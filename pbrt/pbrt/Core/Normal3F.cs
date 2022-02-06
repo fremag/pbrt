@@ -1,0 +1,103 @@
+using System;
+
+namespace pbrt.Core
+{
+    public class Normal3F
+    {
+        private const double Epsilon = 1e-9;
+
+        public float X { get; }
+        public float Y { get; }
+        public float Z { get; }
+        
+        public Normal3F() : this(0, 0, 0)
+        {
+           
+        }
+        
+       public Normal3F(float x, float y, float z)
+       {
+           X = x;
+           Y = y;
+           Z = z;
+       }
+
+
+       public Normal3F(Normal3F n) : this(n.X, n.Y, n.Z)
+       {
+       }
+       
+       public Normal3F(Vector3F n) : this(n.X, n.Y, n.Z)
+       {
+       }
+       
+
+       public static Normal3F operator -(Normal3F n) => new Normal3F(-n.X, -n.Y, -n.Z );
+       public static Normal3F operator +(Normal3F n1, Normal3F n2) => new Normal3F(n1.X+n2.X, n1.Y+n2.Y, n1.Z +n2.Z);
+       public static Normal3F operator -(Normal3F n1, Normal3F n2) => new Normal3F(n1.X-n2.X, n1.Y-n2.Y, n1.Z -n2.Z);
+       
+       public bool HasNaNs  => double.IsNaN(X) || double.IsNaN(Y) || double.IsNaN(Z);
+       
+       public static Normal3F operator *(float f, Normal3F n) => new Normal3F(f*n.X, f*n.Y, f*n.Z );
+       public static Normal3F operator *(Normal3F n, float f) => new Normal3F(f*n.X, f*n.Y, f*n.Z );
+       public static Normal3F operator /(float f, Normal3F n) => new Normal3F(f/n.X, f/n.Y, f/n.Z );
+       public static Normal3F operator /(Normal3F n, float f) => new Normal3F(f/n.X, f/n.Y, f/n.Z );
+
+       public float LengthSquared=> X*X + Y*Y+ Z*Z; 
+       public float Length => MathF.Sqrt(LengthSquared);
+
+       Normal3F Normalize() => this / Length;
+
+        
+       public static bool operator ==(Normal3F n1, Normal3F n2)
+       {
+           if ((n1 == null && n2 != null) || (n1 != null && n2 == null))
+           {
+               return false;
+           }
+
+           if (n1 == null)
+           {
+               return true;
+           }
+
+           return Math.Abs(n1.X - n2.X) < Epsilon && Math.Abs(n1.Y - n2.Y) < Epsilon && Math.Abs(n1.Z - n2.Z) < Epsilon;
+       }
+
+       public static bool operator !=(Normal3F n1, Normal3F n2)
+       {
+           return !(n1 == n2);
+       }
+       protected bool Equals(Normal3F other)
+       {
+           return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z);
+       }
+
+       public override bool Equals(object obj)
+       {
+           if (ReferenceEquals(null, obj)) return false;
+           if (ReferenceEquals(this, obj)) return true;
+           if (obj.GetType() != GetType()) return false;
+           return Equals((Vector3F)obj);
+       }
+
+       public override int GetHashCode()
+       {
+           return HashCode.Combine(X, Y, Z);
+       }
+
+       public float this[int i] {
+           get
+           {
+               return i switch
+               {
+                   0 => X,
+                   1 => Y,
+                   2 => Z,
+                   _ => throw new IndexOutOfRangeException()
+               };
+           }
+       }
+       
+    }
+}

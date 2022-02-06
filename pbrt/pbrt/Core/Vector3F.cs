@@ -16,6 +16,12 @@ namespace pbrt.Core
             Z = z;
         }
 
+        public Vector3F(Vector3F v) : this (v.X, v.Y, v.Z)
+        { }
+
+        public Vector3F(Normal3F n) : this (n.X, n.Y, n.Z)
+        { }
+
         public float this[int i] {
             get
             {
@@ -44,7 +50,11 @@ namespace pbrt.Core
         }
 
         public static float Dot(Vector3F v1, Vector3F v2) => v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
-        public static float AbsDot(Vector3F v1, Vector3F v2) => MathF.Abs(Dot(v1,v2));
+        public static float AbsDot(Vector3F v, Vector3F v2) => MathF.Abs(Dot(v,v2));
+        public static float Dot(Vector3F v1, Normal3F n) => v1.X * n.X + v1.Y * n.Y + v1.Z * n.Z;
+        public static float AbsDot(Vector3F v, Normal3F n) => MathF.Abs(Dot(v,n));
+        public static float Dot(Normal3F n1, Vector3F v) => n1.X * v.X + n1.Y * v.Y + n1.Z * v.Z;
+        public static float AbsDot(Normal3F n, Vector3F v) => MathF.Abs(Dot(n,v));
 
         public float Dot(Vector3F v) => Dot(this, v);
         public float AbsDot(Vector3F v) => MathF.Abs(Dot(v));
@@ -122,5 +132,7 @@ namespace pbrt.Core
 
             v3 = Cross(v1, v2);
         }
+        
+        public static Normal3F Faceforward(Normal3F n, Vector3F v) => Dot(n, v) < 0 ? -n : n;
     }
 }
