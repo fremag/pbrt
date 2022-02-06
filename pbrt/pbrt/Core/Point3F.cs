@@ -8,6 +8,7 @@ namespace pbrt.Core
         public float X { get; } 
         public float Y { get; } 
         public float Z { get; }
+        public bool HasNaNs => double.IsNaN(X) || double.IsNaN(Y) || double.IsNaN(Z);
 
         public Point3F() : this(0, 0, 0)
         {

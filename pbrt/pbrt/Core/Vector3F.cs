@@ -78,6 +78,8 @@ namespace pbrt.Core
             }
         }
 
+        public bool HasNaNs => double.IsNaN(X) || double.IsNaN(Y) || double.IsNaN(Z);
+
         public static Vector3F Min(Vector3F v1, Vector3F v2) => new(MathF.Min(v1.X, v2.X), MathF.Min(v1.Y, v2.Y), MathF.Min(v1.Z, v2.Z));
         public static Vector3F Max(Vector3F v1, Vector3F v2) => new(MathF.Max(v1.X, v2.X), MathF.Max(v1.Y, v2.Y), MathF.Max(v1.Z, v2.Z));
         public Vector3F Permute(int x, int y, int z) => new(this[x], this[y], this[z]);
