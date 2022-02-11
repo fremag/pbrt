@@ -41,6 +41,14 @@ namespace pbrt.Core
         
         public Point3F Corner(int corner) => new Point3F(this[corner & 1].X, this[(corner & 2) == 0 ? 1 : 0].Y, this[(corner & 4) == 0 ? 1 : 0].Z);
 
+        public Bounds3F Union(Point3F p) {
+            return new Bounds3F(new Point3F(MathF.Min(PMin.X, p.X),
+                    MathF.Min(PMin.Y, p.Y),
+                    MathF.Min(PMin.Z, p.Z)),
+                new Point3F(MathF.Max(PMax.X, p.X),
+                    MathF.Max(PMax.Y, p.Y),
+                    MathF.Max(PMax.Z, p.Z)));
+        }        
         public Bounds3F Union(Bounds3F bounds1, Bounds3F bounds2) {
             return new Bounds3F(new Point3F(MathF.Min(bounds1.PMin.X, bounds2.PMin.X),
                     MathF.Min(bounds1.PMin.Y, bounds2.PMin.Y),
