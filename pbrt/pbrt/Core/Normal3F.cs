@@ -46,7 +46,7 @@ namespace pbrt.Core
        public float LengthSquared=> X*X + Y*Y+ Z*Z; 
        public float Length => MathF.Sqrt(LengthSquared);
 
-       Normal3F Normalize() => this / Length;
+       public Normal3F Normalize() => this / Length;
 
         
        public static bool operator ==(Normal3F n1, Normal3F n2)
@@ -99,5 +99,11 @@ namespace pbrt.Core
            }
        }
        
+       public float Dot(Vector3F v) => Vector3F.Dot(this, v);
+       public float Dot(Normal3F n) => X * n.X + Y * n.Y + Z * n.Z;
+       public float AbsDot(Vector3F v) => MathF.Abs(Dot(v));
+       
+       public Normal3F FaceForward(Vector3F v) => Dot(v) < 0f ? - this : this;
+       public Normal3F FaceForward(Normal3F n) => Dot(n) < 0f ? - this : this;
     }
 }

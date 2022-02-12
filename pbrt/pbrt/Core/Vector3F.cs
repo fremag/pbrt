@@ -58,11 +58,16 @@ namespace pbrt.Core
 
         public float Dot(Vector3F v) => Dot(this, v);
         public float AbsDot(Vector3F v) => MathF.Abs(Dot(v));
+        public float Dot(Normal3F n) => Dot(this, n);
+        public float AbsDot(Normal3F v) => MathF.Abs(Dot(v));
 
         public static Vector3F Cross(Vector3F v1, Vector3F v2) => new(
             v1.Y*v2.Z-v1.Z*v2.Y, 
             v1.Z*v2.X-v1.X*v2.Z, 
             v1.X*v2.Y-v1.Y*v2.X);
+
+        public Vector3F Cross(Vector3F v) => Cross(this, v);
+        
         public static Vector3F Normalize(Vector3F v) => v / v.Length;
         public Vector3F Normalized() => Normalize(this);
 
