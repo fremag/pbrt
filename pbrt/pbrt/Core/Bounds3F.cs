@@ -141,6 +141,63 @@ namespace pbrt.Core
         {
             center = (PMin + PMax) / 2;
             radius = Inside(center, this) ? Point3F.Distance(center, PMax) : 0;
+        }
+        
+        public bool IntersectP(Ray ray, out float hitT0, out float hitT1) 
+        {
+            hitT0 = 0;
+            hitT1 = ray.TMax;
+                
+            for (int i = 0; i < 3; ++i) 
+            {
+                float invRayDir = 1 / ray.D[i];
+                float tNear = (PMin[i] - ray.O[i]) * invRayDir;
+                float tFar  = (PMax[i] - ray.O[i]) * invRayDir;
+
+                if (tNear > tFar)
+                {
+                    (tFar, tNear) = (tNear, tFar);
+                }
+                
+                tFar *= 1 + 2 * MathUtils.Gamma(3);
+                hitT0 = tNear > hitT0 ? tNear : hitT0;
+                hitT1 = tFar  < hitT1 ? tFar  : hitT1;
+                
+                if (hitT0 > hitT1)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }        
+        
+        public bool IntersectP(Ray ray, Vector3F invDir, int[] dirIsNeg)
+        {
+            Bounds3F bounds = this;
+            // Check for ray intersection against $x$ and $y$ slabs
+            float tMin = (bounds[dirIsNeg[0]].X - ray.O.X) * invDir.X;
+            float tMax = (bounds[1 - dirIsNeg[0]].X - ray.O.X) * invDir.X;
+            float tyMin = (bounds[dirIsNeg[1]].Y - ray.O.Y) * invDir.Y;
+            float tyMax = (bounds[1 - dirIsNeg[1]].Y - ray.O.Y) * invDir.Y;
+
+            // Update _tMax_ and _tyMax_ to ensure robust bounds intersection
+            tMax *= 1 + 2 * MathUtils.Gamma(3);
+            tyMax *= 1 + 2 *  MathUtils.Gamma(3);
+            if (tMin > tyMax || tyMin > tMax) return false;
+            if (tyMin > tMin) tMin = tyMin;
+            if (tyMax < tMax) tMax = tyMax;
+
+            // Check for ray intersection against $z$ slab
+            float tzMin = (bounds[dirIsNeg[2]].Z - ray.O.Z) * invDir.Z;
+            float tzMax = (bounds[1 - dirIsNeg[2]].Z - ray.O.Z) * invDir.Z;
+
+            // Update _tzMax_ to ensure robust bounds intersection
+            tzMax *= 1 + 2 *  MathUtils.Gamma(3);
+            if (tMin > tzMax || tzMin > tMax) return false;
+            if (tzMin > tMin) tMin = tzMin;
+            if (tzMax < tMax) tMax = tzMax;
+            return (tMin < ray.TMax) && (tMax > 0);
         }        
     }
 }

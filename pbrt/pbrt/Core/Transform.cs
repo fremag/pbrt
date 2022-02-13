@@ -323,15 +323,13 @@ namespace pbrt.Core
                 MInv.M12*x + MInv.M22*y + MInv.M32*z,
                 MInv.M13*x + MInv.M23*y + MInv.M33*z);
         }
-        public static float Gamma(int n) {
-            return (n * float.Epsilon) / (1 - n * float.Epsilon);
-        }
+
         public Point3F Apply(Point3F p, out Vector3F pError) 
         {
             float xAbsSum = MathF.Abs(M.M11 * p.X) + MathF.Abs(M.M12 * p.Y) + MathF.Abs(M.M13 * p.Z) + MathF.Abs(M.M14);
             float yAbsSum = (MathF.Abs(M.M21 * p.X) + MathF.Abs(M.M22 * p.Y) + MathF.Abs(M.M23 * p.Z) + MathF.Abs(M.M24));
             float zAbsSum = (MathF.Abs(M.M31 * p.X) + MathF.Abs(M.M32 * p.Y) + MathF.Abs(M.M33 * p.Z) + MathF.Abs(M.M34));
-            var g3 = Gamma(3);
+            var g3 = MathUtils.Gamma(3);
             pError = new Vector3F(g3 * xAbsSum, g3 * yAbsSum, g3 * zAbsSum);
 
             return Apply(p);
