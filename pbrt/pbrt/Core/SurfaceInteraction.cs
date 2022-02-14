@@ -18,8 +18,19 @@ namespace pbrt.Core
         public Vector3F DpDv { get; set; }
         public Normal3F DnDu{ get; set; }
         public Normal3F DnDv { get; set; }
-        public AbstractShape AbstractShape { get; set; }
+        public AbstractShape Shape { get; set; }
         public Shading  Shading { get; set; }
+        
+        public Primitive Primitive = null;
+        public BSDF Bsdf = null;
+        public BSSRDF Bssrdf = null;
+        public Vector3F DpDx { get; set; } 
+        public Vector3F DpDy{ get; set; } 
+        public float DuDx { get; set; } 
+        public float  DvDx { get; set; } 
+        public float  DuDy { get; set; } 
+        public float  DvDy { get; set; } 
+        public int FaceIndex { get; set; } = 0;
         
         public SurfaceInteraction()
         {
@@ -29,7 +40,7 @@ namespace pbrt.Core
         public SurfaceInteraction(Point3F p, Vector3F pError, Point2F uv, Vector3F wo,
             Vector3F dpdu, Vector3F dpdv,
             Normal3F dndu, Normal3F dndv,
-            float time, AbstractShape abstractShape)
+            float time, AbstractShape shape)
             : base(p, new Normal3F(dpdu.Cross(dpdv).Normalized()), pError, wo, time, null)
         {
             Uv = uv;
@@ -37,7 +48,7 @@ namespace pbrt.Core
             DpDv = dpdv;
             DnDu = dndu;
             DnDv = dndv;
-            AbstractShape = abstractShape;
+            Shape = shape;
 
             Shading = new Shading
             {
@@ -52,7 +63,7 @@ namespace pbrt.Core
         public void SetShadingGeometry(Vector3F dpdus, Vector3F dpdvs, Normal3F dndus, Normal3F dndvs, bool orientationIsAuthoritative) {
             Vector3F vector3F = dpdus.Cross(dpdvs).Normalized();
             Shading.N = new Normal3F(vector3F);
-            if (AbstractShape != null && (AbstractShape.ReverseOrientation ^ AbstractShape.TransformSwapsHandedness))
+            if (Shape != null && (Shape.ReverseOrientation ^ Shape.TransformSwapsHandedness))
             {
                 Shading.N = - Shading.N;
             }

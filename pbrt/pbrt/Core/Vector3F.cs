@@ -22,6 +22,13 @@ namespace pbrt.Core
         public Vector3F(Normal3F n) : this (n.X, n.Y, n.Z)
         { }
 
+        public Vector3F(Point3F point3F)
+        {
+            X = point3F.X;
+            Y = point3F.Y;
+            Z = point3F.Z;
+        }
+
         public float this[int i] {
             get
             {
@@ -38,6 +45,7 @@ namespace pbrt.Core
         public static Vector3F operator +(Vector3F v1, Vector3F v2) => new(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z); 
         public static Vector3F operator -(Vector3F v1, Vector3F v2) => new(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
         public static Vector3F operator *(Vector3F v, float f) => new(v.X *f, v.Y *f, v.Z *f);
+        public static Vector3F operator *(float f, Vector3F v) => new(v.X *f, v.Y *f, v.Z *f);
         public static Vector3F operator /(Vector3F v, float f) => new(v.X /f, v.Y /f, v.Z /f);
         public static Vector3F operator -(Vector3F v) => new(-v.X , -v.Y , -v.Z );
 

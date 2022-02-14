@@ -18,12 +18,11 @@ namespace pbrt.Shapes
             TransformSwapsHandedness = ObjectToWorld.SwapsHandedness();
         }
         
-        public abstract Bounds3F ObjectBound { get; }
+        public float Area { get; protected set; }
+        public Bounds3F ObjectBound { get; protected set; }
         public Bounds3F WorldBound() => ObjectToWorld.Apply(ObjectBound);
         
         public abstract bool Intersect(Ray ray, out float tHit, out SurfaceInteraction isect, bool testAlphaTexture = true);
         public virtual bool IntersectP(Ray ray, bool testAlphaTexture = true) => Intersect(ray, out _, out _, testAlphaTexture);
-
-        public abstract float Area { get; }
     }
 }

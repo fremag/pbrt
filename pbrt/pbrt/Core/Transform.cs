@@ -124,7 +124,6 @@ namespace pbrt.Core
                         }
 
                         break;
-
                 }
 
                 throw new IndexOutOfRangeException();
@@ -133,13 +132,15 @@ namespace pbrt.Core
 
         public static bool operator <(Transform t1, Transform t2)
         {
-                for (int i = 0; i < 4; ++i)
-                for (int j = 0; j < 4; ++j) {
-                    if (t1[i,j] < t2[i,j]) return true;
-                    if (t1[i,j] > t2[i,j]) return false;
-                }
-                return false;
+            for (int i = 0; i < 4; ++i)
+            for (int j = 0; j < 4; ++j)
+            {
+                if (t1[i, j] < t2[i, j]) return true;
+                if (t1[i, j] > t2[i, j]) return false;
             }
+
+            return false;
+        }
 
         public static bool operator >(Transform t1, Transform t2)
         {
@@ -147,8 +148,8 @@ namespace pbrt.Core
         }
 
         public bool IsIdentity => M.IsIdentity;
-        
-        
+
+
         public static Transform Translate(Vector3F delta)
         {
             return Translate(delta.X, delta.Y, delta.Z);
@@ -170,7 +171,7 @@ namespace pbrt.Core
 
             return new Transform(m, mInv);
         }
-        
+
 
         public static Transform Scale(float x, float y, float z)
         {
@@ -188,7 +189,7 @@ namespace pbrt.Core
 
             return new Transform(m, mInv);
         }
-        
+
         public static Transform RotateX(float deg)
         {
             var rad = deg * MathF.PI / 180;
@@ -216,7 +217,7 @@ namespace pbrt.Core
             var t = Matrix4x4.Transpose(m);
             return new Transform(m, t);
         }
-        
+
         public static Transform RotateZ(float deg)
         {
             var rad = deg * MathF.PI / 180;
@@ -262,7 +263,7 @@ namespace pbrt.Core
             Matrix4x4.Invert(cameraToWorld, out var inverted);
             return new Transform(inverted, cameraToWorld);
         }
-        
+
         protected bool Equals(Transform other)
         {
             return M.Equals(other.M) && MInv.Equals(other.MInv);
@@ -280,51 +281,51 @@ namespace pbrt.Core
         {
             return HashCode.Combine(M, MInv);
         }
-        
+
         public Point3F Apply(Point3F p)
         {
             float x = p.X;
             float y = p.Y;
             float z = p.Z;
             const float w = 1;
-            float xp = M.M11*x + M.M12*y + M.M13*z + M.M14 * w;
-            float yp = M.M21*x + M.M22*y + M.M23*z + M.M24 * w;
-            float zp = M.M31*x + M.M32*y + M.M33*z + M.M34 * w;
-            float wp = M.M41*x + M.M42*y + M.M43*z + M.M44 * w;
-            
+            float xp = M.M11 * x + M.M12 * y + M.M13 * z + M.M14 * w;
+            float yp = M.M21 * x + M.M22 * y + M.M23 * z + M.M24 * w;
+            float zp = M.M31 * x + M.M32 * y + M.M33 * z + M.M34 * w;
+            float wp = M.M41 * x + M.M42 * y + M.M43 * z + M.M44 * w;
+
             if (Math.Abs(wp - 1) < float.Epsilon)
             {
                 return new Point3F(xp, yp, zp);
             }
 
-            return new Point3F(xp / wp, yp / wp, zp / wp) ;
+            return new Point3F(xp / wp, yp / wp, zp / wp);
         }
-        
+
         public Vector3F Apply(Vector3F p)
         {
             float x = p.X;
             float y = p.Y;
             float z = p.Z;
 
-            float xp = M.M11*x + M.M12*y + M.M13*z;
-            float yp = M.M21*x + M.M22*y + M.M23*z;
-            float zp = M.M31*x + M.M32*y + M.M33*z;
+            float xp = M.M11 * x + M.M12 * y + M.M13 * z;
+            float yp = M.M21 * x + M.M22 * y + M.M23 * z;
+            float zp = M.M31 * x + M.M32 * y + M.M33 * z;
 
-            return new Vector3F(xp, yp, zp) ;
+            return new Vector3F(xp, yp, zp);
         }
-        
+
         public Normal3F Apply(Normal3F n)
         {
             float x = n.X;
             float y = n.Y;
             float z = n.Z;
 
-            return new Normal3F(MInv.M11*x + MInv.M21*y + MInv.M31*z,
-                MInv.M12*x + MInv.M22*y + MInv.M32*z,
-                MInv.M13*x + MInv.M23*y + MInv.M33*z);
+            return new Normal3F(MInv.M11 * x + MInv.M21 * y + MInv.M31 * z,
+                MInv.M12 * x + MInv.M22 * y + MInv.M32 * z,
+                MInv.M13 * x + MInv.M23 * y + MInv.M33 * z);
         }
 
-        public Point3F Apply(Point3F p, out Vector3F pError) 
+        public Point3F Apply(Point3F p, out Vector3F pError)
         {
             float xAbsSum = MathF.Abs(M.M11 * p.X) + MathF.Abs(M.M12 * p.Y) + MathF.Abs(M.M13 * p.Z) + MathF.Abs(M.M14);
             float yAbsSum = (MathF.Abs(M.M21 * p.X) + MathF.Abs(M.M22 * p.Y) + MathF.Abs(M.M23 * p.Z) + MathF.Abs(M.M24));
@@ -334,15 +335,15 @@ namespace pbrt.Core
 
             return Apply(p);
         }
-        
-        public Ray Apply(Ray r) 
-        { 
+
+        public Ray Apply(Ray r)
+        {
             Point3F o = Apply(r.O, out var oError);
             Vector3F d = Apply(r.D);
             float lengthSquared = d.LengthSquared;
             float tMax = r.TMax;
-            if (lengthSquared > 0) {
-                
+            if (lengthSquared > 0)
+            {
                 float dt = d.Abs().Dot(oError) / lengthSquared;
                 o += d * dt;
                 tMax -= dt;
@@ -350,7 +351,6 @@ namespace pbrt.Core
 
             return new Ray(o, d, tMax, r.Time, r.Medium);
         }
-        
 
         public Bounds3F Apply(Bounds3F b)
         {
@@ -363,20 +363,146 @@ namespace pbrt.Core
             tb = tb.Union(Apply(new Point3F(b.PMax.X, b.PMin.Y, b.PMax.Z)));
             tb = tb.Union(Apply(new Point3F(b.PMax.X, b.PMax.Y, b.PMax.Z)));
             return tb;
-        }        
+        }
+
         public static Point3F operator *(Transform t, Point3F p) => t.Apply(p);
         public static Vector3F operator *(Transform t, Vector3F v) => t.Apply(v);
         public static Normal3F operator *(Transform t, Normal3F n) => t.Apply(n);
         public static Ray operator *(Transform t, Ray r) => t.Apply(r);
         public static Bounds3F operator *(Transform t, Bounds3F b) => t.Apply(b);
-        public static Transform operator*(Transform t1, Transform t2) => new Transform(t1.M * t2.M, t2.MInv * t1.MInv);
-        
+        public static Transform operator *(Transform t1, Transform t2) => new Transform(t1.M * t2.M, t2.MInv * t1.MInv);
+
         public bool SwapsHandedness()
         {
             float det = M.M11 * (M.M22 * M.M33 - M.M23 * M.M32) -
                         M.M12 * (M.M21 * M.M33 - M.M23 * M.M31) +
                         M.M13 * (M.M21 * M.M32 - M.M22 * M.M31);
             return det < 0;
+        }
+
+        public Vector3F Apply(Vector3F v, out Vector3F absError)
+        {
+            float x = v.X;
+            float y = v.Y;
+            float z = v.Z;
+            var absErrorX = MathF.Abs(M.M11 * v.X) + MathF.Abs(M.M12 * v.Y) + MathF.Abs(M.M13 * v.Z);
+            var absErrorY = MathF.Abs(M.M21 * v.X) + MathF.Abs(M.M22 * v.Y) + MathF.Abs(M.M23 * v.Z);
+            var absErrorZ = MathF.Abs(M.M31 * v.X) + MathF.Abs(M.M32 * v.Y) + MathF.Abs(M.M33 * v.Z);
+
+            var g3 = MathUtils.Gamma(3);
+            absError = new Vector3F(g3 * absErrorX, g3 * absErrorY, g3 * absErrorZ);
+
+            var vX = M.M11 * x + M.M12 * y + M.M13 * z;
+            var vY = M.M21 * x + M.M22 * y + M.M23 * z;
+            var vZ = M.M31 * x + M.M32 * y + M.M33 * z;
+
+            return new Vector3F(vX, vY, vZ);
+        }
+
+        public Ray Apply(Ray ray, out Vector3F oError, out Vector3F dError)
+        {
+            Point3F o = Apply(ray.O, out oError);
+            Vector3F d = Apply(ray.D, out dError);
+            float tMax = ray.TMax;
+            float lengthSquared = d.LengthSquared;
+            if (lengthSquared > 0)
+            {
+                float dt = d.Abs().Dot(oError) / lengthSquared;
+                o += d * dt;
+            }
+
+            return new Ray(o, d, tMax, ray.Time, ray.Medium);
+        }
+
+        public Point3F Apply(Point3F pt, Vector3F ptError, out Vector3F absError)
+        {
+            float x = pt.X, y = pt.Y, z = pt.Z;
+            float xp = (M.M11 * x + M.M12 * y) + (M.M13 * z + M.M14);
+            float yp = (M.M21 * x + M.M22 * y) + (M.M23 * z + M.M24);
+            float zp = (M.M31 * x + M.M32 * y) + (M.M33 * z + M.M34);
+            float wp = (M.M41 * x + M.M42 * y) + (M.M43 * z + M.M44);
+            var absErrorX =
+                (MathUtils.Gamma(3) + (float)1) *
+                (MathF.Abs(M.M11) * ptError.X
+                 + MathF.Abs(M.M12) * ptError.Y
+                 + MathF.Abs(M.M13) * ptError.Z)
+                + MathUtils.Gamma(3) * (MathF.Abs(M.M11 * x) + MathF.Abs(M.M12 * y) + MathF.Abs(M.M13 * z) + MathF.Abs(M.M14));
+
+            var absErrorY =
+                (MathUtils.Gamma(3) + (float)1) *
+                (MathF.Abs(M.M21) * ptError.X + MathF.Abs(M.M22) * ptError.Y +
+                 MathF.Abs(M.M23) * ptError.Z) +
+                MathUtils.Gamma(3) * (MathF.Abs(M.M21 * x) + MathF.Abs(M.M22 * y) +
+                                      MathF.Abs(M.M23 * z) + MathF.Abs(M.M24));
+            var absErrorZ =
+                (MathUtils.Gamma(3) + (float)1) *
+                (MathF.Abs(M.M31) * ptError.X + MathF.Abs(M.M32) * ptError.Y +
+                 MathF.Abs(M.M33) * ptError.Z) +
+                MathUtils.Gamma(3) * (MathF.Abs(M.M31 * x) + MathF.Abs(M.M32 * y) +
+                                      MathF.Abs(M.M33 * z) + MathF.Abs(M.M34));
+
+            absError = new Vector3F(absErrorX, absErrorY, absErrorZ);
+            if (Math.Abs(wp - 1) < float.Epsilon)
+                return new Point3F(xp, yp, zp);
+            return new Point3F(xp, yp, zp) / wp;
+        }
+
+        public SurfaceInteraction Apply(SurfaceInteraction si)
+        {
+            // Transform _p_ and _pError_ in _SurfaceInteraction_
+            var p = Apply(si.P, si.PError, out var pError);
+
+            // Transform remaining members of _SurfaceInteraction_
+            var n = Apply(si.N).Normalize();
+            var wo = Apply(si.Wo).Normalized();
+            var time = si.Time;
+            var mediumInterface = si.MediumInterface;
+            var uv = si.Uv;
+            var shape = si.Shape;
+            var dpdu = Apply(si.DpDu);
+            var dpdv = Apply(si.DpDv);
+            var dndu = Apply(si.DnDu);
+            var dndv = Apply(si.DnDv);
+            var shadingN = Apply(si.Shading.N).Normalize();
+            var shadingDpdu = Apply(si.Shading.DpDu);
+            var shadingDpdv = Apply(si.Shading.DpDv);
+            var shadingDndu = Apply(si.Shading.DnDu);
+            var shadingDndv = Apply(si.Shading.DnDv);
+
+            var dudx = si.DuDx;
+            var dvdx = si.DvDx;
+            var dudy = si.DuDy;
+            var dvdy = si.DvDy;
+            var dpdx = Apply(si.DpDx);
+            var dpdy = Apply(si.DpDy);
+            var bsdf = si.Bsdf;
+            var bssrdf = si.Bssrdf;
+            var primitive = si.Primitive;
+            //    ret.n = Faceforward(ret.n, ret.shading.n);
+            shadingN = shadingN.FaceForward(n);
+            var faceIndex = si.FaceIndex;
+
+            var shading = new Shading
+            {
+                N = shadingN, DnDu = shadingDndu, DnDv = shadingDndv, DpDu = shadingDpdu, DpDv = shadingDpdv
+            };
+
+            var surfaceInteraction = new SurfaceInteraction(p, pError, uv, wo, dpdu, dpdv, dndu, dndv, time, shape)
+            {
+                Shading = shading,
+                Bsdf = bsdf,
+                Bssrdf = bssrdf,
+                DuDx = dudx,
+                DuDy = dudy,
+                DvDx = dvdx,
+                DvDy = dvdy,
+                DpDx = dpdx,
+                DpDy = dpdy,
+                Primitive = primitive,
+                FaceIndex = faceIndex,
+                MediumInterface = mediumInterface
+            };
+            return surfaceInteraction;
         }
     }
 }
