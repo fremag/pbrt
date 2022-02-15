@@ -18,10 +18,10 @@ namespace pbrt.Core
         public Vector3F DpDv { get; set; }
         public Normal3F DnDu{ get; set; }
         public Normal3F DnDv { get; set; }
-        public AbstractShape Shape { get; set; }
+        public AbstractShape AbstractShape { get; set; }
         public Shading  Shading { get; set; }
         
-        public Primitive Primitive = null;
+        public IPrimitive Primitive = null;
         public BSDF Bsdf = null;
         public BSSRDF Bssrdf = null;
         public Vector3F DpDx { get; set; } 
@@ -40,7 +40,7 @@ namespace pbrt.Core
         public SurfaceInteraction(Point3F p, Vector3F pError, Point2F uv, Vector3F wo,
             Vector3F dpdu, Vector3F dpdv,
             Normal3F dndu, Normal3F dndv,
-            float time, AbstractShape shape)
+            float time, AbstractShape abstractShape)
             : base(p, new Normal3F(dpdu.Cross(dpdv).Normalized()), pError, wo, time, null)
         {
             Uv = uv;
@@ -48,7 +48,7 @@ namespace pbrt.Core
             DpDv = dpdv;
             DnDu = dndu;
             DnDv = dndv;
-            Shape = shape;
+            AbstractShape = abstractShape;
 
             Shading = new Shading
             {
@@ -63,7 +63,7 @@ namespace pbrt.Core
         public void SetShadingGeometry(Vector3F dpdus, Vector3F dpdvs, Normal3F dndus, Normal3F dndvs, bool orientationIsAuthoritative) {
             Vector3F vector3F = dpdus.Cross(dpdvs).Normalized();
             Shading.N = new Normal3F(vector3F);
-            if (Shape != null && (Shape.ReverseOrientation ^ Shape.TransformSwapsHandedness))
+            if (AbstractShape != null && (AbstractShape.ReverseOrientation ^ AbstractShape.TransformSwapsHandedness))
             {
                 Shading.N = - Shading.N;
             }

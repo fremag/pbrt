@@ -458,7 +458,7 @@ namespace pbrt.Core
             var time = si.Time;
             var mediumInterface = si.MediumInterface;
             var uv = si.Uv;
-            var shape = si.Shape;
+            var shape = si.AbstractShape;
             var dpdu = Apply(si.DpDu);
             var dpdv = Apply(si.DpDv);
             var dndu = Apply(si.DnDu);

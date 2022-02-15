@@ -4,7 +4,7 @@ namespace pbrt.Core
     {
         public Point3F O { get; }
         public Vector3F D { get; }
-        public float TMax { get; }
+        public float TMax { get; set; }
         public float Time { get; }
         public Medium Medium { get; }
 

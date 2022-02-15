@@ -1,6 +1,6 @@
 namespace pbrt.Core
 {
-    public class Primitive
+    public class MemoryArena
     {
     }
 }

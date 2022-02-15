@@ -27,6 +27,8 @@ namespace pbrt.Shapes
             ObjectBound = new Bounds3F(pMin, pMax);
         }
 
+        public override float Area => PhiMax * Radius * (ZMax - ZMin);
+
         public override bool Intersect(Ray r, out float tHit, out SurfaceInteraction isect, bool testAlphaTexture = true)
         {
             tHit = 0;

@@ -2,15 +2,15 @@ using pbrt.Core;
 
 namespace pbrt.Shapes
 {
-    public abstract class AbstractShape 
+    public abstract class AbstractShape : IShape
     {
         public Transform ObjectToWorld { get; set; }
         public Transform WorldToObject { get; set; }
         public bool ReverseOrientation { get; set; }
         public bool TransformSwapsHandedness { get; set; }
+        public abstract float Area { get; }
         
-        public AbstractShape(Transform objectToWorld,
-        Transform worldToObject, bool reverseOrientation)
+        public AbstractShape(Transform objectToWorld, Transform worldToObject, bool reverseOrientation)
         {
             ObjectToWorld = objectToWorld;
             WorldToObject = worldToObject;
@@ -18,7 +18,6 @@ namespace pbrt.Shapes
             TransformSwapsHandedness = ObjectToWorld.SwapsHandedness();
         }
         
-        public float Area { get; protected set; }
         public Bounds3F ObjectBound { get; protected set; }
         public Bounds3F WorldBound() => ObjectToWorld.Apply(ObjectBound);
         
