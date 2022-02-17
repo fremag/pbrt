@@ -68,7 +68,8 @@ namespace pbrt.Core
        {
            return !(n1 == n2);
        }
-       protected bool Equals(Normal3F other)
+       
+       public bool Equals(Normal3F other)
        {
            return X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z);
        }
@@ -78,7 +79,7 @@ namespace pbrt.Core
            if (ReferenceEquals(null, obj)) return false;
            if (ReferenceEquals(this, obj)) return true;
            if (obj.GetType() != GetType()) return false;
-           return Equals((Vector3F)obj);
+           return Equals((Normal3F)obj);
        }
 
        public override int GetHashCode()

@@ -65,9 +65,9 @@ namespace pbrt.Core
         public static float AbsDot(Normal3F n, Vector3F v) => MathF.Abs(Dot(n,v));
 
         public float Dot(Vector3F v) => Dot(this, v);
-        public float AbsDot(Vector3F v) => MathF.Abs(Dot(v));
+        public float AbsDot(Vector3F v) => AbsDot(this, v);
         public float Dot(Normal3F n) => Dot(this, n);
-        public float AbsDot(Normal3F v) => MathF.Abs(Dot(v));
+        public float AbsDot(Normal3F v) => AbsDot(this, v);
 
         public static Vector3F Cross(Vector3F v1, Vector3F v2) => new(
             v1.Y*v2.Z-v1.Z*v2.Y, 
@@ -99,12 +99,12 @@ namespace pbrt.Core
         
         public static bool operator ==(Vector3F v1, Vector3F v2)
         {
-            if ((v1 == null && v2 != null) || (v1 != null && v2 == null))
+            if (ReferenceEquals(v1, null) && ! ReferenceEquals(v2, null) || (! ReferenceEquals(v1, null) && ReferenceEquals(v2, null)))
             {
                 return false;
             }
 
-            if (v1 == null)
+            if (ReferenceEquals(v1, v2))
             {
                 return true;
             }
@@ -134,7 +134,7 @@ namespace pbrt.Core
             return HashCode.Combine(X, Y, Z);
         }
 
-        public void CoordinateSystem(Vector3F v1, out Vector3F v2, out Vector3F v3)
+        public static void CoordinateSystem(Vector3F v1, out Vector3F v2, out Vector3F v3)
         {
             if (MathF.Abs(v1.X) > MathF.Abs(v1.Y))
             {
