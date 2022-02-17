@@ -49,7 +49,8 @@ namespace pbrt.Core
                     MathF.Max(PMax.Y, p.Y),
                     MathF.Max(PMax.Z, p.Z)));
         }        
-        public Bounds3F Union(Bounds3F bounds1, Bounds3F bounds2) {
+        
+        public static Bounds3F Union(Bounds3F bounds1, Bounds3F bounds2) {
             return new Bounds3F(new Point3F(MathF.Min(bounds1.PMin.X, bounds2.PMin.X),
                     MathF.Min(bounds1.PMin.Y, bounds2.PMin.Y),
                     MathF.Min(bounds1.PMin.Z, bounds2.PMin.Z)),
@@ -57,6 +58,8 @@ namespace pbrt.Core
                     MathF.Max(bounds1.PMax.Y, bounds2.PMax.Y),
                     MathF.Max(bounds1.PMax.Z, bounds2.PMax.Z)));
         }
+
+        public Bounds3F Union(Bounds3F bounds) => Union(this, bounds);
         
         public Bounds3F Intersect( Bounds3F bounds1,  Bounds3F bounds2) {
             return new Bounds3F(new Point3F(MathF.Max(bounds1.PMin.X, bounds2.PMin.X),
@@ -86,20 +89,20 @@ namespace pbrt.Core
         }
         
         public Bounds3F Expand(Bounds3F b, float delta) {
-            return new Bounds3F(b.PMin - new Vector3F(delta, delta, delta),
-                b.PMax + new Vector3F(delta, delta, delta));
+            return new Bounds3F(b.PMin - new Vector3F(delta, delta, delta), b.PMax + new Vector3F(delta, delta, delta));
         }
 
         public Vector3F Diagonal() => PMax - PMin;
         
-        float SurfaceArea {
+        public float SurfaceArea {
             get
             {
                 Vector3F d = Diagonal();
-                return 2 * (d.X * d.Y + d.X * d.Z + d.Y * d.Z);
+                return 2f * (d.X * d.Y + d.X * d.Z + d.Y * d.Z);
             }
         }
-        float Volume {
+        
+        public float Volume {
             get
             {
                 Vector3F d = Diagonal();
@@ -107,7 +110,7 @@ namespace pbrt.Core
             }
         }
 
-        int MaximumExtent
+        public int MaximumExtent
         {
             get
             {
