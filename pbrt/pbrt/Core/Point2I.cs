@@ -32,12 +32,12 @@ namespace pbrt.Core
         
         public static bool operator == (Point2I p1, Point2I p2)
         {
-            if ((p1 == null && p2 != null) || (p1 != null && p2 == null))
+            if (ReferenceEquals(p1, null) && ! ReferenceEquals(p2, null) || (! ReferenceEquals(p1, null) && ReferenceEquals(p2, null)))
             {
                 return false;
             }
 
-            if (p1 == p2)
+            if (ReferenceEquals(p1, p2))
             {
                 return true;
             }
@@ -57,10 +57,11 @@ namespace pbrt.Core
         public static Point2F operator *(float f, Point2I p) => new(p.X *f, p.Y *f);
 
         public static Point2I operator /(Point2I p, int i) => new(p.X /i, p.Y /i);
-        public static Point2I operator /(int f, Point2I p) => new(p.X /f, p.Y /f);
      
         public static float Distance(Point2I p1, Point2I p2) => (p1 - p2).Length;
         public static float DistanceSquared(Point2I p1, Point2I p2) => (p1 - p2).LengthSquared;
+        public float Distance(Point2I p) => Distance(this, p);
+        public float DistanceSquared(Point2I p) => DistanceSquared(this, p);
         
         public static Point2F Lerp(float t, Point2I p0, Point2I p1) => (1 - t) * p0 + t * p1;
 
@@ -91,7 +92,7 @@ namespace pbrt.Core
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Point3F)obj);
+            return Equals((Point2I)obj);
         }
 
         public override int GetHashCode() => HashCode.Combine(X, Y);

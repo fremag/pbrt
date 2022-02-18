@@ -59,18 +59,17 @@ namespace pbrt.Core
         public static Point3F operator *(float f, Point3I p) => new(p.X *f, p.Y *f, p.Z *f);
 
         public static Point3I operator /(Point3I p, int f) => new(p.X /f, p.Y /f, p.Z /f);
-        public static Point3I operator /(int f, Point3I p) => new(p.X /f, p.Y /f, p.Z /f);
      
         public static float Distance(Point3I p1, Point3I p2) => (p1 - p2).Length;
+        public float Distance(Point3I p) => Distance(this,  p);
         public static float DistanceSquared(Point3I p1, Point3I p2) => (p1 - p2).LengthSquared;
+        public float DistanceSquared(Point3I p) => DistanceSquared(this, p);
         
         public static Point3F Lerp(float t, Point3I p0, Point3I p1) => (1 - t) * p0 + t * p1;
 
         public static Point3I Min(Point3I p0, Point3I p1) => new Point3I(Math.Min(p0.X, p1.X), Math.Min(p0.Y, p1.Y), Math.Min(p0.Z, p1.Z));
         public static Point3I Max(Point3I p0, Point3I p1) => new Point3I(Math.Max(p0.X, p1.X), Math.Max(p0.Y, p1.Y), Math.Max(p0.Z, p1.Z));
 
-        public Point3F Ceil() => new Point3F(MathF.Ceiling(X), MathF.Ceiling(Y), MathF.Ceiling(Z));
-        public Point3F Floor() => new Point3F(MathF.Floor(X), MathF.Floor(Y), MathF.Floor(Z));
         public Point3F Abs() => new Point3F(MathF.Abs(X), MathF.Abs(Y), MathF.Abs(Z));
         
         public float this[int i] {
@@ -96,7 +95,7 @@ namespace pbrt.Core
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Point3F)obj);
+            return Equals((Point3I)obj);
         }
 
         public override int GetHashCode() => HashCode.Combine(X, Y, Z);

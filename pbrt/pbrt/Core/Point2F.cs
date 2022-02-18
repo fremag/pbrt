@@ -55,15 +55,16 @@ namespace pbrt.Core
         public static Point2F operator *(float f, Point2F p) => new(p.X *f, p.Y *f);
 
         public static Point2F operator /(Point2F p, float f) => new(p.X /f, p.Y /f);
-        public static Point2F operator /(float f, Point2F p) => new(p.X /f, p.Y /f);
      
-        public static float Distance(Point3F p1, Point3F p2) => (p1 - p2).Length;
-        public static float DistanceSquared(Point3F p1, Point3F p2) => (p1 - p2).LengthSquared;
+        public static float Distance(Point2F p1, Point2F p2) => (p1 - p2).Length;
+        public static float DistanceSquared(Point2F p1, Point2F p2) => (p1 - p2).LengthSquared;
+        public float Distance(Point2F p) => Distance(this, p);
+        public float DistanceSquared(Point2F p) => DistanceSquared(this, p);
         
-        public static Point3F Lerp(float t, Point3F p0, Point3F p1) => (1 - t) * p0 + t * p1;
+        public static Point2F Lerp(float t, Point2F p0, Point2F p1) => (1 - t) * p0 + t * p1;
 
-        public static Point3F Min(Point3F p0, Point3F p1) => new Point3F(MathF.Min(p0.X, p1.X), MathF.Min(p0.Y, p1.Y), MathF.Min(p0.Z, p1.Z));
-        public static Point3F Max(Point3F p0, Point3F p1) => new Point3F(MathF.Max(p0.X, p1.X), MathF.Max(p0.Y, p1.Y), MathF.Max(p0.Z, p1.Z));
+        public static Point2F Min(Point2F p0, Point2F p1) => new Point2F(MathF.Min(p0.X, p1.X), MathF.Min(p0.Y, p1.Y));
+        public static Point2F Max(Point2F p0, Point2F p1) => new Point2F(MathF.Max(p0.X, p1.X), MathF.Max(p0.Y, p1.Y));
 
         public Point2F Ceil() => new Point2F(MathF.Ceiling(X), MathF.Ceiling(Y));
         public Point2F Floor() => new Point2F(MathF.Floor(X), MathF.Floor(Y));
@@ -91,7 +92,7 @@ namespace pbrt.Core
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Point3F)obj);
+            return Equals((Point2F)obj);
         }
 
         public override int GetHashCode() => HashCode.Combine(X, Y);
