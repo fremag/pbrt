@@ -23,7 +23,6 @@ namespace pbrt.Core
             Y = y;
         }
 
-        public static explicit operator Point2F(Point3F p) => new Point2F(p.X, p.Y);
         public static explicit operator Point2I(Point2F p) => new Point2I((int)p.X, (int)p.Y);
         
         public static Point2F operator +(Point2F p1, Point2F p2) => new Point2F(p1.X + p2.X, p1.Y + p2.Y);
@@ -32,12 +31,12 @@ namespace pbrt.Core
         
         public static bool operator == (Point2F p1, Point2F p2)
         {
-            if ((p1 == null && p2 != null) || (p1 != null && p2 == null))
+            if (ReferenceEquals(p1, null) && ! ReferenceEquals(p2, null) || (! ReferenceEquals(p1, null) && ReferenceEquals(p2, null)))
             {
                 return false;
             }
 
-            if (p1 == p2)
+            if (ReferenceEquals(p1, p2))
             {
                 return true;
             }

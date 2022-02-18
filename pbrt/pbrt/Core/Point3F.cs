@@ -37,12 +37,12 @@ namespace pbrt.Core
         
         public static bool operator == (Point3F p1, Point3F p2)
         {
-            if ((p1 == null && p2 != null) || (p1 != null && p2 == null))
+            if (ReferenceEquals(p1, null) && ! ReferenceEquals(p2, null) || (! ReferenceEquals(p1, null) && ReferenceEquals(p2, null)))
             {
                 return false;
             }
 
-            if (p1 == p2)
+            if (ReferenceEquals(p1, p2))
             {
                 return true;
             }
@@ -59,10 +59,11 @@ namespace pbrt.Core
         public static Point3F operator *(float f, Point3F p) => new(p.X *f, p.Y *f, p.Z *f);
 
         public static Point3F operator /(Point3F p, float f) => new(p.X /f, p.Y /f, p.Z /f);
-        public static Point3F operator /(float f, Point3F p) => new(p.X /f, p.Y /f, p.Z /f);
      
         public static float Distance(Point3F p1, Point3F p2) => (p1 - p2).Length;
+        public float Distance(Point3F p) => Distance(this, p);
         public static float DistanceSquared(Point3F p1, Point3F p2) => (p1 - p2).LengthSquared;
+        public float DistanceSquared(Point3F p) => DistanceSquared(this, p);
         
         public static Point3F Lerp(float t, Point3F p0, Point3F p1) => (1 - t) * p0 + t * p1;
 

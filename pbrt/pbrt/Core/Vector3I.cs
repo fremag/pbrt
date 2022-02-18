@@ -7,7 +7,6 @@ namespace pbrt.Core
         public int X { get; }
         public int Y { get; }
         public int Z { get; }
-        private const double Epsilon = 1e-9;
 
         public Vector3I(int x, int y, int z)
         {
@@ -32,6 +31,7 @@ namespace pbrt.Core
         public static Vector3I operator +(Vector3I v1, Vector3I v2) => new(v1.X + v2.X, v1.Y + v2.Y, v1.Z + v2.Z); 
         public static Vector3I operator -(Vector3I v1, Vector3I v2) => new(v1.X - v2.X, v1.Y - v2.Y, v1.Z - v2.Z);
         public static Vector3F operator *(Vector3I v, float f) => new(v.X *f, v.Y *f, v.Z *f);
+        public static Vector3F operator *(float f, Vector3I v) => v * f;
         public static Vector3F operator /(Vector3I v, float f) => new(v.X /f, v.Y /f, v.Z /f);
         public static Vector3I operator -(Vector3I v) => new(-v.X , -v.Y , -v.Z );
 
@@ -47,8 +47,9 @@ namespace pbrt.Core
         public static int AbsDot(Vector3I v1, Vector3I v2) => Math.Abs(Dot(v1,v2));
 
         public int Dot(Vector3I v) => Dot(this, v);
-        public int AbsDot(Vector3I v) => Math.Abs(Dot(v));
+        public int AbsDot(Vector3I v) => AbsDot(this, v);
 
+        public Vector3I Cross(Vector3I v) => Cross(this, v);
         public static Vector3I Cross(Vector3I v1, Vector3I v2) => new(
             v1.Y*v2.Z-v1.Z*v2.Y, 
             v1.Z*v2.X-v1.X*v2.Z, 
@@ -74,17 +75,17 @@ namespace pbrt.Core
         
         public static bool operator ==(Vector3I v1, Vector3I v2)
         {
-            if ((v1 == null && v2 != null) || (v1 != null && v2 == null))
+            if (ReferenceEquals(v1, null) && ! ReferenceEquals(v2, null) || (! ReferenceEquals(v1, null) && ReferenceEquals(v2, null)))
             {
                 return false;
             }
 
-            if (v1 == null)
+            if (ReferenceEquals(v1, v2))
             {
                 return true;
             }
 
-            return Math.Abs(v1.X - v2.X) < Epsilon && Math.Abs(v1.Y - v2.Y) < Epsilon && Math.Abs(v1.Z - v2.Z) < Epsilon;
+            return v1.X == v2.X && v1.Y == v2.Y && v1.Z == v2.Z;
         }
 
         public static bool operator !=(Vector3I v1, Vector3I v2)

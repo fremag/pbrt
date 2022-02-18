@@ -13,6 +13,12 @@ namespace pbrt.Core
             Y = y;
         }
 
+        public Vector2I(Vector2I v) : this(v.X, v.Y)
+        { }
+
+        public Vector2I(Point2I p) : this(p.X, p.Y)
+        { }
+        
         public int this[int i] {
             get
             {
@@ -28,6 +34,7 @@ namespace pbrt.Core
         public static Vector2I operator +(Vector2I v1, Vector2I v2) => new(v1.X + v2.X, v1.Y + v2.Y); 
         public static Vector2I operator -(Vector2I v1, Vector2I v2) => new(v1.X - v2.X, v1.Y - v2.Y);
         public static Vector2I operator *(Vector2I v, int f) => new(v.X *f, v.Y *f);
+        public static Vector2I operator *(int f, Vector2I v) => new(v.X *f, v.Y *f);
         public static Vector2I operator /(Vector2I v, int f) => new(v.X /f, v.Y /f);
         public static Vector2I operator -(Vector2I v) => new(-v.X , -v.Y);
 
@@ -43,16 +50,16 @@ namespace pbrt.Core
         public static int AbsDot(Vector2I v1, Vector2I v2) => Math.Abs(Dot(v1,v2));
 
         public int Dot(Vector2I v) => Dot(this, v);
-        public int AbsDot(Vector2I v) => Math.Abs(Dot(v));
+        public int AbsDot(Vector2I v) => AbsDot(this, v);
 
         public static bool operator ==(Vector2I v1, Vector2I v2)
         {
-            if ((v1 == null && v2 != null) || (v1 != null && v2 == null))
+            if (ReferenceEquals(v1, null) && ! ReferenceEquals(v2, null) || (! ReferenceEquals(v1, null) && ReferenceEquals(v2, null)))
             {
                 return false;
             }
 
-            if (v1 == null)
+            if (ReferenceEquals(v1, v2))
             {
                 return true;
             }
@@ -64,6 +71,7 @@ namespace pbrt.Core
         {
             return !(v1 == v2);
         }
+        
         protected bool Equals(Vector2I other)
         {
             return X == other.X && Y == other.Y;

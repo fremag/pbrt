@@ -37,8 +37,15 @@ namespace pbrt.Core
 
             double rootDiscrim = Math.Sqrt(discrim);
             double q;
-            if (b < 0) q = -.5 * (b - rootDiscrim);
-            else q = -.5 * (b + rootDiscrim);
+            if (b < 0)
+            {
+                q = -.5 * (b - rootDiscrim);
+            }
+            else
+            {
+                q = -.5 * (b + rootDiscrim);
+            }
+
             t0 = (float)(q / a);
             t1 = (float)(c / q);
 

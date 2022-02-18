@@ -34,12 +34,12 @@ namespace pbrt.Core
         
         public static bool operator == (Point3I p1, Point3I p2)
         {
-            if ((p1 == null && p2 != null) || (p1 != null && p2 == null))
+            if (ReferenceEquals(p1, null) && ! ReferenceEquals(p2, null) || (! ReferenceEquals(p1, null) && ReferenceEquals(p2, null)))
             {
                 return false;
             }
 
-            if (p1 == p2)
+            if (ReferenceEquals(p1, p2))
             {
                 return true;
             }
