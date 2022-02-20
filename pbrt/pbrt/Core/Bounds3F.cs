@@ -60,8 +60,9 @@ namespace pbrt.Core
         }
 
         public Bounds3F Union(Bounds3F bounds) => Union(this, bounds);
-        
-        public Bounds3F Intersect( Bounds3F bounds1,  Bounds3F bounds2) {
+
+        public Bounds3F Intersect(Bounds3F bounds) => Intersect(this, bounds);
+        public static Bounds3F Intersect( Bounds3F bounds1,  Bounds3F bounds2) {
             return new Bounds3F(new Point3F(MathF.Max(bounds1.PMin.X, bounds2.PMin.X),
                     MathF.Max(bounds1.PMin.Y, bounds2.PMin.Y),
                     MathF.Max(bounds1.PMin.Z, bounds2.PMin.Z)),
@@ -69,7 +70,8 @@ namespace pbrt.Core
                     MathF.Min(bounds1.PMax.Y, bounds2.PMax.Y),
                     MathF.Min(bounds1.PMax.Z, bounds2.PMax.Z)));
         }
-        
+
+        public bool Overlaps(Bounds3F b) => Overlaps(this, b);
         public static bool Overlaps(Bounds3F b1, Bounds3F b2) {
             bool x = (b1.PMax.X >= b2.PMin.X) && (b1.PMin.X <= b2.PMax.X);
             bool y = (b1.PMax.Y >= b2.PMin.Y) && (b1.PMin.Y <= b2.PMax.Y);
@@ -77,20 +79,23 @@ namespace pbrt.Core
             return (x && y && z);
         }        
         
-        public bool Inside(Point3F p, Bounds3F b) {
+        public static bool Inside(Point3F p, Bounds3F b) {
             return (p.X >= b.PMin.X && p.X <= b.PMax.X &&
                     p.Y >= b.PMin.Y && p.Y <= b.PMax.Y &&
                     p.Z >= b.PMin.Z && p.Z <= b.PMax.Z);
         }
-        public bool InsideExclusive(Point3F p, Bounds3F b) {
+
+        public bool Inside(Point3F p) => Inside(p, this);
+
+        public bool InsideExclusive(Point3F p) => InsideExclusive(p, this);
+        
+        public static bool InsideExclusive(Point3F p, Bounds3F b) {
             return (p.X >= b.PMin.X && p.X < b.PMax.X &&
                     p.Y >= b.PMin.Y && p.Y < b.PMax.Y &&
                     p.Z >= b.PMin.Z && p.Z < b.PMax.Z);
         }
         
-        public Bounds3F Expand(Bounds3F b, float delta) {
-            return new Bounds3F(b.PMin - new Vector3F(delta, delta, delta), b.PMax + new Vector3F(delta, delta, delta));
-        }
+        public Bounds3F Expand(float delta) => new Bounds3F(PMin - new Vector3F(delta, delta, delta), PMax + new Vector3F(delta, delta, delta));
 
         public Vector3F Diagonal() => PMax - PMin;
         

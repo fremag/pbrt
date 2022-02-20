@@ -101,5 +101,7 @@ namespace pbrt.Core
         }
 
         public override int GetHashCode() => HashCode.Combine(X, Y, Z);
+
+        public override string ToString() => $"X[{X}] Y[{Y}] Y[{Z}]";
     }
 }
