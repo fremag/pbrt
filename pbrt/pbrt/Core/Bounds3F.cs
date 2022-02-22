@@ -156,18 +156,27 @@ namespace pbrt.Core
             hitT0 = 0;
             hitT1 = ray.TMax;
                 
+            var gammaFactor = 1 + 2 * MathUtils.Gamma(3);
+
             for (int i = 0; i < 3; ++i) 
             {
                 float invRayDir = 1 / ray.D[i];
-                float tNear = (PMin[i] - ray.O[i]) * invRayDir;
-                float tFar  = (PMax[i] - ray.O[i]) * invRayDir;
+                var pMin = PMin[i];
+                var pMax = PMax[i];
+                var o = ray.O[i];
+
+                var near = pMin - o;
+                var far = pMax - o;
+
+                float tNear = near * invRayDir;
+                float tFar  = far * invRayDir;
 
                 if (tNear > tFar)
                 {
                     (tFar, tNear) = (tNear, tFar);
                 }
-                
-                tFar *= 1 + 2 * MathUtils.Gamma(3);
+
+                tFar *= gammaFactor;
                 hitT0 = tNear > hitT0 ? tNear : hitT0;
                 hitT1 = tFar  < hitT1 ? tFar  : hitT1;
                 
@@ -190,8 +199,9 @@ namespace pbrt.Core
             float tyMax = (bounds[1 - dirIsNeg[1]].Y - ray.O.Y) * invDir.Y;
 
             // Update _tMax_ and _tyMax_ to ensure robust bounds intersection
-            tMax *= 1 + 2 * MathUtils.Gamma(3);
-            tyMax *= 1 + 2 *  MathUtils.Gamma(3);
+            var errGamma = 1 + 2 * MathUtils.Gamma(3);
+            tMax *= errGamma;
+            tyMax *= errGamma;
             if (tMin > tyMax || tyMin > tMax) return false;
             if (tyMin > tMin) tMin = tyMin;
             if (tyMax < tMax) tMax = tyMax;
@@ -201,7 +211,7 @@ namespace pbrt.Core
             float tzMax = (bounds[1 - dirIsNeg[2]].Z - ray.O.Z) * invDir.Z;
 
             // Update _tzMax_ to ensure robust bounds intersection
-            tzMax *= 1 + 2 *  MathUtils.Gamma(3);
+            tzMax *= errGamma;
             if (tMin > tzMax || tzMin > tMax) return false;
             if (tzMin > tMin) tMin = tzMin;
             if (tzMax < tMax) tMax = tzMax;

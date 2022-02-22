@@ -2,6 +2,7 @@ using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+// ReSharper disable EqualExpressionComparison
 
 namespace Pbrt.Tests.Core
 {
@@ -251,6 +252,12 @@ namespace Pbrt.Tests.Core
             Check.That(p).IsEqualTo(p1);
             p = Point3F.Lerp(1, p1, p2);
             Check.That(p).IsEqualTo(p2);
+        }
+
+        [Test]
+        public void ToStringTest()
+        {
+            Check.That(new Point3F(1.23f, 2.34f, 3.45f).ToString()).IsEqualTo("X[1.23] Y[2.34] Y[3.45]");
         }
     }
 }

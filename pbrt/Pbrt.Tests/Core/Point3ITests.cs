@@ -2,6 +2,8 @@ using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+// ReSharper disable EqualExpressionComparison
+// ReSharper disable SuspiciousTypeConversion.Global
 
 namespace Pbrt.Tests.Core
 {
@@ -53,14 +55,14 @@ namespace Pbrt.Tests.Core
         [Test]
         public void ExplicitConvertOperatorTest()
         {
-            var p2f = (Point2F)p1;
-            Check.That(p2f.X).IsEqualTo(1f);
-            Check.That(p2f.Y).IsEqualTo(2f);
+            var p2F = (Point2F)p1;
+            Check.That(p2F.X).IsEqualTo(1f);
+            Check.That(p2F.Y).IsEqualTo(2f);
 
-            var p3f = (Point3F)p1;
-            Check.That(p3f.X).IsEqualTo(1f);
-            Check.That(p3f.Y).IsEqualTo(2f);
-            Check.That(p3f.Z).IsEqualTo(3f);
+            var p3F = (Point3F)p1;
+            Check.That(p3F.X).IsEqualTo(1f);
+            Check.That(p3F.Y).IsEqualTo(2f);
+            Check.That(p3F.Z).IsEqualTo(3f);
         }
 
         [Test]

@@ -2,14 +2,15 @@ using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+// ReSharper disable EqualExpressionComparison
 
 namespace Pbrt.Tests.Core
 {
     [TestFixture]
     public class Point2FTests
     {
-        Point2F p1 = new Point2F(1.1f, 2.2f);
-        Point2F p2 = new Point2F(4.4f, 5.5f);
+        private readonly Point2F p1 = new Point2F(1.1f, 2.2f);
+        private readonly Point2F p2 = new Point2F(4.4f, 5.5f);
         
         [Test]
         public void EmptyConstructorTest()
@@ -49,9 +50,9 @@ namespace Pbrt.Tests.Core
         [Test]
         public void ExplicitConvertOperatorTest()
         {
-            var p3i = (Point2I)p1;
-            Check.That(p3i.X).IsEqualTo(1);
-            Check.That(p3i.Y).IsEqualTo(2);
+            var p3I = (Point2I)p1;
+            Check.That(p3I.X).IsEqualTo(1);
+            Check.That(p3I.Y).IsEqualTo(2);
         }
 
         [Test]
