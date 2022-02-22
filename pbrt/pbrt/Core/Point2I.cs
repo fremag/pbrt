@@ -4,6 +4,7 @@ namespace pbrt.Core
 {
     public class Point2I
     {
+        public static readonly Point2I Zero = new Point2I(0, 0);
         public int X { get; } 
         public int Y { get; } 
 
