@@ -7,6 +7,7 @@ namespace pbrt.Core
         public int X { get; } 
         public int Y { get; } 
         public int Z { get; }
+        public static readonly Point3I Zero = new Point3I(0,0,0);
 
         public Point3I() : this(0, 0, 0)
         {

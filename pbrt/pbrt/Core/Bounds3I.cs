@@ -41,7 +41,8 @@ namespace pbrt.Core
         
         public Point3I Corner(int corner) => new Point3I(this[corner & 1].X, this[(corner & 2) == 0 ? 1 : 0].Y, this[(corner & 4) == 0 ? 1 : 0].Z);
 
-        public Bounds3I Union(Bounds3I bounds1, Bounds3I bounds2) {
+        public Bounds3I Union(Bounds3I bounds) => Union(this, bounds);
+        public static Bounds3I Union(Bounds3I bounds1, Bounds3I bounds2) {
             return new Bounds3I(new Point3I(Math.Min(bounds1.PMin.X, bounds2.PMin.X),
                     Math.Min(bounds1.PMin.Y, bounds2.PMin.Y),
                     Math.Min(bounds1.PMin.Z, bounds2.PMin.Z)),
@@ -49,8 +50,18 @@ namespace pbrt.Core
                     Math.Max(bounds1.PMax.Y, bounds2.PMax.Y),
                     Math.Max(bounds1.PMax.Z, bounds2.PMax.Z)));
         }
-        
-        public Bounds3I Intersect( Bounds3I bounds1,  Bounds3I bounds2) {
+
+        public Bounds3I Union(Point3I p) {
+            return new Bounds3I(new Point3I(Math.Min(PMin.X, p.X),
+                    Math.Min(PMin.Y, p.Y),
+                    Math.Min(PMin.Z, p.Z)),
+                new Point3I(Math.Max(PMax.X, p.X),
+                    Math.Max(PMax.Y, p.Y),
+                    Math.Max(PMax.Z, p.Z)));
+        }        
+
+        public Bounds3I Intersect(Bounds3I bounds) => Intersect(this, bounds);
+        public static Bounds3I Intersect( Bounds3I bounds1,  Bounds3I bounds2) {
             return new Bounds3I(new Point3I(Math.Max(bounds1.PMin.X, bounds2.PMin.X),
                     Math.Max(bounds1.PMin.Y, bounds2.PMin.Y),
                     Math.Max(bounds1.PMin.Z, bounds2.PMin.Z)),
@@ -58,40 +69,46 @@ namespace pbrt.Core
                     Math.Min(bounds1.PMax.Y, bounds2.PMax.Y),
                     Math.Min(bounds1.PMax.Z, bounds2.PMax.Z)));
         }
-        
+
+        public bool Overlaps(Bounds3I bounds) => Overlaps(this, bounds);
         public static bool Overlaps(Bounds3I b1, Bounds3I b2) {
             bool x = (b1.PMax.X >= b2.PMin.X) && (b1.PMin.X <= b2.PMax.X);
             bool y = (b1.PMax.Y >= b2.PMin.Y) && (b1.PMin.Y <= b2.PMax.Y);
             bool z = (b1.PMax.Z >= b2.PMin.Z) && (b1.PMin.Z <= b2.PMax.Z);
             return (x && y && z);
-        }        
-        
-        public bool Inside(Point3I p, Bounds3I b) {
+        }
+
+        public bool Inside(Point3I p) => Inside(p, this); 
+        public static bool Inside(Point3I p, Bounds3I b) {
             return (p.X >= b.PMin.X && p.X <= b.PMax.X &&
                     p.Y >= b.PMin.Y && p.Y <= b.PMax.Y &&
                     p.Z >= b.PMin.Z && p.Z <= b.PMax.Z);
         }
-        public bool InsideExclusive(Point3I p, Bounds3I b) {
+
+        public bool InsideExclusive(Point3I p) => InsideExclusive(p, this);
+        public static bool InsideExclusive(Point3I p, Bounds3I b) {
             return (p.X >= b.PMin.X && p.X < b.PMax.X &&
                     p.Y >= b.PMin.Y && p.Y < b.PMax.Y &&
                     p.Z >= b.PMin.Z && p.Z < b.PMax.Z);
         }
-        
-        public Bounds3I Expand(Bounds3I b, int delta) {
+
+        public Bounds3I Expand(int delta) => Expand(this, delta);
+        public static Bounds3I Expand(Bounds3I b, int delta) {
             return new Bounds3I(b.PMin - new Vector3I(delta, delta, delta),
                 b.PMax + new Vector3I(delta, delta, delta));
         }
 
         public Vector3I Diagonal() => PMax - PMin;
         
-        int SurfaceArea {
+        public int SurfaceArea {
             get
             {
                 Vector3I d = Diagonal();
                 return 2 * (d.X * d.Y + d.X * d.Z + d.Y * d.Z);
             }
         }
-        float Volume {
+        
+        public float Volume {
             get
             {
                 Vector3I d = Diagonal();
@@ -99,7 +116,7 @@ namespace pbrt.Core
             }
         }
 
-        int MaximumExtent
+        public int MaximumExtent
         {
             get
             {
