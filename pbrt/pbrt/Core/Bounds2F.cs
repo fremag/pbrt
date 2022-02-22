@@ -41,50 +41,54 @@ namespace pbrt.Core
         
         public Point2F Corner(int corner) => new Point2F(this[corner & 1].X, this[(corner & 2) == 0 ? 1 : 0].Y);
 
-        public Bounds2F Union(Bounds2F bounds1, Bounds2F bounds2) {
+        public Bounds2F Union(Bounds2F bounds) => Union(this, bounds);
+
+        public static Bounds2F Union(Bounds2F bounds1, Bounds2F bounds2) {
             return new Bounds2F(new Point2F(MathF.Min(bounds1.PMin.X, bounds2.PMin.X),
                     MathF.Min(bounds1.PMin.Y, bounds2.PMin.Y)),
                 new Point2F(MathF.Max(bounds1.PMax.X, bounds2.PMax.X),
                     MathF.Max(bounds1.PMax.Y, bounds2.PMax.Y)));
         }
-        
-        public Bounds2F Intersect( Bounds2F bounds1,  Bounds2F bounds2) {
+
+        public Bounds2F Intersect(Bounds2F bounds) => Intersect(this, bounds);
+        public static Bounds2F Intersect( Bounds2F bounds1,  Bounds2F bounds2) {
             return new Bounds2F(new Point2F(MathF.Max(bounds1.PMin.X, bounds2.PMin.X),
                     MathF.Max(bounds1.PMin.Y, bounds2.PMin.Y)),
                 new Point2F(MathF.Min(bounds1.PMax.X, bounds2.PMax.X),
                     MathF.Min(bounds1.PMax.Y, bounds2.PMax.Y)));
         }
-        
+
+        public bool Overlaps(Bounds2F bounds) => Overlaps(this, bounds);
         public static bool Overlaps(Bounds2F b1, Bounds2F b2) {
             bool x = (b1.PMax.X >= b2.PMin.X) && (b1.PMin.X <= b2.PMax.X);
             bool y = (b1.PMax.Y >= b2.PMin.Y) && (b1.PMin.Y <= b2.PMax.Y);
             return (x && y);
-        }        
+        }
+
+        public bool Inside(Point2F p) => Inside(p, this);
         
-        public bool Inside(Point2F p, Bounds2F b) {
+        public static bool Inside(Point2F p, Bounds2F b) {
             return (p.X >= b.PMin.X && p.X <= b.PMax.X &&
                     p.Y >= b.PMin.Y && p.Y <= b.PMax.Y);
         }
-        public bool InsideExclusive(Point2F p, Bounds2F b) {
+
+        public bool InsideExclusive(Point2F p) => InsideExclusive(p, this);
+        
+        public static bool InsideExclusive(Point2F p, Bounds2F b) {
             return (p.X >= b.PMin.X && p.X < b.PMax.X &&
                     p.Y >= b.PMin.Y && p.Y < b.PMax.Y );
         }
+
+        public Bounds2F Expand(float delta) => Expand(this, delta);
         
-        public Bounds2F Expand(Bounds2F b, float delta) {
+        public static Bounds2F Expand(Bounds2F b, float delta) {
             return new Bounds2F(b.PMin - new Vector2F(delta, delta),
                 b.PMax + new Vector2F(delta, delta));
         }
 
         public Vector2F Diagonal() => PMax - PMin;
         
-        float SurfaceArea {
-            get
-            {
-                Vector2F d = Diagonal();
-                return 2 * (d.X * d.Y + d.X);
-            }
-        }
-        float Volume {
+        public float SurfaceArea {
             get
             {
                 Vector2F d = Diagonal();
@@ -92,7 +96,7 @@ namespace pbrt.Core
             }
         }
 
-        int MaximumExtent
+        public int MaximumExtent
         {
             get
             {
