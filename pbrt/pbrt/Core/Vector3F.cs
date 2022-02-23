@@ -6,6 +6,8 @@ namespace pbrt.Core
     [DebuggerDisplay("Vx[{X}] Vy[{Y}] Vz[{Z}]")]
     public class Vector3F
     {
+        public static Vector3F Zero { get; } = new Vector3F(0,0,0);
+
         public float X { get; }
         public float Y { get; }
         public float Z { get; }

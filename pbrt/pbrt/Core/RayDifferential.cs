@@ -11,6 +11,10 @@ namespace pbrt.Core
         public RayDifferential(Point3F origin, Vector3F direction, float tMax = float.PositiveInfinity, float time = 0.0f, Medium medium=null)
             : base(origin, direction, tMax, time, medium)
         {
+            RxOrigin = Point3F.Zero;
+            RyOrigin = Point3F.Zero;
+            RxDirection = Vector3F.Zero;
+            RyDirection = Vector3F.Zero;
             // The constructor sets HasDifferentials to false because the neighboring rays if any, are not known
             HasDifferentials = false;
         }

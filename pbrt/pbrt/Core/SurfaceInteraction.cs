@@ -10,33 +10,32 @@ namespace pbrt.Core
         public Normal3F DnDu { get; set; }
         public Normal3F DnDv { get; set; }
     }
-    
-    public class SurfaceInteraction : Interaction 
+
+    public class SurfaceInteraction : Interaction
     {
-        public Point2F Uv{ get; set; }
-        public Vector3F DpDu{ get; set; }
+        public Point2F Uv { get; set; }
+        public Vector3F DpDu { get; set; }
         public Vector3F DpDv { get; set; }
-        public Normal3F DnDu{ get; set; }
+        public Normal3F DnDu { get; set; }
         public Normal3F DnDv { get; set; }
         public AbstractShape AbstractShape { get; set; }
-        public Shading  Shading { get; set; }
-        
+        public Shading Shading { get; set; }
+
         public IPrimitive Primitive = null;
         public BSDF Bsdf = null;
         public BSSRDF Bssrdf = null;
-        public Vector3F DpDx { get; set; } 
-        public Vector3F DpDy{ get; set; } 
-        public float DuDx { get; set; } 
-        public float  DvDx { get; set; } 
-        public float  DuDy { get; set; } 
-        public float  DvDy { get; set; } 
+        public Vector3F DpDx { get; set; }
+        public Vector3F DpDy { get; set; }
+        public float DuDx { get; set; }
+        public float DvDx { get; set; }
+        public float DuDy { get; set; }
+        public float DvDy { get; set; }
         public int FaceIndex { get; set; } = 0;
-        
+
         public SurfaceInteraction()
         {
-            
         }
-        
+
         public SurfaceInteraction(Point3F p, Vector3F pError, Point2F uv, Vector3F wo,
             Vector3F dpdu, Vector3F dpdv,
             Normal3F dndu, Normal3F dndv,
@@ -60,12 +59,13 @@ namespace pbrt.Core
             };
         }
 
-        public void SetShadingGeometry(Vector3F dpdus, Vector3F dpdvs, Normal3F dndus, Normal3F dndvs, bool orientationIsAuthoritative) {
+        public void SetShadingGeometry(Vector3F dpdus, Vector3F dpdvs, Normal3F dndus, Normal3F dndvs, bool orientationIsAuthoritative)
+        {
             Vector3F vector3F = dpdus.Cross(dpdvs).Normalized();
             Shading.N = new Normal3F(vector3F);
             if (AbstractShape != null && (AbstractShape.ReverseOrientation ^ AbstractShape.TransformSwapsHandedness))
             {
-                Shading.N = - Shading.N;
+                Shading.N = -Shading.N;
             }
 
             if (orientationIsAuthoritative)
@@ -80,7 +80,7 @@ namespace pbrt.Core
             Shading.DpDu = dpdus;
             Shading.DpDv = dpdvs;
             Shading.DnDu = dndus;
-            Shading.DnDv = dndvs;            
-        }        
+            Shading.DnDv = dndvs;
+        }
     }
 }
