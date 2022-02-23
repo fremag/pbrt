@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace pbrt.Core
 {
+    [DebuggerDisplay("Vx[{X}] Vy[{Y}] Vz[{Z}]")]
     public class Vector3F
     {
         public float X { get; }
@@ -149,5 +151,6 @@ namespace pbrt.Core
         }
         
         public static Normal3F Faceforward(Normal3F n, Vector3F v) => Dot(n, v) < 0 ? -n : n;
+        public override string ToString() => $"Vx[{X}] Vy[{Y}] Vz[{Z}]";
     }
 }

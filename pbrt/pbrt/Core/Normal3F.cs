@@ -1,7 +1,9 @@
 using System;
+using System.Diagnostics;
 
 namespace pbrt.Core
 {
+    [DebuggerDisplay("Nx[{X}] Ny[{Y}] Nz[{Z}]")]
     public class Normal3F
     {
         private const double Epsilon = 1e-9;
@@ -103,5 +105,6 @@ namespace pbrt.Core
 
         public Normal3F FaceForward(Vector3F v) => Dot(v) < 0f ? -this : this;
         public Normal3F FaceForward(Normal3F n) => Dot(n) < 0f ? -this : this;
+        public override string ToString() => $"Nx[{X}] Ny[{Y}] Nz[{Z}]";
     }
 }

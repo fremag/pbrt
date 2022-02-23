@@ -2,7 +2,7 @@ namespace pbrt.Core
 {
     public class Interaction
     {
-        const float ShadowEpsilon = 0.0001f;
+        public const float ShadowEpsilon = 0.0001f;
 
         public Point3F P { get; set; }
         public float Time { get; set; }
@@ -24,12 +24,12 @@ namespace pbrt.Core
         }
 
         public bool IsSurfaceInteraction() => N.X != 0 || N.Y != 0 || N.Z != 0;
-        bool IsMediumInteraction() => !IsSurfaceInteraction();
+        public bool IsMediumInteraction() => !IsSurfaceInteraction();
 
         public Medium GetMedium(Vector3F w) => Vector3F.Dot(w, N) > 0 ? MediumInterface.Outside : MediumInterface.Inside;
-        Medium GetMedium() => MediumInterface.Inside;
+        public Medium GetMedium() => MediumInterface.Inside;
 
-        Point3F OffsetRayOrigin(Point3F p, Vector3F pError, Normal3F n, Vector3F w)
+        public Point3F OffsetRayOrigin(Point3F p, Vector3F pError, Normal3F n, Vector3F w)
         {
             float d = n.AbsDot(pError);
             Vector3F offset = new Vector3F(d * n.X, d * n.Y, d * n.Z);
@@ -45,17 +45,19 @@ namespace pbrt.Core
             return new Ray(o, d, float.PositiveInfinity, Time, GetMedium(d));
         }
 
-        Ray SpawnRayTo(Point3F point) 
+        public Ray SpawnRayTo(Point3F point) 
         {
             Point3F origin = OffsetRayOrigin(P, PError, N, point - P);
             Vector3F d = point - origin;
             return new Ray(origin, d, 1 - ShadowEpsilon, Time, GetMedium(d));
         }
         
-        Ray SpawnRayTo(Interaction interaction) 
+        public Ray SpawnRayTo(Interaction interaction) 
         {
-            Point3F origin = OffsetRayOrigin(P, PError, N, interaction.P - P);
-            Point3F target = OffsetRayOrigin(interaction.P, interaction.PError, interaction.N, origin - interaction.P);
+            var w = interaction.P - P;
+            Point3F origin = OffsetRayOrigin(P, PError, N, w);
+            var w2 = origin - interaction.P;
+            Point3F target = OffsetRayOrigin(interaction.P, interaction.PError, interaction.N, w2);
             Vector3F direction = target - origin;
             return new Ray(origin, direction, 1-ShadowEpsilon, Time, GetMedium(direction));
         }

@@ -206,5 +206,11 @@ namespace Pbrt.Tests.Core
             n = n1.FaceForward(-nn);
             Check.That(n).IsEqualTo(-n1);
         }
+ 
+        [Test]
+        public void  ToStringTest()
+        {
+            Check.That(new Normal3F(1.23f, 2.34f, 3.45f).ToString()).IsEqualTo("Nx[1.23] Ny[2.34] Nz[3.45]");
+        }
     }
 }

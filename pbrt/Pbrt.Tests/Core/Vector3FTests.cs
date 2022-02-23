@@ -289,5 +289,11 @@ namespace Pbrt.Tests.Core
             Check.That(y1).IsEqualTo(new Vector3F(0, 0, -1));
             Check.That(y2).IsEqualTo(new Vector3F(-1, 0, 0));
         }
+
+        [Test]
+        public void  ToStringTest()
+        {
+            Check.That(new Vector3F(1.23f, 2.34f, 3.45f).ToString()).IsEqualTo("Vx[1.23] Vy[2.34] Vz[3.45]");
+        }
     }
 }
