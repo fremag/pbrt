@@ -259,7 +259,7 @@ namespace Pbrt.Tests.Core
         [Test]
         public void ToStringTest()
         {
-            Check.That(new Point3F(1.23f, 2.34f, 3.45f).ToString()).IsEqualTo("X[1.23] Y[2.34] Y[3.45]");
+            Check.That(new Point3F(1.23f, 2.34f, 3.45f).ToString()).IsEqualTo("X[1.23] Y[2.34] Z[3.45]");
         }
     }
 }

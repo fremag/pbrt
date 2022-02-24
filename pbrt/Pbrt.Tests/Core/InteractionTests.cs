@@ -75,7 +75,7 @@ namespace Pbrt.Tests.Core
         public void OffsetRayOrigin()
         {
             var p = interaction.OffsetRayOrigin(point, pError, normal, wo);
-            Check.That(p).IsEqualTo(new Point3F(1, 1.1f, 1));
+            Check.That(p).IsEqualTo(new Point3F(1, 1.1000001f, 1));
             p = interaction.OffsetRayOrigin(point, pError, normal, -wo);
             Check.That(p).IsEqualTo(new Point3F(1, 0.9f, 1));
         }
@@ -86,7 +86,7 @@ namespace Pbrt.Tests.Core
             Vector3F d = new Vector3F(0, 1, 0);
             var spawn = interaction.SpawnRay(d);
             Check.That(spawn.D).IsEqualTo(d);
-            Check.That(spawn.O).IsEqualTo(new Point3F(1f, 1.1f, 1f));
+            Check.That(spawn.O).IsEqualTo(new Point3F(1f, 1.1000001f, 1f));
             Check.That(spawn.TMax).Not.IsFinite();
             Check.That(spawn.TMax).IsStrictlyPositive();
             Check.That(spawn.Time).IsEqualTo(time);
@@ -107,7 +107,7 @@ namespace Pbrt.Tests.Core
         {
             Point3F p = new Point3F(1, 1, 1);
             Ray spawnTo = interaction.SpawnRayTo(p);
-            Check.That(spawnTo.O).IsEqualTo(new Point3F(1, 1.1f, 1));
+            Check.That(spawnTo.O).IsEqualTo(new Point3F(1, 1.1000001f, 1));
             Check.That(spawnTo.D.X).IsEqualTo(0);
             Check.That(spawnTo.D.Y).IsCloseTo(-0.1f, 1e-6);
             Check.That(spawnTo.D.Z).IsEqualTo(0);
@@ -117,7 +117,7 @@ namespace Pbrt.Tests.Core
 
             p = new Point3F(0, 1.1f, 1);
             spawnTo = interaction.SpawnRayTo(p);
-            Check.That(spawnTo.O).IsEqualTo(new Point3F(1, 1.1f, 1));
+            Check.That(spawnTo.O).IsEqualTo(new Point3F(1, 1.1000001f, 1));
             Check.That(spawnTo.D.X).IsEqualTo(-1);
             Check.That(spawnTo.D.Y).IsCloseTo(-0f, 1e-6);
             Check.That(spawnTo.D.Z).IsEqualTo(0);
@@ -131,7 +131,7 @@ namespace Pbrt.Tests.Core
         {
             var anotherInteraction = new Interaction(point, normal, pError, wo, time, mediumInterface);
             var spawnTo = interaction.SpawnRayTo(anotherInteraction);
-            Check.That(spawnTo.O).IsEqualTo(new Point3F(1, 1.1f, 1));
+            Check.That(spawnTo.O).IsEqualTo(new Point3F(1, 1.1000001f, 1));
             Check.That(spawnTo.D.X).IsEqualTo(0);
             Check.That(spawnTo.D.Y).IsCloseTo(-0f, 1e-6);
             Check.That(spawnTo.D.Z).IsEqualTo(0);
