@@ -9,7 +9,7 @@ namespace pbrt.Shapes
         public bool ReverseOrientation { get; set; }
         public bool TransformSwapsHandedness { get; set; }
         public abstract float Area { get; }
-        
+    
         public AbstractShape(Transform objectToWorld, Transform worldToObject, bool reverseOrientation)
         {
             ObjectToWorld = objectToWorld;

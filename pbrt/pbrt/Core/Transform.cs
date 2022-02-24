@@ -36,17 +36,19 @@ namespace pbrt.Core
 
         public static bool operator ==(Transform t1, Transform t2)
         {
-            if (t1 == null && t2 != null)
+            var t1IsNull = ReferenceEquals(t1, null);
+            var t2IsNull = ReferenceEquals(t2, null);
+            if (t1IsNull && ! t2IsNull)
             {
                 return false;
             }
 
-            if (t2 == null && t1 != null)
+            if (t2IsNull && ! t1IsNull)
             {
                 return false;
             }
 
-            if (t1 == null)
+            if (t1IsNull)
             {
                 return true;
             }
@@ -223,8 +225,8 @@ namespace pbrt.Core
             var rad = deg * MathF.PI / 180;
 
             var m = new Matrix4x4(
-                MathF.Cos(rad), 0, -MathF.Sin(rad), 0,
-                MathF.Sin(rad), 0, MathF.Cos(rad), 0,
+                MathF.Cos(rad), -MathF.Sin(rad), 0, 0,
+                MathF.Sin(rad), MathF.Cos(rad), 0, 0,
                 0, 0, 1, 0,
                 0, 0, 0, 1);
 
@@ -301,11 +303,11 @@ namespace pbrt.Core
             return new Point3F(xp / wp, yp / wp, zp / wp);
         }
 
-        public Vector3F Apply(Vector3F p)
+        public Vector3F Apply(Vector3F v)
         {
-            float x = p.X;
-            float y = p.Y;
-            float z = p.Z;
+            float x = v.X;
+            float y = v.Y;
+            float z = v.Z;
 
             float xp = M.M11 * x + M.M12 * y + M.M13 * z;
             float yp = M.M21 * x + M.M22 * y + M.M23 * z;
@@ -320,9 +322,11 @@ namespace pbrt.Core
             float y = n.Y;
             float z = n.Z;
 
-            return new Normal3F(MInv.M11 * x + MInv.M21 * y + MInv.M31 * z,
-                MInv.M12 * x + MInv.M22 * y + MInv.M32 * z,
-                MInv.M13 * x + MInv.M23 * y + MInv.M33 * z);
+            var nX = MInv.M11 * x + MInv.M21 * y + MInv.M31 * z;
+            var nY = MInv.M12 * x + MInv.M22 * y + MInv.M32 * z;
+            var nZ = MInv.M13 * x + MInv.M23 * y + MInv.M33 * z;
+            
+            return new Normal3F(nX, nY, nZ);
         }
 
         public Point3F Apply(Point3F p, out Vector3F pError)
@@ -354,14 +358,23 @@ namespace pbrt.Core
 
         public Bounds3F Apply(Bounds3F b)
         {
-            var tb = new Bounds3F(b.PMin);
-            tb = tb.Union(Apply(new Point3F(b.PMax.X, b.PMin.Y, b.PMin.Z)));
-            tb = tb.Union(Apply(new Point3F(b.PMin.X, b.PMax.Y, b.PMin.Z)));
-            tb = tb.Union(Apply(new Point3F(b.PMin.X, b.PMin.Y, b.PMax.Z)));
-            tb = tb.Union(Apply(new Point3F(b.PMin.X, b.PMax.Y, b.PMax.Z)));
-            tb = tb.Union(Apply(new Point3F(b.PMax.X, b.PMax.Y, b.PMin.Z)));
-            tb = tb.Union(Apply(new Point3F(b.PMax.X, b.PMin.Y, b.PMax.Z)));
-            tb = tb.Union(Apply(new Point3F(b.PMax.X, b.PMax.Y, b.PMax.Z)));
+            var p0 = Apply(b.PMin);
+            var p1 = Apply(new Point3F(b.PMax.X, b.PMin.Y, b.PMin.Z));
+            var p2 = Apply(new Point3F(b.PMin.X, b.PMax.Y, b.PMin.Z));
+            var p3 = Apply(new Point3F(b.PMin.X, b.PMin.Y, b.PMax.Z));
+            var p4 = Apply(new Point3F(b.PMin.X, b.PMax.Y, b.PMax.Z));
+            var p5 = Apply(new Point3F(b.PMax.X, b.PMax.Y, b.PMin.Z));
+            var p6 = Apply(new Point3F(b.PMax.X, b.PMin.Y, b.PMax.Z));
+            var p7 = Apply(new Point3F(b.PMax.X, b.PMax.Y, b.PMax.Z));
+
+            var tb = new Bounds3F(p0);
+            tb = tb.Union(p1);
+            tb = tb.Union(p2);
+            tb = tb.Union(p3);
+            tb = tb.Union(p4);
+            tb = tb.Union(p5);
+            tb = tb.Union(p6);
+            tb = tb.Union(p7);
             return tb;
         }
 
@@ -374,9 +387,11 @@ namespace pbrt.Core
 
         public bool SwapsHandedness()
         {
-            float det = M.M11 * (M.M22 * M.M33 - M.M23 * M.M32) -
-                        M.M12 * (M.M21 * M.M33 - M.M23 * M.M31) +
-                        M.M13 * (M.M21 * M.M32 - M.M22 * M.M31);
+            // determinant of the transformation’s upper-left 3x3 sub matrix
+            var a = M.M11 * (M.M22 * M.M33 - M.M23 * M.M32);
+            var b = M.M12 * (M.M21 * M.M33 - M.M23 * M.M31);
+            var c = M.M13 * (M.M21 * M.M32 - M.M22 * M.M31);
+            float det = a - b + c;
             return det < 0;
         }
 
@@ -447,6 +462,7 @@ namespace pbrt.Core
             return new Point3F(xp, yp, zp) / wp;
         }
 
+        // https://github.com/mmp/pbrt-v3/blob/aaa552a4b9cbf9dccb71450f47b268e0ed6370e2/src/core/transform.cpp#L262
         public SurfaceInteraction Apply(SurfaceInteraction si)
         {
             // Transform _p_ and _pError_ in _SurfaceInteraction_
@@ -455,10 +471,6 @@ namespace pbrt.Core
             // Transform remaining members of _SurfaceInteraction_
             var n = Apply(si.N).Normalize();
             var wo = Apply(si.Wo).Normalized();
-            var time = si.Time;
-            var mediumInterface = si.MediumInterface;
-            var uv = si.Uv;
-            var shape = si.AbstractShape;
             var dpdu = Apply(si.DpDu);
             var dpdv = Apply(si.DpDv);
             var dndu = Apply(si.DnDu);
@@ -469,15 +481,8 @@ namespace pbrt.Core
             var shadingDndu = Apply(si.Shading.DnDu);
             var shadingDndv = Apply(si.Shading.DnDv);
 
-            var dudx = si.DuDx;
-            var dvdx = si.DvDx;
-            var dudy = si.DuDy;
-            var dvdy = si.DvDy;
             var dpdx = Apply(si.DpDx);
             var dpdy = Apply(si.DpDy);
-            var bsdf = si.Bsdf;
-            var bssrdf = si.Bssrdf;
-            var primitive = si.Primitive;
             //    ret.n = Faceforward(ret.n, ret.shading.n);
             shadingN = shadingN.FaceForward(n);
             var faceIndex = si.FaceIndex;
@@ -487,20 +492,20 @@ namespace pbrt.Core
                 N = shadingN, DnDu = shadingDndu, DnDv = shadingDndv, DpDu = shadingDpdu, DpDv = shadingDpdv
             };
 
-            var surfaceInteraction = new SurfaceInteraction(p, pError, uv, wo, dpdu, dpdv, dndu, dndv, time, shape)
+            var surfaceInteraction = new SurfaceInteraction(p, pError, si.Uv, wo, dpdu, dpdv, dndu, dndv, si.Time, si.Shape)
             {
                 Shading = shading,
-                Bsdf = bsdf,
-                Bssrdf = bssrdf,
-                DuDx = dudx,
-                DuDy = dudy,
-                DvDx = dvdx,
-                DvDy = dvdy,
+                Bsdf = si.Bsdf,
+                Bssrdf = si.Bssrdf,
+                DuDx = si.DuDx,
+                DvDx = si.DvDx,
+                DuDy = si.DuDy,
+                DvDy = si.DvDy,
                 DpDx = dpdx,
                 DpDy = dpdy,
-                Primitive = primitive,
+                Primitive = si.Primitive,
                 FaceIndex = faceIndex,
-                MediumInterface = mediumInterface
+                MediumInterface = si.MediumInterface
             };
             return surfaceInteraction;
         }

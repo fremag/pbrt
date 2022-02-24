@@ -29,13 +29,38 @@ namespace pbrt.Core
         public Medium GetMedium(Vector3F w) => Vector3F.Dot(w, N) > 0 ? MediumInterface.Outside : MediumInterface.Inside;
         public Medium GetMedium() => MediumInterface.Inside;
 
+        // https://github.com/mmp/pbrt-v3/blob/aaa552a4b9cbf9dccb71450f47b268e0ed6370e2/src/core/geometry.h#L1440
         public Point3F OffsetRayOrigin(Point3F p, Vector3F pError, Normal3F n, Vector3F w)
         {
             float d = n.AbsDot(pError);
-            Vector3F offset = new Vector3F(d * n.X, d * n.Y, d * n.Z);
+            float offsetX = d * n.X;
+            float offsetY = d * n.Y;
+            float offsetZ = d * n.Z;
+
             if (w.Dot(n) < 0)
-                offset = - offset;
-            Point3F po = p + offset;
+            {
+                offsetX = -offsetX;
+                offsetY = -offsetY;
+                offsetZ = -offsetZ;
+            }
+
+            float poX = p.X + offsetX;
+            float poY = p.Y + offsetY;
+            float poZ = p.Z + offsetZ;
+
+            // Round offset point _po_ away from _p_
+            float RoundOffset(float po, float offset)
+            {
+                if (offset > 0) return MathUtils.NextFloatUp(po);
+                if (offset < 0) return MathUtils.NextFloatDown(po);
+                return po;
+            }
+
+            poX = RoundOffset(poX, offsetX);
+            poY = RoundOffset(poY, offsetY);
+            poZ = RoundOffset(poZ, offsetZ);
+            
+            var po = new Point3F(poX, poY, poZ);
             return po;
         }
         

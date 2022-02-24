@@ -3,6 +3,7 @@ using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
 // ReSharper disable EqualExpressionComparison
+// ReSharper disable PossibleNullReferenceException
 // ReSharper disable SuspiciousTypeConversion.Global
 
 namespace Pbrt.Tests.Core
