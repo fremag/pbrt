@@ -8,7 +8,7 @@ namespace pbrt.Core
         public float Low { get; }
         public float High { get; }
 
-        private EFloat(float v, float high, float low)
+        public EFloat(float v, float high, float low)
         {
             V = v;
             High = high;
@@ -29,9 +29,12 @@ namespace pbrt.Core
         
         public EFloat(float v, float err = 0f)
         {
-            this.V = v;
+            V = v;
             if (err == 0f)
-                Low = High = v;
+            {
+                Low = v;
+                High = v;
+            }
             else
             {
                 // Compute conservative bounds by rounding the endpoints away
@@ -50,7 +53,9 @@ namespace pbrt.Core
 
         public static explicit operator float(EFloat ef) => ef.V;
         public static explicit operator double(EFloat ef) => ef.V;
-        
+        public static implicit operator EFloat(float f) => new EFloat(f);
+        public static implicit operator EFloat(double d) => new EFloat((float)d);
+
         public static EFloat operator +(EFloat ef1, EFloat ef2)
         {
             var v = ef1.V + ef2.V;
@@ -78,14 +83,14 @@ namespace pbrt.Core
             var v = ef1.V * ef2.V;
             float[] prod =
             {
-                ef1.LowerBound() * ef2.LowerBound(), ef1.UpperBound() * ef2.LowerBound(),
-                ef1.LowerBound() * ef2.UpperBound(), ef1.UpperBound() * ef2.UpperBound()
+                ef1.LowerBound() * ef2.LowerBound(), 
+                ef1.UpperBound() * ef2.LowerBound(),
+                ef1.LowerBound() * ef2.UpperBound(), 
+                ef1.UpperBound() * ef2.UpperBound()
             };
 
-            var low = MathUtils.NextFloatDown(
-                MathF.Min(MathF.Min(prod[0], prod[1]), MathF.Min(prod[2], prod[3])));
-            var high = MathUtils.NextFloatUp(
-                MathF.Max(MathF.Max(prod[0], prod[1]), MathF.Max(prod[2], prod[3])));
+            var low = MathUtils.NextFloatDown(MathF.Min(MathF.Min(prod[0], prod[1]), MathF.Min(prod[2], prod[3])));
+            var high = MathUtils.NextFloatUp(MathF.Max(MathF.Max(prod[0], prod[1]), MathF.Max(prod[2], prod[3])));
             var r = new EFloat(v, high, low);
             r.Check();
             return r;
@@ -107,13 +112,13 @@ namespace pbrt.Core
             {
                 float[] div =
                 {
-                    ef1.LowerBound() / ef2.LowerBound(), ef1.UpperBound() / ef2.LowerBound(),
-                    ef1.LowerBound() / ef2.UpperBound(), ef1.UpperBound() / ef2.UpperBound()
+                    ef1.LowerBound() / ef2.LowerBound(),
+                    ef1.UpperBound() / ef2.LowerBound(),
+                    ef1.LowerBound() / ef2.UpperBound(),
+                    ef1.UpperBound() / ef2.UpperBound()
                 };
-                low = MathUtils.NextFloatDown(
-                    MathF.Min(MathF.Min(div[0], div[1]), MathF.Min(div[2], div[3])));
-                high = MathUtils.NextFloatUp(
-                    MathF.Max(MathF.Max(div[0], div[1]), MathF.Max(div[2], div[3])));
+                low = MathUtils.NextFloatDown(MathF.Min(MathF.Min(div[0], div[1]), MathF.Min(div[2], div[3])));
+                high = MathUtils.NextFloatUp(MathF.Max(MathF.Max(div[0], div[1]), MathF.Max(div[2], div[3])));
             }
 
             var r = new EFloat(v, high, low);
@@ -123,7 +128,7 @@ namespace pbrt.Core
 
         public static EFloat operator -(EFloat ef)
         {
-            EFloat r = new EFloat(-ef.V, -ef.High, -ef.Low);
+            EFloat r = new EFloat(-ef.V, -ef.Low, -ef.High);
             r.Check();
             return r;
         }
@@ -131,9 +136,9 @@ namespace pbrt.Core
         public static bool operator !=(EFloat ef1, EFloat ef2) => !(ef1 == ef2);
         public static bool operator ==(EFloat ef1, EFloat ef2)
         {
-            if (ef1 == null && ef2 != null) return false;
-            if (ef1 != null && ef2 == null) return false;
-            if (ef1 == ef2) return true;
+            if (ReferenceEquals(ef1, null) && ! ReferenceEquals(ef2, null)) return false;
+            if (! ReferenceEquals(ef1, null) && ReferenceEquals(ef2, null)) return false;
+            if (ReferenceEquals(ef1, ef2)) return true;
             return Math.Abs(ef1.V - ef2.V) < float.Epsilon;
         }
 
@@ -153,10 +158,11 @@ namespace pbrt.Core
         public static EFloat operator +(float f, EFloat fe) => new EFloat(f) + fe;
         public static EFloat operator -(float f, EFloat fe) => new EFloat(f) - fe;
         public static EFloat operator *(EFloat fe, float f) => new EFloat(f) * fe;
-        public static EFloat operator /(EFloat fe, float f) => new EFloat(f) / fe;
+        public static EFloat operator /(EFloat fe, float f) => fe / new EFloat(f);
         public static EFloat operator +(EFloat fe, float f) => new EFloat(f) + fe;
         public static EFloat operator -(EFloat fe, float f) => new EFloat(f) - fe;
 
+        public EFloat Sqrt() => Sqrt(this);
         public static EFloat Sqrt(EFloat fe)
         {
             var v = MathF.Sqrt(fe.V);
@@ -167,6 +173,7 @@ namespace pbrt.Core
             return r;
         }
 
+        public EFloat Abs() => Abs(this);
         public static EFloat Abs(EFloat fe)
         {
             if (fe.Low >= 0)
@@ -237,9 +244,7 @@ namespace pbrt.Core
             return Equals((EFloat)obj);
         }
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(V, Low, High);
-        }
-   }
+        public override int GetHashCode() => HashCode.Combine(V, Low, High);
+        public override string ToString() => $"V[{V}] High[{High}] Low[{Low}]";
+    }
 }
