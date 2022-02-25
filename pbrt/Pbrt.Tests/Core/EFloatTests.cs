@@ -6,6 +6,7 @@ using pbrt.Core;
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable SuspiciousTypeConversion.Global
 // ReSharper disable HeapView.BoxingAllocation
+#pragma warning disable CS1718 
 
 namespace Pbrt.Tests.Core
 {

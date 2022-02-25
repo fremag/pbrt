@@ -4,6 +4,7 @@ using NUnit.Framework;
 using pbrt.Core;
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable SuspiciousTypeConversion.Global
+#pragma warning disable CS1718 
 
 namespace Pbrt.Tests.Core
 {

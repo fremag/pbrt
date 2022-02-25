@@ -9,6 +9,7 @@ using pbrt.Shapes;
 // ReSharper disable ExpressionIsAlwaysNull
 // ReSharper disable SuspiciousTypeConversion.Global
 // ReSharper disable EqualExpressionComparison
+#pragma warning disable CS1718 
 
 namespace Pbrt.Tests.Core
 {
