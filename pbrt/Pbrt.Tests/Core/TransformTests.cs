@@ -1,7 +1,6 @@
 using System;
 using System.Numerics;
 using NFluent;
-using NSubstitute;
 using NUnit.Framework;
 using pbrt.Core;
 using pbrt.Shapes;
@@ -265,6 +264,17 @@ namespace Pbrt.Tests.Core
         }
         
         [Test]
+        public void Wp_ApplyPointTest()
+        { // just for code coverage
+            var m = new Matrix4x4();
+            var t = new Transform(m);
+            var p = t.Apply(Point3F.Zero);
+            Check.That(p.X).IsNaN();
+            Check.That(p.Y).IsNaN();
+            Check.That(p.Z).IsNaN();
+        }
+        
+        [Test]
         public void ApplyVectorTest()
         {
             var t = Transform.Translate(1, 0, 0);
@@ -432,6 +442,21 @@ namespace Pbrt.Tests.Core
             var p1 = translation.Apply(p, vError, out var pError);
             Check.That(p1).IsEqualTo(new Point3F(1,1,1));
             Check.That(pError).IsEqualTo(5 * new Vector3F(float.Epsilon,float.Epsilon,float.Epsilon));
+        }
+
+        [Test]
+        public void Wp_ApplyPointWithErrorTest()
+        {
+            // Just for code coverage
+            var translation = new Transform(new Matrix4x4());
+            var p = Point3F.Zero;
+
+            Vector3F vError =2* new Vector3F(float.Epsilon,float.Epsilon,float.Epsilon);
+            var p1 = translation.Apply(p, vError, out var pError);
+            Check.That(p1.X).IsNaN();
+            Check.That(p1.Y).IsNaN();
+            Check.That(p1.Z).IsNaN();
+            Check.That(pError).IsEqualTo(Vector3F.Zero);
         }
 
         [Test]

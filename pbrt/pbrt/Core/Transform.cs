@@ -236,31 +236,32 @@ namespace pbrt.Core
 
         public static Transform LookAt(Point3F pos, Point3F look, Vector3F up)
         {
-            Matrix4x4 cameraToWorld = new Matrix4x4();
-
-            cameraToWorld.M14 = pos.X;
-            cameraToWorld.M24 = pos.Y;
-            cameraToWorld.M34 = pos.Z;
-            cameraToWorld.M44 = 1;
-
             var dir = (look - pos).Normalized();
             var left = Vector3F.Cross(up.Normalized(), dir);
             up = Vector3F.Cross(dir, left);
 
-            cameraToWorld.M11 = left.X;
-            cameraToWorld.M21 = left.Y;
-            cameraToWorld.M31 = left.Z;
-            cameraToWorld.M41 = 0;
-
-            cameraToWorld.M12 = up.X;
-            cameraToWorld.M22 = up.Y;
-            cameraToWorld.M32 = up.Z;
-            cameraToWorld.M42 = 0;
-
-            cameraToWorld.M13 = dir.X;
-            cameraToWorld.M23 = dir.Y;
-            cameraToWorld.M33 = dir.Z;
-            cameraToWorld.M43 = 0;
+            var cameraToWorld = new Matrix4x4
+            {
+                M14 = pos.X,
+                M24 = pos.Y,
+                M34 = pos.Z,
+                M44 = 1,
+                //
+                M11 = left.X,
+                M21 = left.Y,
+                M31 = left.Z,
+                M41 = 0,
+                //
+                M12 = up.X,
+                M22 = up.Y,
+                M32 = up.Z,
+                M42 = 0,
+                //
+                M13 = dir.X,
+                M23 = dir.Y,
+                M33 = dir.Z,
+                M43 = 0
+            };
 
             Matrix4x4.Invert(cameraToWorld, out var inverted);
             return new Transform(inverted, cameraToWorld);
@@ -481,8 +482,8 @@ namespace pbrt.Core
             var shadingDndu = Apply(si.Shading.DnDu);
             var shadingDndv = Apply(si.Shading.DnDv);
 
-            var dpdx = Apply(si.DpDx);
-            var dpdy = Apply(si.DpDy);
+            var dpdx = si.DpDx != null ? Apply(si.DpDx) : null;
+            var dpdy = si.DpDy != null ? Apply(si.DpDy) : null;
             //    ret.n = Faceforward(ret.n, ret.shading.n);
             shadingN = shadingN.FaceForward(n);
             var faceIndex = si.FaceIndex;

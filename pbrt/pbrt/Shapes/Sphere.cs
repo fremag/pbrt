@@ -16,11 +16,15 @@ namespace pbrt.Shapes
             : base(objectToWorld, worldToObject, reverseOrientation)
         {
             Radius = radius;
-            ZMin = zMin.Clamp(-radius, radius);
-            ZMax = zMax.Clamp(-radius, radius);
+            ZMin = Math.Min(zMin, zMax).Clamp(-radius, radius);
+            ZMax = Math.Max(zMin, zMax).Clamp(-radius, radius);
             PhiMax = phiMax.Radians().Clamp(0, 360);
-            ThetaMin = MathF.Acos(zMin / radius).Clamp(-1, 1);
-            ThetaMax = MathF.Acos(zMax / radius).Clamp(-1, 1);
+            
+            var cosThetaMin = (Math.Min(zMin, zMax) / radius).Clamp(-1, 1);
+            var cosThetaMax = (Math.Max(zMin, zMax) / radius).Clamp(-1, 1);
+
+            ThetaMin = MathF.Acos(cosThetaMin);
+            ThetaMax = MathF.Acos(cosThetaMax);
             var pMin = new Point3F(-radius, -radius, zMin);
             var pMax = new Point3F(radius, radius, zMax);
 
@@ -46,13 +50,13 @@ namespace pbrt.Shapes
             var oy = new EFloat(ray.O.Y, oErr.Y);
             var oz = new EFloat(ray.O.Z, oErr.Z);
 
-            EFloat dx = new EFloat(ray.D.X, dErr.X);
+            var dx = new EFloat(ray.D.X, dErr.X);
             var dy = new EFloat(ray.D.Y, dErr.Y);
             var dz = new EFloat(ray.D.Z, dErr.Z);
 
-            EFloat a = dx * dx + dy * dy + dz * dz;
-            EFloat b = 2 * (dx * ox + dy * oy + dz * oz);
-            EFloat c = ox * ox + oy * oy + oz * oz - new EFloat(Radius) * new EFloat(Radius);
+            var a = dx * dx + dy * dy + dz * dz;
+            var b = 2 * (dx * ox + dy * oy + dz * oz);
+            var c = ox * ox + oy * oy + oz * oz - new EFloat(Radius) * new EFloat(Radius);
 
             // Solve quadratic equation for _t_ values
             EFloat t0, t1;
@@ -81,7 +85,9 @@ namespace pbrt.Shapes
             pHit = ray.At((float)tShapeHit);
 
             // Refine sphere intersection point
-            pHit *= Radius / Point3F.Distance(pHit, Point3F.Zero);
+            var distance = Point3F.Distance(pHit, Point3F.Zero);
+            float ratio = Radius / distance;
+            pHit *= ratio;
             if (pHit.X == 0 && pHit.Y == 0)
             {
                 pHit.X = 1e-5f * Radius;
@@ -111,7 +117,9 @@ namespace pbrt.Shapes
                 pHit = ray.At((float)tShapeHit);
 
                 // Refine sphere intersection point
-                pHit *= Radius / Point3F.Distance(pHit, Point3F.Zero);
+                distance = Point3F.Distance(pHit, Point3F.Zero);
+                ratio = Radius / distance;
+                pHit *= ratio;
                 if (pHit.X == 0 && pHit.Y == 0)
                 {
                     pHit.X = 1e-5f * Radius;
