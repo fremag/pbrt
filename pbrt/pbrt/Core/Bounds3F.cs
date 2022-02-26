@@ -216,6 +216,8 @@ namespace pbrt.Core
             if (tzMin > tMin) tMin = tzMin;
             if (tzMax < tMax) tMax = tzMax;
             return (tMin < ray.TMax) && (tMax > 0);
-        }        
+        }
+
+        public override string ToString() => $"Min[{PMin.X}, {PMin.Y}, {PMin.Z}] Max[{PMax.X}, {PMax.Y}, {PMax.Z}]";
     }
 }

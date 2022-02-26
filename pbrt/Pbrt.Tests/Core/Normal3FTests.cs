@@ -216,5 +216,24 @@ namespace Pbrt.Tests.Core
         {
             Check.That(new Normal3F(1.23f, 2.34f, 3.45f).ToString()).IsEqualTo("Nx[1.23] Ny[2.34] Nz[3.45]");
         }
+        
+
+        [Test]
+        public void DeConstructorTest()
+        {
+            var n = (1f, 2f, 3f);
+            var normal = (Normal3F)n;
+            Check.That(normal.X).IsEqualTo(1);
+            Check.That(normal.Y).IsEqualTo(2);
+            Check.That(normal.Z).IsEqualTo(3);
+
+            var (x, y, z) = normal;
+            Check.That(x).IsEqualTo(1);
+            Check.That(y).IsEqualTo(2);
+            Check.That(z).IsEqualTo(3);
+            
+            Check.That(normal).IsEqualTo((1f, 2f, 3f));
+            Check.That(normal).IsEqualTo((1, 2, 3));
+        }
     }
 }

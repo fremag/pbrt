@@ -297,5 +297,23 @@ namespace Pbrt.Tests.Core
         {
             Check.That(new Vector3F(1.23f, 2.34f, 3.45f).ToString()).IsEqualTo("Vx[1.23] Vy[2.34] Vz[3.45]");
         }
+
+        [Test]
+        public void DeConstructorTest()
+        {
+            var v = (1f, 2f, 3f);
+            var vector = (Vector3F)v;
+            Check.That(vector.X).IsEqualTo(1);
+            Check.That(vector.Y).IsEqualTo(2);
+            Check.That(vector.Z).IsEqualTo(3);
+
+            var (x, y, z) = vector;
+            Check.That(x).IsEqualTo(1);
+            Check.That(y).IsEqualTo(2);
+            Check.That(z).IsEqualTo(3);
+
+            Check.That(vector).IsEqualTo((1f, 2f, 3f));
+            Check.That(vector).IsEqualTo((1, 2, 3));
+        }
     }
 }

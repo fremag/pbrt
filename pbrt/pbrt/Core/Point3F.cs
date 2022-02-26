@@ -28,6 +28,14 @@ namespace pbrt.Core
             Z = z;
         }
 
+        public void Deconstruct(out float x, out float y, out float z)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+        }
+        public static implicit operator Point3F((float x, float y, float z) p) => new Point3F(p.x, p.y, p.z);
+
         public static explicit operator Point2F(Point3F p) => new Point2F(p.X, p.Y);
         public static explicit operator Point3I(Point3F p) => new Point3I((int)p.X, (int)p.Y, (int)p.Z);
         

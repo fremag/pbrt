@@ -31,6 +31,14 @@ namespace pbrt.Core
         {
         }
 
+        public void Deconstruct(out float x, out float y, out float z)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+        }
+        public static implicit operator Normal3F((float x, float y, float z) p) => new Normal3F(p.x, p.y, p.z);
+
         public static Normal3F operator -(Normal3F n) => new Normal3F(-n.X, -n.Y, -n.Z);
         public static Normal3F operator +(Normal3F n1, Normal3F n2) => new Normal3F(n1.X + n2.X, n1.Y + n2.Y, n1.Z + n2.Z);
         public static Normal3F operator -(Normal3F n1, Normal3F n2) => new Normal3F(n1.X - n2.X, n1.Y - n2.Y, n1.Z - n2.Z);

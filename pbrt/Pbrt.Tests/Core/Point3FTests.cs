@@ -262,5 +262,23 @@ namespace Pbrt.Tests.Core
         {
             Check.That(new Point3F(1.23f, 2.34f, 3.45f).ToString()).IsEqualTo("X[1.23] Y[2.34] Z[3.45]");
         }
+
+        [Test]
+        public void DeConstructorTest()
+        {
+            var p = (1f, 2f, 3f);
+            var point = (Point3F)p;
+            Check.That(point.X).IsEqualTo(1);
+            Check.That(point.Y).IsEqualTo(2);
+            Check.That(point.Z).IsEqualTo(3);
+
+            var (x, y, z) = point;
+            Check.That(x).IsEqualTo(1);
+            Check.That(y).IsEqualTo(2);
+            Check.That(z).IsEqualTo(3);
+            
+            Check.That(point).IsEqualTo((1f, 2f, 3f));
+            Check.That(point).IsEqualTo((1, 2, 3));
+        }
     }
 }

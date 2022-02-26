@@ -288,5 +288,12 @@ namespace Pbrt.Tests.Core
             var intersectP = bounds.IntersectP(ray, invDir, dirIsNeg);
             Check.That(intersectP).IsEqualTo(intersect);
         }
+
+        [Test]
+        public void ToStringTest()
+        {
+            var b = new Bounds3F(new Point3F(0, 0, 0), new Point3F(2, 2, 2));
+            Check.That(b.ToString()).IsEqualTo("Min[0, 0, 0] Max[2, 2, 2]");
+        }
     }
 }

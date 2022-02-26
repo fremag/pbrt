@@ -33,6 +33,14 @@ namespace pbrt.Core
             Z = point3F.Z;
         }
 
+        public void Deconstruct(out float x, out float y, out float z)
+        {
+            x = X;
+            y = Y;
+            z = Z;
+        }
+        public static implicit operator Vector3F((float x, float y, float z) p) => new Vector3F(p.x, p.y, p.z);
+        
         public float this[int i] {
             get
             {
