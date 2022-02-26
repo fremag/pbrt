@@ -7,7 +7,7 @@ namespace Pbrt.Tests.Core
 {
     public static class NFluentHelper
     {
-        public static ICheckLink<ICheck<Vector3F>> IsEqualTo(this ICheck<Vector3F> check, (float x, float y, float z) expected)
+        public static ICheckLink<ICheck<Vector3F>> Check(this ICheck<Vector3F> check, (float x, float y, float z) expected)
         {
             var runCheck = ExtensibilityHelper.ExtractChecker<Vector3F>(check); 
             return runCheck.ExecuteCheck(() =>
@@ -18,7 +18,7 @@ namespace Pbrt.Tests.Core
                 }
             }, "failed");
         }
-        public static ICheckLink<ICheck<Vector3F>> IsEqualTo(this ICheck<Vector3F> check, (int x, int y, int z) expected)
+        public static ICheckLink<ICheck<Vector3F>> Check(this ICheck<Vector3F> check, (int x, int y, int z) expected)
         {
             var runCheck = ExtensibilityHelper.ExtractChecker<Vector3F>(check); 
             return runCheck.ExecuteCheck(() =>
@@ -30,7 +30,7 @@ namespace Pbrt.Tests.Core
             }, "failed");
         }
         
-        public static ICheckLink<ICheck<Point3F>> IsEqualTo(this ICheck<Point3F> check, (float x, float y, float z) expected)
+        public static ICheckLink<ICheck<Point3F>> Check(this ICheck<Point3F> check, (float x, float y, float z) expected)
         {
             var runCheck = ExtensibilityHelper.ExtractChecker<Point3F>(check); 
             return runCheck.ExecuteCheck(() =>
@@ -41,7 +41,7 @@ namespace Pbrt.Tests.Core
                 }
             }, "failed");
         }
-        public static ICheckLink<ICheck<Point3F>> IsEqualTo(this ICheck<Point3F> check, (int x, int y, int z) expected)
+        public static ICheckLink<ICheck<Point3F>> Check(this ICheck<Point3F> check, (int x, int y, int z) expected)
         {
             var runCheck = ExtensibilityHelper.ExtractChecker<Point3F>(check); 
             return runCheck.ExecuteCheck(() =>
@@ -53,7 +53,7 @@ namespace Pbrt.Tests.Core
             }, "failed");
         }
         
-        public static ICheckLink<ICheck<Normal3F>> IsEqualTo(this ICheck<Normal3F> check, (float x, float y, float z) expected)
+        public static ICheckLink<ICheck<Normal3F>> Check(this ICheck<Normal3F> check, (float x, float y, float z) expected)
         {
             var runCheck = ExtensibilityHelper.ExtractChecker<Normal3F>(check); 
             return runCheck.ExecuteCheck(() =>
@@ -64,7 +64,8 @@ namespace Pbrt.Tests.Core
                 }
             }, "failed");
         }
-        public static ICheckLink<ICheck<Normal3F>> IsEqualTo(this ICheck<Normal3F> check, (int x, int y, int z) expected)
+        
+        public static ICheckLink<ICheck<Normal3F>> Check(this ICheck<Normal3F> check, (int x, int y, int z) expected)
         {
             var runCheck = ExtensibilityHelper.ExtractChecker<Normal3F>(check); 
             return runCheck.ExecuteCheck(() =>

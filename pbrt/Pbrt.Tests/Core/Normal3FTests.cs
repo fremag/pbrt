@@ -232,8 +232,8 @@ namespace Pbrt.Tests.Core
             Check.That(y).IsEqualTo(2);
             Check.That(z).IsEqualTo(3);
             
-            Check.That(normal).IsEqualTo((1f, 2f, 3f));
-            Check.That(normal).IsEqualTo((1, 2, 3));
+            Check.That(normal).Check((1f, 2f, 3f));
+            Check.That(normal).Check((1, 2, 3));
         }
     }
 }

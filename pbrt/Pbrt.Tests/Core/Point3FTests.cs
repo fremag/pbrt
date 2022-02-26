@@ -277,8 +277,8 @@ namespace Pbrt.Tests.Core
             Check.That(y).IsEqualTo(2);
             Check.That(z).IsEqualTo(3);
             
-            Check.That(point).IsEqualTo((1f, 2f, 3f));
-            Check.That(point).IsEqualTo((1, 2, 3));
+            Check.That(point).Check((1f, 2f, 3f));
+            Check.That(point).Check((1, 2, 3));
         }
     }
 }
