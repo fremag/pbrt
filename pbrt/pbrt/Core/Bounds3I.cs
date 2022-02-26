@@ -129,10 +129,14 @@ namespace pbrt.Core
             }
         }
 
-        private static float Lerp(float t, float x1, float x2) => (1 - t) * x1 + t * x2;
-        
-        public Point3I Lerp(Point3F t) =>  new Point3I((int)Lerp(t.X, PMin.X, PMax.X), (int)Lerp(t.Y, PMin.Y, PMax.Y), (int)Lerp(t.Z, PMin.Z, PMax.Z));
-        
+        public Point3I Lerp(Point3F t)
+        {
+            var lerpX = (int)MathUtils.Lerp(t.X, PMin.X, PMax.X);
+            var lerpY = (int)MathUtils.Lerp(t.Y, PMin.Y, PMax.Y);
+            var lerpZ = (int)MathUtils.Lerp(t.Z, PMin.Z, PMax.Z);
+            return new Point3I(lerpX, lerpY, lerpZ);
+        }
+
         public Vector3I Offset(Point3I p) 
         {
             var oX = p.X - PMin.X;

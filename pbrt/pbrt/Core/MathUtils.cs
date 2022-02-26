@@ -4,6 +4,8 @@ namespace pbrt.Core
 {
     public static class MathUtils
     {
+        public static float Lerp(float t, float x1, float x2) => (1 - t) * x1 + t * x2;
+
         public static float Gamma(int n)
         {
             return (n * float.Epsilon) / (1 - n * float.Epsilon);
