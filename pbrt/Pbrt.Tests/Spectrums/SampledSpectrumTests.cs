@@ -138,5 +138,29 @@ namespace Pbrt.Tests.Spectrums
                 Check.That(spec.C[i]).IsCloseTo(expected[i], 1e-3);
             }
         }
+
+        [Test]
+        public void ToXyzTest()
+        {
+            float[] lambdas = new [] {500f, 400f, 600f, 700f};
+            float[] values = new [] {2f, 1f, 2f, 1f};
+
+            var spec = SampledSpectrum.FromSampled(lambdas, values, lambdas.Length);
+            var xyz = spec.ToXYZ();
+            Check.That(xyz[0]).IsCloseTo(1.81246662, 1e-5);
+            Check.That(xyz[1]).IsCloseTo(1.94576085, 1e-5);
+            Check.That(xyz[2]).IsCloseTo(1.53008139, 1e-5);
+        }
+
+        [Test]
+        public void YTest()
+        {
+            float[] lambdas = new [] {500f, 400f, 600f, 700f};
+            float[] values = new [] {2f, 1f, 2f, 1f};
+
+            var spec = SampledSpectrum.FromSampled(lambdas, values, lambdas.Length);
+            var y = spec.Y();
+            Check.That(y).IsCloseTo(207.91795, 1e-4);
+        }
     }
 }

@@ -125,5 +125,37 @@ namespace pbrt.Spectrums
             }                
             return sum / (lambdaEnd - lambdaStart);
         }
+        
+        public float[] ToXYZ()
+        {
+            float[] xyz = new float[3];
+            xyz[0] = 0;
+            xyz[1] = 0;
+            xyz[2] = 0;
+            
+            for (int i = 0; i < NSpectralSamples; ++i) 
+            {
+                xyz[0] += RgbUtils.X.C[i] * C[i];
+                xyz[1] += RgbUtils.Y.C[i] * C[i];
+                xyz[2] += RgbUtils.Z.C[i] * C[i];
+            }
+            
+            float scale = (SampledLambdaEnd - SampledLambdaStart) / (RgbUtils.CIE_Y_integral * NSpectralSamples);
+            xyz[0] *= scale;
+            xyz[1] *= scale;
+            xyz[2] *= scale;
+            return xyz;
+        }        
+        
+        public float Y() 
+        { 
+            float yy = 0f;
+            for (int i = 0; i < NSpectralSamples; ++i)
+            {
+                yy += RgbUtils.Y.C[i] * C[i];
+            }
+
+            return yy * (SampledLambdaEnd - SampledLambdaStart) / NSpectralSamples;
+        }
     }
 }

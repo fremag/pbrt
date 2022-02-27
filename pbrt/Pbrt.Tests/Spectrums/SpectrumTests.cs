@@ -108,5 +108,6 @@ namespace Pbrt.Tests.Spectrums
             Check.That(Spectrum.Lerp(1, spec1, spec2)).IsEqualTo(new Spectrum(new[] { 200, 500f }));
             Check.That(Spectrum.Lerp(0.5f, spec1, spec2)).IsEqualTo(new Spectrum(new[] { 150, 450f }));
         }
+        
     }
 }
