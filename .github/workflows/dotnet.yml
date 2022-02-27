@@ -10,8 +10,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    env:
-      working-directory: pbrt
+    defaults:
+      run:
+        working-directory: pbrt
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
