@@ -6,8 +6,8 @@ namespace pbrt.Spectrums
 {
     public class SampledSpectrum : CoefficientSpectrum
     {
-        public static readonly int SampledLambdaStart = 400;
-        public static readonly int SampledLambdaEnd = 700;
+        public static readonly int SampledLambdaStart = 400; // nano meter
+        public static readonly int SampledLambdaEnd = 700; // nano meter
         public static readonly int NSpectralSamples = 60;
         
         public SampledSpectrum(int nSpectrumSamples, float v=0) : base(nSpectrumSamples, v)
@@ -18,9 +18,13 @@ namespace pbrt.Spectrums
         {
         }
 
-        public override CoefficientSpectrum Copy() => new SampledSpectrum(this);
-        
-        public static bool SpectrumSamplesSorted(float[] lambdas, int n) {
+        public SampledSpectrum(float[] values) : base(values)
+        {
+            
+        }
+
+        public static bool SpectrumSamplesSorted(float[] lambdas, int n) 
+        {
             for (int i = n - 1 - 1; i >= 0; --i)
             {
                 if (lambdas[i] > lambdas[i + 1])
@@ -47,8 +51,8 @@ namespace pbrt.Spectrums
             
             for (int i = 0; i < n; i++)
             {
-                lambdas[i] = sorted.Keys[i];
-                values[i] = sorted.Values[i];
+                sortedLambdas[i] = sorted.Keys[i];
+                sortedValues[i] = sorted.Values[i];
             }
         }
         
@@ -109,15 +113,17 @@ namespace pbrt.Spectrums
             // Loop over wavelength sample segments and add contributions
             float Interp (float w, int j) {
                 return MathUtils.Lerp((w - lambdas[j]) / (lambdas[j + 1] - lambdas[j]), values[j], values[j + 1]);
-            };
+            }
             
             for (; i+1 < n && lambdaEnd >= lambdas[i]; i++) 
             {
                 float segLambdaStart = MathF.Max(lambdaStart, lambdas[i]);
                 float segLambdaEnd =   MathF.Min(lambdaEnd,   lambdas[i + 1]);
-                sum += 0.5f * (Interp(segLambdaStart, i) + Interp(segLambdaEnd, i)) * (segLambdaEnd - segLambdaStart);
+                var interpValueStart = Interp(segLambdaStart, i);
+                var interpValueEnd = Interp(segLambdaEnd, i);
+                sum += 0.5f * (interpValueStart + interpValueEnd) * (segLambdaEnd - segLambdaStart);
             }                
             return sum / (lambdaEnd - lambdaStart);
-        }        
+        }
     }
 }

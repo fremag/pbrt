@@ -1,25 +1,33 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using pbrt.Core;
 
 namespace pbrt.Spectrums
 {
-    public abstract class CoefficientSpectrum
+    public class CoefficientSpectrum
     {
         public int NSpectrumSamples { get; }
         public float[] C { get; }
 
-        protected CoefficientSpectrum(int nSpectrumSamples, float v)
+        public CoefficientSpectrum(float[] values)
+        {
+            NSpectrumSamples = values.Length;
+            C = new float[NSpectrumSamples];
+            Array.Copy(values, C, NSpectrumSamples);
+        }
+        
+        public CoefficientSpectrum(int nSpectrumSamples, float v)
         {
             NSpectrumSamples = nSpectrumSamples;
             C = Enumerable.Range(0, nSpectrumSamples).Select(_ => v).ToArray();
         }
 
-        public abstract CoefficientSpectrum Copy();
-
         public float this[int i] => C[i];
+        public bool IsBlack() => C.All(c => c == 0);
 
-        protected CoefficientSpectrum(CoefficientSpectrum cs) : this(cs.NSpectrumSamples, 0)
+        public CoefficientSpectrum(CoefficientSpectrum cs) : this(cs.NSpectrumSamples, 0)
         {
             Add(cs);
         }
@@ -56,13 +64,12 @@ namespace pbrt.Spectrums
             }
         }
 
-        public CoefficientSpectrum Mul(float a)
+        public void Mul(float a)
         {
             for (var i = 0; i < NSpectrumSamples; ++i)
             {
                 C[i] *= a;
             }
-            return this;
         }
 
         public void Div(float a)
@@ -136,18 +143,8 @@ namespace pbrt.Spectrums
             return Equals((CoefficientSpectrum)obj);
         }
 
-        public override int GetHashCode() => HashCode.Combine(NSpectrumSamples, C);
+        public override int GetHashCode() => HashCode.Combine(NSpectrumSamples, ((IStructuralEquatable)C).GetHashCode(EqualityComparer<float>.Default));
 
-        public bool IsBlack() => C.All(c => c != 0);
-
-        public static CoefficientSpectrum Lerp(float t, CoefficientSpectrum cs1, CoefficientSpectrum cs2)
-        {
-            var cs = cs1.Copy();
-            cs.Mul(1 - t);
-            var csBis = cs2.Copy();
-            csBis.Mul(t);
-            cs.Add(csBis);
-            return cs;
-        }
+        public override string ToString() => $"[{string.Join(", ", C)}]";
     }
 }
