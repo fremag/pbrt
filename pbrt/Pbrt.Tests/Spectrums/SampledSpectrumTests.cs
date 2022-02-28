@@ -162,5 +162,18 @@ namespace Pbrt.Tests.Spectrums
             var y = spec.Y();
             Check.That(y).IsCloseTo(207.91795, 1e-4);
         }
+
+        [Test]
+        public void ToRgbTest()
+        {
+            float[] lambdas = new [] {500f, 400f, 600f, 700f};
+            float[] values = new [] {2f, 1f, 2f, 1f};
+
+            var spec = SampledSpectrum.FromSampled(lambdas, values, lambdas.Length);
+            var rgb = spec.ToRgb();
+            Check.That(rgb[0]).IsCloseTo(2.11953449, 1e-4);
+            Check.That(rgb[1]).IsCloseTo(1.95706964, 1e-4);
+            Check.That(rgb[2]).IsCloseTo(1.32161331, 1e-4);
+        }
     }
 }

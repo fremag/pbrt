@@ -32,12 +32,17 @@ namespace pbrt.Spectrums
             Add(cs);
         }
 
-        public void Add(CoefficientSpectrum s2)
+        public void Add(float factor, CoefficientSpectrum s2)
         {
             for (var i = 0; i < NSpectrumSamples; ++i)
             {
-                C[i] += s2.C[i];
+                C[i] += factor * s2.C[i];
             }
+        }
+
+        public void Add(CoefficientSpectrum s2)
+        {
+            Add(1, s2);
         }
 
         public void Sub(CoefficientSpectrum s2)
@@ -144,7 +149,7 @@ namespace pbrt.Spectrums
         }
 
         public override int GetHashCode() => HashCode.Combine(NSpectrumSamples, ((IStructuralEquatable)C).GetHashCode(EqualityComparer<float>.Default));
-
+        
         public override string ToString() => $"[{string.Join(", ", C)}]";
     }
 }
