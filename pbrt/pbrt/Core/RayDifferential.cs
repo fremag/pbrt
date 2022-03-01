@@ -2,10 +2,10 @@ namespace pbrt.Core
 {
     public class RayDifferential : Ray
     {
-        public Point3F RxOrigin { get; private set;}
-        public Point3F RyOrigin { get; private set;} 
-        public Vector3F RxDirection { get; private set; }
-        public Vector3F RyDirection { get; private set; }
+        public Point3F RxOrigin { get; set;}
+        public Point3F RyOrigin { get;  set;} 
+        public Vector3F RxDirection { get; set; }
+        public Vector3F RyDirection { get; set; }
         public bool HasDifferentials { get; set; }
 
         public RayDifferential(Point3F origin, Vector3F direction, float tMax = float.PositiveInfinity, float time = 0.0f, Medium medium=null)
