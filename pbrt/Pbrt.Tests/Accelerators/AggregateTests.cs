@@ -21,6 +21,15 @@ namespace Pbrt.Tests.Accelerators
         }
 
         [Test]
+        public void DummyCoverageOnlyTest()
+        {
+            MyAggregate agg = new MyAggregate();
+            Check.That(agg.WorldBound()).IsNull();
+            Check.That(agg.IntersectP(null)).IsFalse();
+            Check.That(agg.Intersect(null, out _)).IsFalse();
+        }
+        
+        [Test]
         public void GetAreaLightTest()
         {
             var dummy = new MyAggregate();

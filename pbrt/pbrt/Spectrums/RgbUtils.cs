@@ -245,20 +245,20 @@ namespace pbrt.Spectrums
 
         static RgbUtils()
         {
-            rgbRefl2SpectWhite = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbRefl2SpectCyan = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbRefl2SpectMagenta = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbRefl2SpectYellow = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbRefl2SpectRed = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbRefl2SpectGreen = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbRefl2SpectBlue = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbIllum2SpectWhite = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbIllum2SpectCyan = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbIllum2SpectMagenta = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbIllum2SpectYellow = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbIllum2SpectRed = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbIllum2SpectGreen = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
-            rgbIllum2SpectBlue = new SampledSpectrum(SampledSpectrum.NSpectralSamples);
+            rgbRefl2SpectWhite = new SampledSpectrum();
+            rgbRefl2SpectCyan = new SampledSpectrum();
+            rgbRefl2SpectMagenta = new SampledSpectrum();
+            rgbRefl2SpectYellow = new SampledSpectrum();
+            rgbRefl2SpectRed = new SampledSpectrum();
+            rgbRefl2SpectGreen = new SampledSpectrum();
+            rgbRefl2SpectBlue = new SampledSpectrum();
+            rgbIllum2SpectWhite = new SampledSpectrum();
+            rgbIllum2SpectCyan = new SampledSpectrum();
+            rgbIllum2SpectMagenta = new SampledSpectrum();
+            rgbIllum2SpectYellow = new SampledSpectrum();
+            rgbIllum2SpectRed = new SampledSpectrum();
+            rgbIllum2SpectGreen = new SampledSpectrum();
+            rgbIllum2SpectBlue = new SampledSpectrum();
 
             // Compute RGB to spectrum functions for _SampledSpectrum_
             for (int i = 0; i < SampledSpectrum.NSpectralSamples; ++i)

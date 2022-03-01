@@ -181,9 +181,8 @@ namespace pbrt.Spectrums
 
         public RgbSpectrum ToRgbSpectrum()
         {
-            // TODO !
-            throw new NotImplementedException();
-        }
+            var rgb = ToRgb();
+            return RgbSpectrum.FromRGB(rgb);        }
 
         public static SampledSpectrum operator +(SampledSpectrum spec1, SampledSpectrum spec2)
         {
