@@ -17,6 +17,12 @@ namespace pbrt.Core
             return val > high ? high : val;
         }
 
+        public static int Clamp(this int val, int low, int high)
+        {
+            if (val < low) return low;
+            return val > high ? high : val;
+        }
+
         public static float Radians(this float deg)
         {
             return (MathF.PI / 180) * deg;

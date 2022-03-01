@@ -23,7 +23,27 @@ namespace pbrt.Spectrums
         public float[] ToRgb() => new float[] { C[0], C[1], C[2] };
 
         public static RgbSpectrum FromRGB(float[] rgb, SpectrumType type = SpectrumType.Reflectance) => new RgbSpectrum(rgb); 
+        
         public float[] ToXyz() => SpectrumUtils.RGBToXYZ(C); 
+        
         public static RgbSpectrum FromXYZ(float[] xyz, SpectrumType type = SpectrumType.Reflectance) => new RgbSpectrum(SpectrumUtils.XYZToRGB(xyz));
+        
+        public static RgbSpectrum FromSampled(float[] lambdas, float[] values, int n) 
+        {
+            // Sort samples if unordered, use sorted for returned spectrum>> 
+            float[] xyz = { 0, 0, 0 };
+            for (int i = 0; i < XyzUtils.nCIESamples; ++i) 
+            {
+                float val = SpectrumUtils.InterpolateSpectrumSamples(lambdas, values, n, XyzUtils.CIE_lambda[i]);
+                xyz[0] += val * XyzUtils.CIE_X[i];
+                xyz[1] += val * XyzUtils.CIE_Y[i];
+                xyz[2] += val * XyzUtils.CIE_Z[i];
+            }
+            float scale = (XyzUtils.CIE_lambda[XyzUtils.nCIESamples-1] - XyzUtils.CIE_lambda[0]) / (XyzUtils.CIE_Y_integral * XyzUtils.nCIESamples);
+            xyz[0] *= scale;
+            xyz[1] *= scale;
+            xyz[2] *= scale;
+            return FromXYZ(xyz);    
+        }
     }
 }

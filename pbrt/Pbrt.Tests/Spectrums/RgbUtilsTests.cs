@@ -55,5 +55,14 @@ namespace Pbrt.Tests.Spectrums
             Check.That(RgbUtils.RGBIllum2SpectGreen).CountIs(RgbUtils.nRGB2SpectSamples);
             Check.That(RgbUtils.RGBIllum2SpectBlue).CountIs(RgbUtils.nRGB2SpectSamples);
         }
+
+        [Test]
+        public void FromSampledTest()
+        {
+            var lambdas = new float[] { 100, 200, 300, 400, 500, 600, 700, 800 };
+            var values = new float[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+            var rgbSpectrum = RgbSpectrum.FromSampled(lambdas, values, lambdas.Length);
+            Check.That(rgbSpectrum.C).ContainsExactly(7.6374006f, 5.144754f, 3.9691753f);
+        }
     }
 }
