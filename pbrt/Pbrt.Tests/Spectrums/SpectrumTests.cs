@@ -81,7 +81,7 @@ namespace Pbrt.Tests.Spectrums
             float[] lambdas = new[] { 500f, 400f, 600f, 700f };
             float[] values = new[] { 2f, 1f, 2f, 1f };
 
-            var spec = Spectrum.FromSampled(lambdas, values, lambdas.Length);
+            var spec = Spectrum.FromSampledSpectrum(lambdas, values, lambdas.Length);
 
             float[] expected =
             {

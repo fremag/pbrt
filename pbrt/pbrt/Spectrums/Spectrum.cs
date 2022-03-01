@@ -16,7 +16,7 @@ namespace pbrt.Spectrums
         {
         }
 
-        public static Spectrum FromSampled(float[] lambdas, float[] values, int n) => new Spectrum(SampledSpectrum.FromSampled(lambdas, values, n));
+        public static Spectrum FromSampledSpectrum(float[] lambdas, float[] values, int n) => new Spectrum(SampledSpectrum.FromSampled(lambdas, values, n));
 
         public static Spectrum Lerp(float t, Spectrum spec1, Spectrum spec2)
         {
