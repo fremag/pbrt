@@ -143,6 +143,27 @@ namespace pbrt.Core
             else
                 ul += delta;
             return BitsToDouble(ul);
-        }        
+        }
+        
+        public static Vector3F SphericalDirection(float sinTheta, float cosTheta, float phi)
+        {
+            var vx = sinTheta * MathF.Cos(phi);
+            var vy = sinTheta * MathF.Sin(phi);
+            var vz = cosTheta;
+            return new Vector3F(vx, vy, vz);
+        }
+        
+        public static Vector3F SphericalDirection(float sinTheta, float cosTheta, float phi, Vector3F x, Vector3F y, Vector3F z) 
+        {
+            return sinTheta * MathF.Cos(phi) * x + sinTheta * MathF.Sin(phi) * y + cosTheta * z;
+        }  
+        
+        public static float SphericalTheta(Vector3F v) => MathF.Acos(v.Z.Clamp(-1, 1));
+        
+        public static float SphericalPhi(Vector3F v) 
+        {
+            float p = MathF.Atan2(v.Y, v.X);
+            return (p < 0) ? (p + 2 * MathF.PI) : p;
+        }
     }
 }

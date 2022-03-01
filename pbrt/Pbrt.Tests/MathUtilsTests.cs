@@ -2,6 +2,7 @@ using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+using Pbrt.Tests.Core;
 
 namespace Pbrt.Tests
 {
@@ -134,5 +135,58 @@ namespace Pbrt.Tests
             Check.That(t1).IsEqualTo(expectedT1);
         }
 
+        [Test]
+        public void SphericalDirectionTest()
+        {
+            var v = MathUtils.SphericalDirection(MathF.Sqrt(2)/2, MathF.Sqrt(2)/2, MathF.PI/4);
+            Check.That(v.X).IsCloseTo(0.5f, 1e-4);
+            Check.That(v.Y).IsCloseTo(0.5f, 1e-4);
+            Check.That(v.Z).IsCloseTo(MathF.Sqrt(2)/2, 1e-4);
+
+            v = MathUtils.SphericalDirection(0, 1, 0);
+            Check.That(v.X).IsCloseTo(0f, 1e-4);
+            Check.That(v.Y).IsCloseTo(0f, 1e-4);
+            Check.That(v.Z).IsCloseTo(1, 1e-4);
+
+            v = MathUtils.SphericalDirection(1, 0, 0);
+            Check.That(v.X).IsCloseTo(1f, 1e-4);
+            Check.That(v.Y).IsCloseTo(0f, 1e-4);
+            Check.That(v.Z).IsCloseTo(0, 1e-4);
+        }
+        
+        [Test]
+        public void SphericalDirectionVectorTest()
+        {
+            var x = new Vector3F(1f, 0, 0);
+            var y = new Vector3F(0, 1, 0);
+            var z = new Vector3F(0, 0, 1);
+            
+            var v = MathUtils.SphericalDirection(0, 1, 0, x, y, z);
+            Check.That(v.X).IsCloseTo(0f, 1e-4);
+            Check.That(v.Y).IsCloseTo(0f, 1e-4);
+            Check.That(v.Z).IsCloseTo(1, 1e-4);
+
+            v = MathUtils.SphericalDirection(1, 0, 0, x, y, z);
+            Check.That(v.X).IsCloseTo(1f, 1e-4);
+            Check.That(v.Y).IsCloseTo(0f, 1e-4);
+            Check.That(v.Z).IsCloseTo(0, 1e-4);
+        }
+
+        [Test]
+        public void SphericalThetaTest()
+        {
+            Check.That(MathUtils.SphericalTheta(new Vector3F(5, 4, 0))).IsEqualTo(MathF.PI/2);
+            Check.That(MathUtils.SphericalTheta(new Vector3F(1, 1, 1))).IsEqualTo(0);
+            Check.That(MathUtils.SphericalTheta(new Vector3F(1, 1, MathF.Sqrt(2)/2))).IsCloseTo(Math.PI/4, 1e-4);
+        }
+        [Test]
+        public void SphericalPhiTest()
+        {
+            Check.That(MathUtils.SphericalPhi(new Vector3F(0, 1, 0))).IsEqualTo(MathF.PI/2);
+            Check.That(MathUtils.SphericalPhi(new Vector3F(1, 0, 5))).IsEqualTo(0);
+            Check.That(MathUtils.SphericalPhi(new Vector3F(1, 1, 1))).IsCloseTo(Math.PI/4, 1e-4);
+            Check.That(MathUtils.SphericalPhi(new Vector3F(-1, 1, 1))).IsCloseTo(3*Math.PI/4, 1e-4);
+            Check.That(MathUtils.SphericalPhi(new Vector3F(-1, -1, 1))).IsCloseTo(5*Math.PI/4, 1e-4);
+        }
     }
 }
