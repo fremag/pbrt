@@ -165,5 +165,33 @@ namespace pbrt.Core
             float p = MathF.Atan2(v.Y, v.X);
             return (p < 0) ? (p + 2 * MathF.PI) : p;
         }
+        
+        public static Point2F ConcentricSampleDisk(Point2F u)
+        {
+            // Map uniform random numbers to [-1, 1] x [-1, 1]
+            Point2F uOffset = new Point2F(2f * u.X - 1, 2f * u.Y - 1);
+
+            // Handle degeneracy at the origin 
+            if (uOffset.X == 0 && uOffset.Y == 0)
+            {
+                return new Point2F(0, 0);
+            }
+
+            // Apply concentric mapping to point 
+            float theta, r;
+            if (MathF.Abs(uOffset.X) > MathF.Abs(uOffset.Y))
+            {
+                r = uOffset.X;
+                theta = MathF.PI / 4 * (uOffset.Y / uOffset.X);
+            }
+            else
+            {
+                r = uOffset.Y;
+                theta = MathF.PI / 2 - MathF.PI / 4 * (uOffset.X / uOffset.Y);
+            }
+
+            return r * new Point2F(MathF.Cos(theta), MathF.Sin(theta));
+        }
+        
     }
 }

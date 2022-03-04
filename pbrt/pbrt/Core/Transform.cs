@@ -357,6 +357,20 @@ namespace pbrt.Core
             return new Ray(o, d, tMax, r.Time, r.Medium);
         }
 
+        public RayDifferential Apply(RayDifferential rayDiff)
+        {
+            Ray tr = Apply(new Ray(rayDiff.O, rayDiff.D));
+
+            return new RayDifferential(tr.O, tr.D, rayDiff.TMax, rayDiff.Time, rayDiff.Medium)
+            {
+                HasDifferentials = rayDiff.HasDifferentials,
+                RxOrigin = Apply(rayDiff.RxOrigin),
+                RyOrigin = Apply(rayDiff.RyOrigin),
+                RxDirection = Apply(rayDiff.RxDirection),
+                RyDirection = Apply(rayDiff.RyDirection)
+            };            
+        }
+
         public Bounds3F Apply(Bounds3F b)
         {
             var p0 = Apply(b.PMin);

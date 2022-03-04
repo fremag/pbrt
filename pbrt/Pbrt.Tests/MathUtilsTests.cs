@@ -188,5 +188,20 @@ namespace Pbrt.Tests
             Check.That(MathUtils.SphericalPhi(new Vector3F(-1, 1, 1))).IsCloseTo(3*Math.PI/4, 1e-4);
             Check.That(MathUtils.SphericalPhi(new Vector3F(-1, -1, 1))).IsCloseTo(5*Math.PI/4, 1e-4);
         }
+
+        [Test]
+        [TestCase(0F, 0F, -0.707F, -0.707F)]
+        [TestCase(1F, 1F, 0.707F, 0.707F)]
+        [TestCase(0F, 1F, -0.707F, 0.707F)]
+        [TestCase(1F, 0F, 0.707F, -0.707F)]
+        [TestCase(0.5F, 0.5F, 0F, 0F)]
+        [TestCase(-0.5F, 0.5F, -2F, 0F)]
+        public void ConcentricSampleDiskTest(float u, float v, float pX, float pY)
+        {
+            Point2F uv = new Point2F(u, v);
+            var p = MathUtils.ConcentricSampleDisk(uv);
+            Check.That(p.X).IsCloseTo(pX, 1e-3);
+            Check.That(p.Y).IsCloseTo(pY, 1e-3);
+        }
     }
 }

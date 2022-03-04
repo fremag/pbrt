@@ -19,9 +19,9 @@ namespace pbrt.Cameras
             Medium = medium;
         }
 
-        protected abstract float GenerateRay(CameraSample sample, out Ray ray);
+        public abstract float GenerateRay(CameraSample sample, out Ray ray);
         
-        public float GenerateRayDifferential(CameraSample sample, out RayDifferential rd) 
+        public virtual float GenerateRayDifferential(CameraSample sample, out RayDifferential rd) 
         {
             float wt = GenerateRay(sample, out var ray);
             rd = new RayDifferential(ray.O, ray.D);

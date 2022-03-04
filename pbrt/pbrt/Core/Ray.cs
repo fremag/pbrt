@@ -2,18 +2,18 @@ namespace pbrt.Core
 {
     public class Ray
     {
-        public Point3F O { get; }
-        public Vector3F D { get; }
+        public Point3F O { get; set; }
+        public Vector3F D { get; set; }
         public float TMax { get; set; }
-        public float Time { get; }
-        public Medium Medium { get; }
+        public float Time { get; set; }
+        public Medium Medium { get; set; }
 
         public Ray()
         {
             TMax = float.PositiveInfinity;
         }
 
-        public Ray(Point3F o, Vector3F d, float max, float time, Medium medium)
+        public Ray(Point3F o, Vector3F d, float max = float.PositiveInfinity, float time = 0f, Medium medium = null)
         {
             O = o;
             D = d;
