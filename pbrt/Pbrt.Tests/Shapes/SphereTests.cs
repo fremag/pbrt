@@ -222,6 +222,28 @@ namespace Pbrt.Tests.Shapes
         }
 
         [Test]
+        public void Inside_IntersectTest()
+        {
+            Transform transZero = Transform.Translate(0, 0, 0);
+            sphere = new Sphere(transZero, transZero, false, 2, 0, 2, 360);
+
+            var o = new Point3F(-1, -1, -10);
+            var dir = new Vector3F(0, 0, 1);
+            float max = 1000;
+            var time = 1;
+            var ray = new Ray(o, dir, max, time, null);
+            var hit = sphere.Intersect(ray, out var tHit, out var iSec);
+            Check.That(hit).IsTrue();
+            Check.That(tHit).IsEqualTo(10+MathF.Sqrt(2));
+            Check.That(iSec.P.X).IsCloseTo(-1, 1e-4);
+            Check.That(iSec.P.Y).IsCloseTo(-1, 1e-4);
+            Check.That(iSec.P.Z).IsCloseTo(MathF.Sqrt(2), 1e-4);
+            Check.That(iSec.N.X).IsCloseTo(-0.5, 1e-4);
+            Check.That(iSec.N.Y).IsCloseTo(-0.5, 1e-4);
+            Check.That(iSec.N.Z).IsCloseTo(MathF.Sqrt(2)/2, 1e-4);
+        }
+
+        [Test]
         public void WithRefineSphereIntersectionPointTest()
         {
             Transform transZero = Transform.Translate(0, 0, 0);

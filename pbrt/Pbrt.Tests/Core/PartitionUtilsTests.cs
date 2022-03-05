@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using NFluent;
 using NUnit.Framework;
@@ -52,7 +53,7 @@ namespace Pbrt.Tests.Core
         public void StdPartition_5_Test()
         {
             List<int> values = new List<int> {7, 8, 9, -1, 0, 1, 2, 3, 4, 5, 6};
-            int m = values.StdPartition(3, 3, i => i < 3);
+            int m = values.StdPartition(3, 3, null);
 
             Check.That(m).IsEqualTo(3);
             Check.That(values).ContainsExactly(7,8,9,-1,0,1,2,3,4,5,6 );

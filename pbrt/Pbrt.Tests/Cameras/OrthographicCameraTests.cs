@@ -21,6 +21,7 @@ namespace Pbrt.Tests.Cameras
             var orthoCam = new OrthographicCamera(translate, screenWindow, film, medium);
             Check.That(orthoCam.DxCamera).IsEqualTo(new Vector3F(1.0f/320,0,0));
             Check.That(orthoCam.DyCamera).IsEqualTo(new Vector3F(0,-1.0f/240,0));
+            Check.That(orthoCam.ScreenWindow).IsEqualTo(screenWindow);
             
             // cam sample centered 
             var camSample = new CameraSample {Time = 0, PFilm = new Point2F(0,0), PLens = Point2F.Zero};
