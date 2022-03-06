@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using pbrt.Cameras;
 using pbrt.Core;
 
@@ -13,10 +12,6 @@ namespace pbrt.Samplers
         public int CurrentPixelSampleIndex { get; private set; }
 
         // Sampler Protected Data 
-        public List<int> Samples1DArraySizes { get; } = new List<int>();
-        public List<int> Samples2DArraySizes { get; } = new List<int>();
-        public List<List<float>> SampleArray1D { get; } = new List<List<float>>();
-        public List<List<Point2F>> SampleArray2D { get; } = new List<List<Point2F>>();
         public int Array1DOffset { get; private set; }
         public int Array2DOffset { get; private set; }
 
@@ -41,40 +36,9 @@ namespace pbrt.Samplers
             return cs;
         }
 
-        public virtual void Request1DArray(int n)
-        {
-            Samples1DArraySizes.Add(n);
-            SampleArray1D.Add(new List<float>(n * SamplesPerPixel));
-        }
-
-        public virtual void Request2DArray(int n)
-        {
-            Samples2DArraySizes.Add(n);
-            SampleArray2D.Add(new List<Point2F>(n * SamplesPerPixel));
-        }
-
         public int RoundCount(int n)
         {
             return n;
-        }
-
-        public virtual float Get1DArray(int n)
-        {
-            if (Array1DOffset == SampleArray1D.Count)
-            {
-                return float.NaN;
-            }
-
-            var floats = SampleArray1D[Array1DOffset++];
-            return floats[CurrentPixelSampleIndex * n];
-        }
-
-        public virtual Point2F Get2DArray(int n)
-        {
-            if (Array2DOffset == SampleArray2D.Count)
-                return null;
-            List<Point2F> point2Fs = SampleArray2D[Array2DOffset++];
-            return point2Fs[CurrentPixelSampleIndex * n];
         }
 
         public virtual bool SetSampleNumber(int sampleNum)
