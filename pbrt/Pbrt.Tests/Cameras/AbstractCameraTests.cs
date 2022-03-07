@@ -3,6 +3,7 @@ using NFluent;
 using NUnit.Framework;
 using pbrt.Cameras;
 using pbrt.Core;
+using pbrt.Films;
 
 namespace Pbrt.Tests.Cameras
 {
@@ -32,12 +33,12 @@ namespace Pbrt.Tests.Cameras
         }
 
         [Test]
-        public void GenerateTest()
+        public void GenerateRayDifferentialTest()
         {
             Transform cameraToWorld = Transform.Translate(-10, 0, 0);
             float shutterOpen = 0f;
             float shutterClose = 1f;
-            Film film = new Film();
+            Film film = new Film(640, 480);
             Medium medium = new Medium();
 
             var cam = new DummyCamera(cameraToWorld, shutterOpen, shutterClose, film, medium);

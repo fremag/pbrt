@@ -3,6 +3,7 @@ using NFluent;
 using NUnit.Framework;
 using pbrt.Cameras;
 using pbrt.Core;
+using pbrt.Films;
 using Pbrt.Tests.Core;
 
 namespace Pbrt.Tests.Cameras
@@ -11,7 +12,7 @@ namespace Pbrt.Tests.Cameras
     public class EnvironmentCameraTests
     {
         private readonly Transform translate = Transform.Translate(-10, 0, 0);
-        private readonly Film film = new Film { FullResolution = new Point2I(640, 480) };
+        private readonly Film film = new Film(640, 480);
         private readonly Medium medium = new Medium();
 
         [Test]

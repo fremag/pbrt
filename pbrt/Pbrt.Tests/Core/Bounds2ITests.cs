@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
@@ -183,6 +185,20 @@ namespace Pbrt.Tests.Core
             Check.That(b1.MaximumExtent).IsEqualTo(0);
             var b2 = new Bounds2I(Point2I.Zero, new Point2I(1, 2));
             Check.That(b2.MaximumExtent).IsEqualTo(1);
+        }
+
+        [Test]
+        public void GetEnumeratorTest()
+        {
+            var bounds3X2 = new Bounds2I(Point2I.Zero, new Point2I(3, 2));
+            Check.That(bounds3X2).ContainsExactly(new Point2I(0, 0), new Point2I(1, 0), new Point2I(2, 0), new Point2I(0, 1), new Point2I(1, 1), new Point2I(2, 1));
+            IEnumerator enumerator = ((IEnumerable)(bounds3X2)).GetEnumerator();
+            var points = new List<Point2I>();
+            while (enumerator.MoveNext())
+            {
+                points.Add((Point2I)enumerator.Current);
+            }
+            Check.That(points).ContainsExactly(new Point2I(0, 0), new Point2I(1, 0), new Point2I(2, 0), new Point2I(0, 1), new Point2I(1, 1), new Point2I(2, 1));
         }
     }
 }

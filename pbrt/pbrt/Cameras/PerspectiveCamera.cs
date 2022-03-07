@@ -1,6 +1,7 @@
 using System;
 using System.Numerics;
 using pbrt.Core;
+using pbrt.Films;
 
 namespace pbrt.Cameras
 {

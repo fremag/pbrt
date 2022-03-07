@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace pbrt.Core
 {
-    public class Bounds2I
+    public class Bounds2I : IEnumerable<Point2I>
     {
         public Point2I PMin { get; private set; }
         public Point2I PMax { get; private set; }
@@ -116,6 +118,27 @@ namespace pbrt.Core
             if (PMax.Y > PMin.Y) oY /= PMax.Y - PMin.Y;
             
             return new Vector2I(oX, oY);
-        }        
+        }
+
+        public IEnumerator<Point2I> GetEnumerator()
+        {
+            int yMin = PMin.Y;
+            int xMin = PMin.X;
+            int yMax = PMax.Y;
+            int xMax = PMax.X;
+
+            for (var y = yMin; y < yMax; ++y)
+            {
+                for (var x = xMin; x < xMax; ++x)
+                {
+                    yield return new Point2I(x, y);
+                }
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }
