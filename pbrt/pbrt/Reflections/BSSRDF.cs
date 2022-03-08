@@ -1,4 +1,4 @@
-namespace pbrt.Core
+namespace pbrt.Reflections
 {
     public class BSSRDF
     {

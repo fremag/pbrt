@@ -1,3 +1,4 @@
+using pbrt.Reflections;
 using pbrt.Shapes;
 
 namespace pbrt.Core
