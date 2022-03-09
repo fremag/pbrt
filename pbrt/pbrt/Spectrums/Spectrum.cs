@@ -42,6 +42,18 @@ namespace pbrt.Spectrums
             return spec;
         }
         
+        public static Spectrum operator +(Spectrum spec1, float s)
+        {
+            var spec = new Spectrum(spec1);
+            for (int i = 0; i < spec.NSpectrumSamples; i++)
+            {
+                spec.C[i] += s;
+            }
+            return spec;
+        }
+
+        public static Spectrum operator -(Spectrum spec1, float s) => spec1 + (-s);
+
         public static Spectrum operator *(Spectrum spec1, Spectrum spec2)
         {
             var spec = new Spectrum(spec1);

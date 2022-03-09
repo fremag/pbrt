@@ -17,12 +17,29 @@ namespace Pbrt.Tests.Spectrums
         }
 
         [Test]
+        public void AddFloatTest()
+        {
+            var spec1 = new Spectrum(new[] { 1.23f, 2.34f });
+            var spec = spec1 + 1;
+            Check.That(spec).IsEqualTo(new Spectrum(new[] { 2.23f, 3.34f }));
+        }
+
+        [Test]
         public void SubTest()
         {
             var spec1 = new Spectrum(new[] { 1.23f, 2.34f });
             var spec2 = new Spectrum(new[] { 2f, 3f });
             var spec = spec2 - spec1;
             Check.That(spec).IsEqualTo(new Spectrum(new[] { 0.77f, 0.6600001f }));
+        }
+
+        [Test]
+        public void SubFloatTest()
+        {
+            var spec1 = new Spectrum(new[] { 1.23f, 2.34f });
+            var spec = spec1 - 1;
+            Check.That(spec[0]).IsCloseTo( 0.23f, 1e-4);
+            Check.That(spec[1]).IsCloseTo(1.34f, 1e-4);
         }
 
         [Test]
