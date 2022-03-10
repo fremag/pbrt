@@ -1,3 +1,4 @@
+using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
@@ -24,14 +25,13 @@ namespace Pbrt.Tests.Reflections
 
             public override Spectrum F(Vector3F wo, Vector3F wi) => spectrum;
 
-            public override Spectrum Sample_f(Vector3F wo, Vector3F wi, Point2F sample, out float pdf, out BxDFType sampledType)
+            public override Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F sample, out float pdf, out BxDFType sampledType)
             {
                 pdf = 1.23f;
+                wi = null;
                 sampledType = BxDFType.BSDF_DIFFUSE;
                 return spectrum;
             }
-
-            public override Spectrum Rho(Vector3F wo, int nSamples, Point2F[] samples) => spectrum;
         }
 
         [SetUp]
@@ -52,7 +52,7 @@ namespace Pbrt.Tests.Reflections
         [Test]
         public void Sample_fTest()
         {
-            var spectrum = scaled.Sample_f(null, null, Point2F.Zero, out var pdf, out var sampledType);
+            var spectrum = scaled.Sample_f(null, out _, Point2F.Zero, out var pdf, out var sampledType);
             Check.That(spectrum[0]).IsEqualTo(0.1f * 0.5f);
             Check.That(pdf).IsEqualTo(1.23f);
             Check.That(sampledType).IsEqualTo(BxDFType.BSDF_DIFFUSE);
@@ -61,8 +61,7 @@ namespace Pbrt.Tests.Reflections
         [Test]
         public void RhoTest()
         {
-            var spectrum = scaled.Rho(null, 1, null);
-            Check.That(spectrum[0]).IsEqualTo(0.1f * 0.5f);
+            Check.ThatCode(() => scaled.Rho(Vector3F.Zero, 0, null)).Throws<NotImplementedException>();
         }
 
         [Test]

@@ -26,8 +26,12 @@ namespace pbrt.Reflections
 
         public bool MatchesFlags(BxDFType bxDfType) => (BxdfType & bxDfType) == bxDfType;
         public abstract Spectrum F(Vector3F wo, Vector3F wi);
-        public abstract Spectrum Sample_f(Vector3F wo, Vector3F wi, Point2F sample, out float pdf, out BxDFType sampledType);
-        public abstract Spectrum Rho(Vector3F wo, int nSamples, Point2F[] samples);
+        public abstract Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F sample, out float pdf, out BxDFType sampledType);
+
+        public virtual Spectrum Rho(Vector3F wo, int nSamples, Point2F[] samples)
+        {
+            throw new NotImplementedException();
+        }
 
         public static float FrDielectric(float cosThetaI, float etaI, float etaT)
         {

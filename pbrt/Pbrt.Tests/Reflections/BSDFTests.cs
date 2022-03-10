@@ -3,6 +3,7 @@ using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
 using pbrt.Reflections;
+using Pbrt.Tests.Core;
 
 namespace Pbrt.Tests.Reflections
 {
@@ -51,6 +52,35 @@ namespace Pbrt.Tests.Reflections
             Check.That(BSDF.CosDPhi(new Vector3F(1, 1, 1), new Vector3F(1, 1, 1))).IsEqualTo(1);
             Check.That(BSDF.CosDPhi(new Vector3F(1, 1, 0), new Vector3F(1, 1, 1))).IsEqualTo(1);
             Check.That(BSDF.CosDPhi(new Vector3F(1, 1, 0.5f), new Vector3F(1, 1, 1))).IsEqualTo(1);
+        }
+
+        [Test]
+        public void ReflectTest()
+        {
+            Vector3F wo = new Vector3F(1, 1, 0);
+            Vector3F n = new Vector3F(0, 1, 0);
+            var reflected = BSDF.Reflect(wo, n);
+            Check.That(reflected).Check((-1, 1, 0));
+        }
+
+        [Test]
+        public void RefractTest()
+        {
+            Vector3F wi = new Vector3F(1, 1, 0);
+            Normal3F n = new Normal3F(0, 1, 0);
+            var refracted = BSDF.Refract(wi, n, 1f/2, out var wt);
+            Check.That(refracted).IsTrue();
+            Check.That(wt).Check((-0.5f, -1f, 0));
+        }
+
+        [Test]
+        public void Reflected_RefractTest()
+        {
+            Vector3F wi = new Vector3F(1, 1, 0).Normalized();
+            Normal3F n = new Normal3F(0, 1, 0);
+            var refracted = BSDF.Refract(wi, n, 2, out var wt);
+            Check.That(refracted).IsFalse();
+            Check.That(wt).IsNull();
         }
     }
 }
