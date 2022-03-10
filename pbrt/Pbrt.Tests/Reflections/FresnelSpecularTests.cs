@@ -32,6 +32,7 @@ namespace Pbrt.Tests.Reflections
             Check.That(fresnelSpecular.R).IsEqualTo(r);
             Check.That(fresnelSpecular.T).IsEqualTo(t);
             Check.That(fresnelSpecular.BxdfType).IsEqualTo(BxDFType.BSDF_REFLECTION | BxDFType.BSDF_TRANSMISSION | BxDFType.BSDF_SPECULAR);
+            Check.That(fresnelSpecular.Mode).IsEqualTo(transportMode);
             Check.That(fresnelSpecular.F(null, null)).IsEqualTo(new Spectrum(0f));
         }
 
