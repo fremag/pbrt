@@ -25,9 +25,21 @@ namespace pbrt.Reflections
         }
 
         public abstract Spectrum F(Vector3F wo, Vector3F wi);
-        public abstract Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F sample, out float pdf, out BxDFType sampledType);
-        public virtual Spectrum Rho(Vector3F wo, int nSamples, Point2F[] samples) => throw new NotImplementedException();
 
+        public virtual Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F sample, out float pdf, out BxDFType sampledType)
+        {
+            // The sample and pdf parameters aren’t needed for delta distribution BxDFs, so they will be explained later,
+            // in Section 14.1, when we provide implementations of this method for nonspecular reflection functions.             
+            throw new NotImplementedException();
+        }
+        
+        // The BxDF::rho() method computes the reflectance function . Some BxDFs can compute this value
+        // in closed form, although most use Monte Carlo integration to compute an approximation to it.
+        // For those BxDFs, the nSamples and samples parameters are used by the implementation of the Monte Carlo algorithm;
+        // they are explained in Section 14.1.5. 
+        public virtual Spectrum Rho(Vector3F wo, int nSamples, Point2F[] samples) => throw new NotImplementedException();
+        public virtual Spectrum Rho(int nSamples, out Point2F samples1, out Point2F samples2)  => throw new NotImplementedException();
+        
         public bool MatchesFlags(BxDFType bxDfType) => (BxdfType & bxDfType) == bxDfType;
 
         public static float FrDielectric(float cosThetaI, float etaI, float etaT)

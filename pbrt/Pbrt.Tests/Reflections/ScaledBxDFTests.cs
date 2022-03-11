@@ -62,6 +62,7 @@ namespace Pbrt.Tests.Reflections
         public void RhoTest()
         {
             Check.ThatCode(() => scaled.Rho(Vector3F.Zero, 0, null)).Throws<NotImplementedException>();
+            Check.ThatCode(() => scaled.Rho(0, out _, out _ )).Throws<NotImplementedException>();
         }
 
         [Test]
