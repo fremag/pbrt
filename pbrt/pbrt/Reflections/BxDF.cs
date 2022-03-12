@@ -129,5 +129,8 @@ namespace pbrt.Reflections
             var wbXy = (wb.X * wb.X + wb.Y * wb.Y);
             return (waXy / MathF.Sqrt(waXy * wbXy)).Clamp(-1, 1);
         }
+        
+        public static bool SameHemisphere(Vector3F w, Vector3F wp) => w.Z * wp.Z > 0;
+        public static bool SameHemisphere(Vector3F w, Normal3F wp) => w.Z * wp.Z > 0;
     }
 }

@@ -1,6 +1,4 @@
 namespace pbrt.Core
 {
-    public class TransportMode
-    {
-    }
+    public enum TransportMode { Radiance, Importance };
 }

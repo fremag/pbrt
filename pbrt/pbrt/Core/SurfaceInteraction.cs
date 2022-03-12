@@ -1,3 +1,4 @@
+using System;
 using pbrt.Reflections;
 using pbrt.Shapes;
 
@@ -82,6 +83,18 @@ namespace pbrt.Core
             Shading.DpDv = dpdvs;
             Shading.DnDu = dndus;
             Shading.DnDv = dndvs;
+        }
+        
+        public void ComputeScatteringFunctions(RayDifferential ray, MemoryArena arena, bool allowMultipleLobes, TransportMode mode) 
+        {
+            ComputeDifferentials(ray);
+            Primitive.ComputeScatteringFunctions(this, arena, mode, allowMultipleLobes);
+        }
+
+        public void ComputeDifferentials(RayDifferential ray)
+        {
+            // TODO in Chap 10: https://pbr-book.org/3ed-2018/Texture/Sampling_and_Antialiasing.html#SurfaceInteraction::ComputeDifferentials
+            if(ray == null) throw new NotImplementedException();
         }
     }
 }

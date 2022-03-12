@@ -1,4 +1,7 @@
+using System;
 using NFluent;
+using NSubstitute;
+using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using pbrt.Core;
 using pbrt.Shapes;
@@ -69,6 +72,23 @@ namespace Pbrt.Tests.Core
             shape.ReverseOrientation = true;
             si.SetShadingGeometry(dpdus, dpdvs, dndus, dndvs, false);
             Check.That(si.Shading.N).IsEqualTo(new Normal3F(0, 1,0));
+        }
+
+        [Test]
+        public void ComputeDifferentialsTest()
+        {
+            Check.ThatCode(() => si.ComputeDifferentials(null)).Throws<NotImplementedException>();
+        }
+        
+        [Test]
+        public void ComputeScatteringFunctionsTest()
+        {
+            RayDifferential ray = new RayDifferential(Point3F.Zero, Vector3F.Zero);
+            MemoryArena arena = new MemoryArena();
+            si.Primitive = Substitute.For<IPrimitive>();
+            si.ComputeScatteringFunctions(ray, arena, true, TransportMode.Radiance);
+            
+            si.Primitive.Received(1).ComputeScatteringFunctions(si, arena, TransportMode.Radiance, true);
         }
     }
 }

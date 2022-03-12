@@ -40,7 +40,7 @@ namespace Pbrt.Tests.Accelerators
         public void ComputeScatteringFunctionsTest()
         {
             var dummy = new MyAggregate();
-            Check.ThatCode(() => dummy.ComputeScatteringFunctions(null, null, null, false)).Throws<NotImplementedException>();
+            Check.ThatCode(() => dummy.ComputeScatteringFunctions(null, null, TransportMode.Radiance, false)).Throws<NotImplementedException>();
         }
 
         [Test]
