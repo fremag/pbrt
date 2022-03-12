@@ -22,31 +22,31 @@ namespace pbrt.Reflections
 
         public override Spectrum F(Vector3F wo, Vector3F wi)
         {
-            float sinThetaI = BSDF.SinTheta(wi);
-            float sinThetaO = BSDF.SinTheta(wo);
+            float sinThetaI = SinTheta(wi);
+            float sinThetaO = SinTheta(wo);
             // Compute cosine term of Oren–Nayar model
             float maxCos = 0;
             if (sinThetaI > 1e-4 && sinThetaO > 1e-4)
             {
-                float sinPhiI = BSDF.SinPhi(wi);
-                float cosPhiI = BSDF.CosPhi(wi);
-                float sinPhiO = BSDF.SinPhi(wo);
-                float cosPhiO = BSDF.CosPhi(wo);
+                float sinPhiI = SinPhi(wi);
+                float cosPhiI = CosPhi(wi);
+                float sinPhiO = SinPhi(wo);
+                float cosPhiO = CosPhi(wo);
                 float dCos = cosPhiI * cosPhiO + sinPhiI * sinPhiO;
                 maxCos = MathF.Max(0f, dCos);
             }
 
             // Compute sine and tangent terms of Oren–Nayar model
             float sinAlpha, tanBeta;
-            if (BSDF.AbsCosTheta(wi) > BSDF.AbsCosTheta(wo))
+            if (AbsCosTheta(wi) > AbsCosTheta(wo))
             {
                 sinAlpha = sinThetaO;
-                tanBeta = sinThetaI / BSDF.AbsCosTheta(wi);
+                tanBeta = sinThetaI / AbsCosTheta(wi);
             }
             else
             {
                 sinAlpha = sinThetaI;
-                tanBeta = sinThetaO / BSDF.AbsCosTheta(wo);
+                tanBeta = sinThetaO / AbsCosTheta(wo);
             }
 
             var coeff = (A + B * maxCos * sinAlpha * tanBeta) / MathF.PI;

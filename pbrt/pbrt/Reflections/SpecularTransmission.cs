@@ -29,7 +29,7 @@ namespace pbrt.Reflections
             pdf = 1;
             
             // Figure out which eta is incident and which is transmitted 
-            bool entering = BSDF.CosTheta(wo) > 0;
+            bool entering = CosTheta(wo) > 0;
             float etaI = entering ? EtaA : EtaB;
             float etaT = entering ? EtaB : EtaA;
             
@@ -37,9 +37,9 @@ namespace pbrt.Reflections
             var faceForward = (new Normal3F(0, 0, 1).FaceForward(wo));
             if (BSDF.Refract(wo, faceForward, etaI / etaT, out wi))
             {
-                Spectrum ft = T * (new Spectrum(1f) - Fresnel.Evaluate(BSDF.CosTheta(wi)));
+                Spectrum ft = T * (new Spectrum(1f) - Fresnel.Evaluate(CosTheta(wi)));
                 // Account for non-symmetry with transmission to different medium 
-                return ft / BSDF.AbsCosTheta(wi);
+                return ft / AbsCosTheta(wi);
             }
 
             return new Spectrum(0f);

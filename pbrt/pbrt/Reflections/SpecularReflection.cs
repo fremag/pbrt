@@ -23,7 +23,7 @@ namespace pbrt.Reflections
             wi = new Vector3F(-wo.X, -wo.Y, wo.Z);
             pdf = 1;
             sampledType = BxdfType;
-            return Fresnel.Evaluate(BSDF.CosTheta(wi)) * R / BSDF.AbsCosTheta(wi);
+            return Fresnel.Evaluate(CosTheta(wi)) * R / AbsCosTheta(wi);
         }
     }
 }
