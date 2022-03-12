@@ -1,5 +1,7 @@
+using System;
 using NFluent;
 using NUnit.Framework;
+using pbrt.Core;
 using pbrt.Reflections;
 using pbrt.Spectrums;
 
@@ -30,5 +32,68 @@ namespace Pbrt.Tests.Reflections
             var f = BxDF.FrConductor(cosThetaI, etaI, etaT, k);
             Check.That(f).IsEqualTo(expected);
         }
+
+        [Test]
+        public void Vector_SameHemisphereTest()
+        {
+            Check.That(BxDF.SameHemisphere(new Vector3F(1, 1, 1), new Vector3F(2, -1, 2))).IsTrue();
+            Check.That(BxDF.SameHemisphere(new Vector3F(0, 0, 1), new Vector3F(0, 0, 1))).IsTrue();
+            Check.That(BxDF.SameHemisphere(new Vector3F(0, 0, 0), new Vector3F(2, -1, 2))).IsFalse();
+            Check.That(BxDF.SameHemisphere(new Vector3F(1, 1, -1), new Vector3F(2, -1, 2))).IsFalse();
+        }
+        
+        [Test]
+        public void Normal_SameHemisphereTest()
+        {
+            Check.That(BxDF.SameHemisphere(new Vector3F(1, 1, 1), new Normal3F(2, -1, 2))).IsTrue();
+            Check.That(BxDF.SameHemisphere(new Vector3F(0, 0, 1), new Normal3F(0, 0, 1))).IsTrue();
+            Check.That(BxDF.SameHemisphere(new Vector3F(0, 0, 0), new Normal3F(2, -1, 2))).IsFalse();
+            Check.That(BxDF.SameHemisphere(new Vector3F(1, 1, -1), new Normal3F(2, -1, 2))).IsFalse();
+        }
+        
+        [Test]
+        public void TrigonometryTest()
+        {
+            Check.That(BxDF.CosTheta(new Vector3F(1, 1, 1))).IsEqualTo(1);
+            Check.That(BxDF.CosTheta(new Vector3F(1, 1, 0))).IsEqualTo(0);
+            Check.That(BxDF.CosTheta(new Vector3F(-1, 1, 0.5f))).IsEqualTo(0.5f);
+
+            Check.That(BxDF.Cos2Theta(new Vector3F(1, 1, -1))).IsEqualTo(1);
+            Check.That(BxDF.Cos2Theta(new Vector3F(1, 1, 0))).IsEqualTo(0);
+            Check.That(BxDF.Cos2Theta(new Vector3F(-1, 1, 0.5f))).IsEqualTo(0.25f);
+
+            Check.That(BxDF.AbsCosTheta(new Vector3F(1, 1, -1))).IsEqualTo(1);
+            Check.That(BxDF.AbsCosTheta(new Vector3F(1, 1, 0))).IsEqualTo(0);
+            Check.That(BxDF.AbsCosTheta(new Vector3F(-1, 1, -0.5f))).IsEqualTo(0.5f);
+
+            Check.That(BxDF.Sin2Theta(new Vector3F(1, 1, -1))).IsEqualTo(0);
+            Check.That(BxDF.Sin2Theta(new Vector3F(1, 1, 0))).IsEqualTo(1);
+            Check.That(BxDF.Sin2Theta(new Vector3F(-1, 1, -0.5f))).IsEqualTo(0.75f);
+
+            Check.That(BxDF.SinTheta(new Vector3F(1, 1, -1))).IsEqualTo(0);
+            Check.That(BxDF.SinTheta(new Vector3F(1, 1, 0))).IsEqualTo(1);
+            Check.That(BxDF.SinTheta(new Vector3F(-1, 1, -0.5f))).IsEqualTo(MathF.Sqrt(0.75f));
+
+            Check.That(BxDF.TanTheta(new Vector3F(1, 1, -1))).IsEqualTo(0);
+            Check.That(BxDF.TanTheta(new Vector3F(1, 1, 0))).Not.IsFinite();
+            Check.That(BxDF.TanTheta(new Vector3F(-1, 1, -0.5f))).IsEqualTo(-MathF.Sqrt(3));
+
+            Check.That(BxDF.Tan2Theta(new Vector3F(1, 1, -1))).IsEqualTo(0);
+            Check.That(BxDF.Tan2Theta(new Vector3F(1, 1, 0))).Not.IsFinite();
+            Check.That(BxDF.Tan2Theta(new Vector3F(-1, 1, -0.5f))).IsEqualTo(3f);
+
+            Check.That(BxDF.Cos2Phi(new Vector3F(1, 1, 1))).IsEqualTo(1);
+            Check.That(BxDF.Cos2Phi(new Vector3F(1, 1, 0))).IsEqualTo(1);
+            Check.That(BxDF.Cos2Phi(new Vector3F(1, 1, 0.5f))).IsEqualTo(1);
+
+            Check.That(BxDF.Sin2Phi(new Vector3F(1, 1, 1))).IsEqualTo(0);
+            Check.That(BxDF.Sin2Phi(new Vector3F(1, 1, 0))).IsEqualTo(1);
+            Check.That(BxDF.Sin2Phi(new Vector3F(1, 1, 0.5f))).IsEqualTo(1);
+
+            Check.That(BxDF.CosDPhi(new Vector3F(1, 1, 1), new Vector3F(1, 1, 1))).IsEqualTo(1);
+            Check.That(BxDF.CosDPhi(new Vector3F(1, 1, 0), new Vector3F(1, 1, 1))).IsEqualTo(1);
+            Check.That(BxDF.CosDPhi(new Vector3F(1, 1, 0.5f), new Vector3F(1, 1, 1))).IsEqualTo(1);
+        }
+        
     }
 }
