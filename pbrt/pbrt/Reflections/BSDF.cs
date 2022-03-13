@@ -8,7 +8,7 @@ namespace pbrt.Reflections
     {
         public static readonly int MaxBxDFs = 8;
         public int NbBxDFs { get; private set; }
-        readonly BxDF[] bxdfs;
+        public readonly BxDF[] bxdfs;
 
         public float Eta { get; }
         public Normal3F Ns { get; }
