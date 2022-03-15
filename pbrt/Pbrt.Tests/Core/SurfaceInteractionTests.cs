@@ -1,7 +1,5 @@
-using System;
 using NFluent;
 using NSubstitute;
-using NSubstitute.ReceivedExtensions;
 using NUnit.Framework;
 using pbrt.Core;
 using pbrt.Shapes;
@@ -75,9 +73,138 @@ namespace Pbrt.Tests.Core
         }
 
         [Test]
-        public void ComputeDifferentialsTest()
+        public void Orthogonal_ComputeDifferentialsTest()
         {
-            Check.ThatCode(() => si.ComputeDifferentials(null)).Throws<NotImplementedException>();
+            Check.That(si.DpDx).IsNull();
+            Check.That(si.DpDy).IsNull();
+
+            Point3F o = new Point3F(-10, 0, 0);
+            var dir = new Vector3F(1, 0, 0);
+            var rayDiff = new RayDifferential(o, dir)
+            {
+                HasDifferentials = true,
+                RxOrigin = new Point3F(-1, 0, 0),
+                RyOrigin = new Point3F(-1, 0, 0),
+                RxDirection = new Vector3F(1, 0, 0),
+                RyDirection = new Vector3F(1, 0, 0)
+            };
+
+            si.ComputeDifferentials(rayDiff);
+
+            Check.That(si.DvDx).IsEqualTo(0);
+            Check.That(si.DvDy).IsEqualTo(0);
+            Check.That(si.DuDx).IsEqualTo(0);
+            Check.That(si.DuDy).IsEqualTo(0);
+            Check.That(si.DpDx).IsEqualTo(Vector3F.Zero);
+            Check.That(si.DpDy).IsEqualTo(Vector3F.Zero);
+        }
+        
+        [Test]
+        public void NoDifferentials_ComputeDifferentialsTest()
+        {
+            Check.That(si.DpDx).IsNull();
+            Check.That(si.DpDy).IsNull();
+            
+            RayDifferential rayDiff = new RayDifferential(null, null)
+            {
+                HasDifferentials = false
+            };
+
+            si.ComputeDifferentials(rayDiff);
+
+            Check.That(si.DvDx).IsEqualTo(0);
+            Check.That(si.DvDy).IsEqualTo(0);
+            Check.That(si.DuDx).IsEqualTo(0);
+            Check.That(si.DuDy).IsEqualTo(0);
+            Check.That(si.DpDx).IsEqualTo(Vector3F.Zero);
+            Check.That(si.DpDy).IsEqualTo(Vector3F.Zero);
+        }
+        
+        [Test]
+        public void ComputeDifferentials_1_Test()
+        {
+            Check.That(si.DpDx).IsNull();
+            Check.That(si.DpDy).IsNull();
+
+            Point3F o = new Point3F(-10, 0, 0);
+            var dir = new Vector3F(1, 0, 0);
+            var rayDiff = new RayDifferential(o, dir)
+            {
+                HasDifferentials = true,
+                RxOrigin = new Point3F(-1, 0, 0),
+                RyOrigin = new Point3F(-1, 0, 0),
+                RxDirection = new Vector3F(1, -1, 0),
+                RyDirection = new Vector3F(-1, -1, 0)
+            };
+
+            si.ComputeDifferentials(rayDiff);
+
+            Check.That(si.DvDx).IsEqualTo(0);
+            Check.That(si.DvDy).IsEqualTo(-2);
+            Check.That(si.DuDx).IsEqualTo(0);
+            Check.That(si.DuDy).IsEqualTo(0);
+            Check.That(si.DpDx).IsEqualTo(new Vector3F(0, -2f, 0));
+            Check.That(si.DpDy).IsEqualTo(new Vector3F(-2f , -2f, 0));
+        }
+        
+        [Test]
+        public void ComputeDifferentials_2_Test()
+        {
+            Check.That(si.DpDx).IsNull();
+            Check.That(si.DpDy).IsNull();
+
+            Point3F o = new Point3F(-10, 0, 0);
+            var dir = new Vector3F(1, 0, 0);
+            var rayDiff = new RayDifferential(o, dir)
+            {
+                HasDifferentials = true,
+                RxOrigin = new Point3F(-1, 0, 0),
+                RyOrigin = new Point3F(-1, 0, 0),
+                RxDirection = new Vector3F(-1, -1, 0),
+                RyDirection = new Vector3F(1, -1, 0)
+            };
+
+            var newDpDu = new Vector3F(0, 1, 0);
+            var newDpDv = new Vector3F(0, 0, 1);
+            si = new SurfaceInteraction(p, pError, uv, wo, newDpDu, newDpDv, dndu, dndv, time, shape);
+            si.ComputeDifferentials(rayDiff);
+
+            Check.That(si.DvDx).IsEqualTo(0f);
+            Check.That(si.DvDy).IsEqualTo(0);
+            Check.That(si.DuDx).IsEqualTo(0);
+            Check.That(si.DuDy).IsEqualTo(-2f);
+            Check.That(si.DpDx).IsEqualTo(new Vector3F(0, 0, 0));
+            Check.That(si.DpDy).IsEqualTo(new Vector3F(0 , -2f, 0));
+        }
+        
+        [Test]
+        public void ComputeDifferentials_3_Test()
+        {
+            Check.That(si.DpDx).IsNull();
+            Check.That(si.DpDy).IsNull();
+
+            Point3F o = new Point3F(-10, 0, 0);
+            var dir = new Vector3F(1, 0, 0);
+            var rayDiff = new RayDifferential(o, dir)
+            {
+                HasDifferentials = true,
+                RxOrigin = new Point3F(0, 0, -1),
+                RyOrigin = new Point3F(0, 0, 1),
+                RxDirection = new Vector3F(0, 0, 1),
+                RyDirection = new Vector3F(0, -1, 1)
+            };
+
+            var newDpDu = new Vector3F(0, 1, 0);
+            var newDpDv = new Vector3F(1, 0, 0);
+            si = new SurfaceInteraction(p, pError, uv, wo, newDpDu, newDpDv, dndu, dndv, time, shape);
+            si.ComputeDifferentials(rayDiff);
+
+            Check.That(si.DvDx).IsEqualTo(0f);
+            Check.That(si.DvDy).IsEqualTo(0);
+            Check.That(si.DuDx).IsEqualTo(-1f);
+            Check.That(si.DuDy).IsEqualTo(0f);
+            Check.That(si.DpDx).IsEqualTo(new Vector3F(0, -1f, 0));
+            Check.That(si.DpDy).IsEqualTo(new Vector3F(0 , 0, 0));
         }
         
         [Test]
@@ -90,5 +217,7 @@ namespace Pbrt.Tests.Core
             
             si.Primitive.Received(1).ComputeScatteringFunctions(si, arena, TransportMode.Radiance, true);
         }
+        
+        
     }
 }

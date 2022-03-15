@@ -203,5 +203,23 @@ namespace Pbrt.Tests
             Check.That(p.X).IsCloseTo(pX, 1e-3);
             Check.That(p.Y).IsCloseTo(pY, 1e-3);
         }
+
+        [Test]
+        public void SolveLinearSystem2X2Test()
+        {
+            float[][] a = new float[][] { new []{0f, 1f}, new []{0f, 1f}};
+            float[] b = new []{0f, 1f};
+            var x = MathUtils.SolveLinearSystem2X2(a, b, out var x0, out var x1);
+            Check.That(x).IsFalse();
+            Check.That(x0).IsZero();
+            Check.That(x1).IsZero();
+
+            a = new float[][] { new []{2f, 1f}, new []{1f, 1f}};
+            b = new []{1f, 2f};
+            x = MathUtils.SolveLinearSystem2X2(a, b, out x0, out x1);
+            Check.That(x).IsTrue();
+            Check.That(x0).IsEqualTo(-1);
+            Check.That(x1).IsEqualTo(3);
+        }
     }
 }

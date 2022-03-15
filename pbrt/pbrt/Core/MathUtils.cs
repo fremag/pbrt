@@ -192,6 +192,20 @@ namespace pbrt.Core
 
             return r * new Point2F(MathF.Cos(theta), MathF.Sin(theta));
         }
-        
+                           
+        public static bool SolveLinearSystem2X2(float[][] a, float[] b, out float x0, out float x1) 
+        {
+            float det = a[0][0] * a[1][1] - a[0][1] * a[1][0];
+            if (MathF.Abs(det) < 1e-10f)
+            {
+                x0 = 0;
+                x1 = 0;
+                return false;
+            }
+
+            x0 = (a[1][1] * b[0] - a[0][1] * b[1]) / det;
+            x1 = (a[0][0] * b[1] - a[1][0] * b[0]) / det;
+            return !float.IsNaN(x0) && !float.IsNaN(x1);
+        }
     }
 }
