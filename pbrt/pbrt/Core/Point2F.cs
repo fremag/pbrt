@@ -97,5 +97,6 @@ namespace pbrt.Core
         }
 
         public override int GetHashCode() => HashCode.Combine(X, Y);
+        public override string ToString() => $"px[{X}] py[{Y}]";
     }
 }

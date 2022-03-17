@@ -4,8 +4,8 @@ namespace pbrt.Core
 {
     public class Vector2F
     {
-        public float X { get; }
-        public float Y { get; }
+        public float X { get; set; }
+        public float Y { get; set; }
         private const double Epsilon = 1e-9;
 
         public Vector2F(float x, float y)
@@ -93,5 +93,7 @@ namespace pbrt.Core
         {
             return HashCode.Combine(X, Y);
         }
+
+        public override string ToString() => $"vx[{X}] vy[{Y}]";
     }
 }

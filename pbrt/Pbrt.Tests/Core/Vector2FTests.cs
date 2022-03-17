@@ -158,5 +158,11 @@ namespace Pbrt.Tests.Core
             var v = new Vector2F(v1);
             Check.That(v1.GetHashCode() == v.GetHashCode()).IsTrue();
         }
+
+        [Test]
+        public void ToStringTest()
+        {
+            Check.That(new Vector2F(1,2).ToString()).IsEqualTo("vx[1] vy[2]");
+        }
     }
 }

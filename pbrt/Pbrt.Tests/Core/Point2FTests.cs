@@ -218,5 +218,11 @@ namespace Pbrt.Tests.Core
             p = Point2F.Lerp(1, p1, p2);
             Check.That(p).IsEqualTo(p2);
         }
+ 
+        [Test]
+        public void ToStringTest()
+        {
+            Check.That(new Point2F(1,2).ToString()).IsEqualTo("px[1] py[2]");
+        }
     }
 }
