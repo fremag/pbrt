@@ -1,5 +1,6 @@
 using System;
 using pbrt.Core;
+using pbrt.Textures;
 
 namespace pbrt.Materials
 {

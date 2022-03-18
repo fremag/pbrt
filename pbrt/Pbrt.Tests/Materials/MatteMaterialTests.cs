@@ -5,6 +5,7 @@ using pbrt.Materials;
 using pbrt.Reflections;
 using pbrt.Spectrums;
 using Pbrt.Tests.Core;
+using pbrt.Textures;
 
 namespace Pbrt.Tests.Materials
 {

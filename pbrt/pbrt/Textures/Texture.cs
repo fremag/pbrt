@@ -1,6 +1,6 @@
 using pbrt.Core;
 
-namespace pbrt.Materials
+namespace pbrt.Textures
 {
     public abstract class Texture<T>
     {

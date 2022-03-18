@@ -1,6 +1,7 @@
 using pbrt.Core;
 using pbrt.Reflections;
 using pbrt.Spectrums;
+using pbrt.Textures;
 
 namespace pbrt.Materials
 {
@@ -44,5 +45,5 @@ namespace pbrt.Materials
                 si.Bsdf.Add(new OrenNayar(r, sig));
             }
         }
-   }
+    }
 }

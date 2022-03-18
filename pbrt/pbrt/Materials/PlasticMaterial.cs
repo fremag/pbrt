@@ -1,6 +1,7 @@
 using pbrt.Core;
 using pbrt.Reflections;
 using pbrt.Spectrums;
+using pbrt.Textures;
 
 namespace pbrt.Materials
 {

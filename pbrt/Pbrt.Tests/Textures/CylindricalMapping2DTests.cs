@@ -116,7 +116,7 @@ namespace Pbrt.Tests.Textures
         [Test]
         [TestCase(1, 0, 2f, 0.5f, 0.70710677f)]
         [TestCase(1, 1, 0, 0.5737918f, 0)]
-        public void SphereTest(float x, float y, float z, float expectedX, float expectedY)
+        public void CylinderTest(float x, float y, float z, float expectedX, float expectedY)
         {
             Transform transform = Transform.Translate(1, 0, 0);
             CylindricalMapping2D cylindricalMapping2D = new CylindricalMapping2D(transform);

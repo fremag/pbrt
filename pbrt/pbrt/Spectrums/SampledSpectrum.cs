@@ -199,7 +199,7 @@ namespace pbrt.Spectrums
         }
 
         // https://github.com/mmp/pbrt-v3/blob/aaa552a4b9cbf9dccb71450f47b268e0ed6370e2/src/core/spectrum.cpp#L98
-        public static SampledSpectrum FromRgb(float[] rgb, SpectrumType type)
+        public static SampledSpectrum FromRgb(float[] rgb, SpectrumType type = SpectrumType.Reflectance)
         {
             SampledSpectrum r = new SampledSpectrum();
             switch (type)
