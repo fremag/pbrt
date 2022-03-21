@@ -1,6 +1,7 @@
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+using pbrt.Media;
 
 namespace Pbrt.Tests.Core
 {
@@ -9,8 +10,8 @@ namespace Pbrt.Tests.Core
     {
         private Interaction interaction;
         private MediumInterface mediumInterface;
-        private readonly Medium inside = new Medium();
-        private readonly Medium outside = new Medium();
+        private readonly Medium inside = HomogeneousMedium.Default();
+        private readonly Medium outside = HomogeneousMedium.Default();
         private readonly Point3F point = new Point3F(1, 1, 1);
         private readonly Normal3F normal = new Normal3F(0, 1, 0);
         private readonly Vector3F pError = new Vector3F(0.1f, 0.1f, 0.1f);

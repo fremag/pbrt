@@ -1,6 +1,7 @@
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+using pbrt.Media;
 
 namespace Pbrt.Tests.Core
 {
@@ -11,7 +12,7 @@ namespace Pbrt.Tests.Core
         private readonly Vector3F direction = new Vector3F(0,1,0);
         private readonly float tMax = 1234;
         private readonly float time = 2.34f;
-        private readonly Medium medium = new Medium();
+        private readonly Medium medium = HomogeneousMedium.Default();
         private RayDifferential rayDiff;
         
         [SetUp]

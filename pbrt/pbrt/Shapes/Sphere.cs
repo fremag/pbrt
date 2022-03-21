@@ -12,7 +12,7 @@ namespace pbrt.Shapes
         public float ThetaMax { get; set; }
         public float PhiMax { get; set; }
 
-        public Sphere(Transform objectToWorld, Transform worldToObject, bool reverseOrientation, float radius, float zMin, float zMax, float phiMax)
+        public Sphere(Transform objectToWorld, Transform worldToObject, bool reverseOrientation, float radius, float zMin, float zMax, float phiMax=2*MathF.PI)
             : base(objectToWorld, worldToObject, reverseOrientation)
         {
             Radius = radius;

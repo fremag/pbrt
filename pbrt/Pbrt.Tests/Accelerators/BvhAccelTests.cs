@@ -5,7 +5,9 @@ using NFluent;
 using NUnit.Framework;
 using pbrt.Accelerators;
 using pbrt.Core;
+using pbrt.Media;
 using pbrt.Shapes;
+using pbrt.Spectrums;
 using Pbrt.Tests.Core;
 
 namespace Pbrt.Tests.Accelerators
@@ -17,7 +19,7 @@ namespace Pbrt.Tests.Accelerators
         {
             var translation = Transform.Translate(x, y, z);
             var sphere = new Sphere(translation, translation.Inverse(), false, radius, -radius, radius, 360);
-            return new GeometricPrimitive { Shape = sphere, MediumInterface = new MediumInterface(new Medium())};
+            return new GeometricPrimitive { Shape = sphere, MediumInterface = new MediumInterface(HomogeneousMedium.Default())};
         }
 
         [Test]
@@ -144,7 +146,7 @@ namespace Pbrt.Tests.Accelerators
 
             Point3F o = new Point3F(-5, 0, 0);
             var dir = new Vector3F(1, 0, 0);
-            Ray ray = new Ray(o, dir, 1000, 1, new Medium());
+            Ray ray = new Ray(o, dir, 1000, 1, HomogeneousMedium.Default());
             var inter = bvh.Intersect(ray, out var isec);
             Check.That(inter).IsTrue();
             Check.That(isec.P).IsEqualTo(new Point3F(-1, 0, 0));
@@ -164,7 +166,7 @@ namespace Pbrt.Tests.Accelerators
 
             Point3F o = new Point3F(5, 0, 0);
             var dir = new Vector3F(-1, 0, 0);
-            Ray ray = new Ray(o, dir, 1000, 1, new Medium());
+            Ray ray = new Ray(o, dir, 1000, 1, HomogeneousMedium.Default());
             
             var inter = bvh.Intersect(ray, out var isec);
             
@@ -193,7 +195,7 @@ namespace Pbrt.Tests.Accelerators
             var bvh = new BvhAccel(primitives.ToList(), 2, SplitMethod.Middle);
             Point3F o = new Point3F(-5, 2, 6);
             var dir = new Vector3F(1, 0, 0);
-            Ray ray = new Ray(o, dir, 1000, 1, new Medium());
+            Ray ray = new Ray(o, dir, 1000, 1, HomogeneousMedium.Default());
             
             var inter = bvh.Intersect(ray, out var isec);
             
@@ -213,7 +215,7 @@ namespace Pbrt.Tests.Accelerators
             };
             
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
-            Ray ray = new Ray((10, 0, 0), (-1, 0, 0), 1000, 1, new Medium());
+            Ray ray = new Ray((10, 0, 0), (-1, 0, 0), 1000, 1, HomogeneousMedium.Default());
             
             var inter = bvh.Intersect(ray, out var isec);
             Check.That(inter).IsTrue();

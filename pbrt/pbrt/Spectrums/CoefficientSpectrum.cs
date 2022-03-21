@@ -85,6 +85,14 @@ namespace pbrt.Spectrums
             }
         }
 
+        public void Exp()
+        {
+            for (var i = 0; i < NSpectrumSamples; ++i)
+            {
+                C[i] = MathF.Exp(C[i]);
+            }
+        }
+
         public void Neg()
         {
             for (var i = 0; i < NSpectrumSamples; ++i)

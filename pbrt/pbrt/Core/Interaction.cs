@@ -1,3 +1,5 @@
+using pbrt.Media;
+
 namespace pbrt.Core
 {
     public class Interaction
@@ -12,7 +14,17 @@ namespace pbrt.Core
         public MediumInterface MediumInterface { get; set; }
         
         public Interaction() {}
-        
+
+        public Interaction(Point3F p, Vector3F wo, float time, MediumInterface mediumInterface)
+            : this(p, null, null, wo, time, mediumInterface)
+        {
+            
+        }
+
+        public Interaction(Point3F p, float time, MediumInterface mediumInterface) : this(p, null, time, mediumInterface)
+        {
+            
+        }        
         public Interaction(Point3F p, Normal3F n, Vector3F pError, Vector3F wo, float time,  MediumInterface mediumInterface)
         {
             P = p;

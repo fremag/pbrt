@@ -1,5 +1,6 @@
 using pbrt.Core;
 using pbrt.Films;
+using pbrt.Media;
 
 namespace pbrt.Cameras
 {

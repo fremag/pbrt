@@ -1,6 +1,7 @@
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+using pbrt.Media;
 
 namespace Pbrt.Tests.Core
 {
@@ -12,7 +13,7 @@ namespace Pbrt.Tests.Core
         {
             var o = new Point3F(1.23f, 2.34f, 3.45f);
             var d = new Vector3F(1, 0, -1);
-            var med = new Medium();
+            var med = HomogeneousMedium.Default();
             var ray = new Ray(o, d, 1000, 0, med);
             Check.That(ray.O).IsEqualTo(o);
             Check.That(ray.D).IsEqualTo(d);
@@ -36,7 +37,7 @@ namespace Pbrt.Tests.Core
         {
             var o = new Point3F(ox, oy, oz);
             var d = new Vector3F(dx, dy, dz);
-            var med = new Medium();
+            var med = HomogeneousMedium.Default();
             var ray = new Ray(o, d, 1000, 0, med);
             Check.That(ray.HasNaNs).IsEqualTo(hasNaNs);
         }

@@ -4,6 +4,7 @@ using NUnit.Framework;
 using pbrt.Cameras;
 using pbrt.Core;
 using pbrt.Films;
+using pbrt.Media;
 using Pbrt.Tests.Core;
 
 namespace Pbrt.Tests.Cameras
@@ -14,7 +15,7 @@ namespace Pbrt.Tests.Cameras
         private readonly Transform translate = Transform.Translate(-10, 0, 0);
         private readonly Bounds2F screenWindow = new Bounds2F(new Point2F(-1f, -1f), new Point2F(1, 1));
         private readonly Film film = new Film(640, 480);
-        private readonly Medium medium = new Medium();
+        private readonly Medium medium = HomogeneousMedium.Default();
         
         [Test]
         public void GenerateRay_NoFocal_Test()

@@ -4,6 +4,7 @@ using NUnit.Framework;
 using pbrt.Cameras;
 using pbrt.Core;
 using pbrt.Films;
+using pbrt.Media;
 
 namespace Pbrt.Tests.Cameras
 {
@@ -39,7 +40,7 @@ namespace Pbrt.Tests.Cameras
             float shutterOpen = 0f;
             float shutterClose = 1f;
             Film film = new Film(640, 480);
-            Medium medium = new Medium();
+            Medium medium = HomogeneousMedium.Default();
 
             var cam = new DummyCamera(cameraToWorld, shutterOpen, shutterClose, film, medium);
             var camSample = new CameraSample { Time = 0, PFilm = new Point2F(0, 0), PLens = Point2F.Zero };

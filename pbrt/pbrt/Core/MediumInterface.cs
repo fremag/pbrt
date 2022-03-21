@@ -1,3 +1,5 @@
+using pbrt.Media;
+
 namespace pbrt.Core
 {
     public class MediumInterface

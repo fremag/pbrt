@@ -4,7 +4,7 @@ using pbrt.Textures;
 
 namespace pbrt.Materials
 {
-    public abstract class Material
+    public abstract class Material : IMaterial
     {
         public abstract void ComputeScatteringFunctions(SurfaceInteraction si, MemoryArena arena, TransportMode mode, bool allowMultipleLobes);
 

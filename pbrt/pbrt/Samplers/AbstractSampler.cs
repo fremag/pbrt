@@ -15,6 +15,10 @@ namespace pbrt.Samplers
         public int Array1DOffset { get; private set; }
         public int Array2DOffset { get; private set; }
 
+        protected AbstractSampler() : this(1)
+        {
+        }
+
         public AbstractSampler(int samplesPerPixel)
         {
             SamplesPerPixel = samplesPerPixel;

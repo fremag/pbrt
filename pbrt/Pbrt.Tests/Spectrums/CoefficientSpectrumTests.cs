@@ -1,3 +1,4 @@
+using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Spectrums;
@@ -132,6 +133,14 @@ namespace Pbrt.Tests.Spectrums
             var cs1 = new CoefficientSpectrum(new [] {4f, 9f});
             cs1.Sqrt();
             Check.That(cs1).IsEqualTo(new CoefficientSpectrum(new[] { 2f, 3f }));
+        }
+        
+        [Test]
+        public void ExpTest()
+        {
+            var cs1 = new CoefficientSpectrum(new [] {0f, 1f});
+            cs1.Exp();
+            Check.That(cs1).IsEqualTo(new CoefficientSpectrum(new[] { 1f, MathF.E}));
         }
         
         

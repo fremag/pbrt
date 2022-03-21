@@ -3,6 +3,7 @@ using NSubstitute;
 using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using pbrt.Core;
+using pbrt.Media;
 using pbrt.Shapes;
 
 namespace Pbrt.Tests.Core
@@ -57,7 +58,7 @@ namespace Pbrt.Tests.Core
         [Test]
         public void IntersectTest()
         {
-            var medium = new Medium();
+            var medium = HomogeneousMedium.Default();
             var ray = new Ray(Point3F.Zero, new Vector3F(1,1,1), 1000f, 1f, medium);
             var tHit = 1.23f;
             var surfaceInteraction = new SurfaceInteraction();
@@ -82,8 +83,8 @@ namespace Pbrt.Tests.Core
             Check.That(surf.MediumInterface.Inside).IsSameReferenceAs(medium);
             Check.That(surf.MediumInterface.Outside).IsSameReferenceAs(medium);
             
-            mediumInterface.Inside = new Medium(); 
-            mediumInterface.Outside = new Medium(); 
+            mediumInterface.Inside = HomogeneousMedium.Default(); 
+            mediumInterface.Outside = HomogeneousMedium.Default(); 
 
             inter = geoPrim.Intersect(ray, out surf);
             Check.That(inter).IsTrue();
