@@ -207,5 +207,16 @@ namespace pbrt.Core
             x1 = (a[0][0] * b[1] - a[1][0] * b[0]) / det;
             return !float.IsNaN(x0) && !float.IsNaN(x1);
         }
+        
+        public static Point2F RejectionSampleDisk(Random rng)
+        {
+            float x;
+            float y;
+            do {
+                x = 1 - 2 * (float)rng.NextDouble();
+                y = 1 - 2 * (float)rng.NextDouble();
+            } while (x * x + y * y > 1);
+            return new Point2F(x, y);
+        }        
     }
 }

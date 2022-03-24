@@ -221,5 +221,25 @@ namespace Pbrt.Tests
             Check.That(x0).IsEqualTo(-1);
             Check.That(x1).IsEqualTo(3);
         }
+
+        [Test]
+        public void RejectionSampleDiskTest()
+        {
+            Random r = new Random(1337);
+            var sumX = 0f;
+            var sumY = 0f;
+            var n = 100_000;
+            for (int i = 0; i < n; i++)
+            {
+                var p = MathUtils.RejectionSampleDisk(r);
+                sumX += p.X;
+                sumY += p.Y;
+                
+                Check.That(p.X*p.X+p.Y*p.Y).IsLessOrEqualThan(1);
+            }
+
+            Check.That(sumX/n).IsCloseTo(0, 1e-2);
+            Check.That(sumY/n).IsCloseTo(0, 1e-2);
+        }
     }
 }
