@@ -21,6 +21,7 @@ namespace Pbrt.Tests.Reflections
         {
             si = new SurfaceInteraction(null, null, null, null, dpdu, dpdv, null, null, 0f, null);
             bsdf = new BSDF(si, 1.5f);
+            Check.ThatCode(() => bsdf.Sample_f(null, out _, null, out _, BxDFType.BSDF_ALL)).Throws<NotImplementedException>();
         }
         
         [Test]

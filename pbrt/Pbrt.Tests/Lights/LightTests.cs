@@ -33,5 +33,5 @@ namespace Pbrt.Tests.Lights
         {
             Check.That(Light.IsDeltaLight(flags)).IsEqualTo(expected);
         }
-    }
+   }
 }

@@ -1,3 +1,5 @@
+using pbrt.Lights;
+using pbrt.Materials;
 using pbrt.Shapes;
 
 namespace pbrt.Core
@@ -7,7 +9,15 @@ namespace pbrt.Core
         public IShape Shape { get; set; }
         public IMaterial Material { get; set; }
         public AreaLight AreaLight { get; set; }
-        public MediumInterface MediumInterface { get; set; }   
+        public MediumInterface MediumInterface { get; set; }
+
+        public GeometricPrimitive(IShape shape, IMaterial material, AreaLight areaLight, MediumInterface mediumInterface)
+        {
+            Shape = shape;
+            Material = material;
+            AreaLight = areaLight;
+            MediumInterface = mediumInterface;
+        }
         
         public bool Intersect(Ray r, out SurfaceInteraction isect) 
         {
@@ -26,7 +36,7 @@ namespace pbrt.Core
             {
                 isect.MediumInterface = new MediumInterface(r.Medium);
             }
-
+            
             return true;
         }
 

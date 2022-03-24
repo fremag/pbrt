@@ -29,12 +29,7 @@ namespace Pbrt.Tests.Core
         {
             material = new MatteMaterial(kd, sigma, null);
             shape = Create();
-            aggregate = new GeometricPrimitive
-            {
-                Shape = shape, 
-                MediumInterface = new MediumInterface(HomogeneousMedium.Default(), HomogeneousMedium.Default()),
-                Material = material 
-            };
+            aggregate = new GeometricPrimitive(shape, material,  null, new MediumInterface(HomogeneousMedium.Default(), HomogeneousMedium.Default()));
             scene = new Scene(aggregate, new [] { light });
         }
         
@@ -92,12 +87,7 @@ namespace Pbrt.Tests.Core
         [Test]
         public void IntersectTr_HitNoMaterial_Test()
         {
-            aggregate = new GeometricPrimitive
-            {
-                Shape = shape, 
-                MediumInterface = new MediumInterface(HomogeneousMedium.Default(), HomogeneousMedium.Default()),
-                Material = null 
-            };
+            aggregate = new GeometricPrimitive(shape, null, null, new MediumInterface(HomogeneousMedium.Default(), HomogeneousMedium.Default()));
             scene = new Scene(aggregate, new [] { light });
 
             Ray ray = new Ray(new Point3F(-5, 0, 0), new Vector3F(1, 0, 0), 1000)

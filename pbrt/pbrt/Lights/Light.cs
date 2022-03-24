@@ -38,10 +38,14 @@ namespace pbrt.Lights
         {
         }
         
-        
         public static bool IsDeltaLight(LightFlags flags) 
         {
             return flags.HasFlag(LightFlags.DeltaPosition) || flags.HasFlag(LightFlags.DeltaDirection);
+        }
+
+        public virtual Spectrum Le(RayDifferential ray)
+        {
+            return new Spectrum(0f);
         }
     }
 }

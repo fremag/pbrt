@@ -71,7 +71,7 @@ namespace Pbrt.Tests.Lights
             Ray ray = null;
             SurfaceInteraction surfaceInteraction = new SurfaceInteraction()
             {
-                Primitive = new GeometricPrimitive() {Material = new MatteMaterial(null, null, null)}
+                Primitive = new GeometricPrimitive(null, new MatteMaterial(null, null, null), null, null)
             };
             scene.Intersect(Arg.Do<Ray>(r => ray = r), out _).Returns(info =>
             {
@@ -93,7 +93,7 @@ namespace Pbrt.Tests.Lights
             Ray ray = null;
             SurfaceInteraction surfaceInteraction = new SurfaceInteraction()
             {
-                Primitive = new GeometricPrimitive {Material = null},
+                Primitive = new GeometricPrimitive(null, null, null, null),
                 P = Point3F.Zero,
                 PError = Vector3F.Zero,
                 N = new Normal3F(0, 1, 0),

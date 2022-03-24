@@ -2,7 +2,9 @@ using NFluent;
 using NSubstitute;
 using NUnit.Framework;
 using pbrt.Core;
+using pbrt.Lights;
 using pbrt.Shapes;
+using pbrt.Spectrums;
 
 namespace Pbrt.Tests.Core
 {
@@ -217,7 +219,16 @@ namespace Pbrt.Tests.Core
             
             si.Primitive.Received(1).ComputeScatteringFunctions(si, arena, TransportMode.Radiance, true);
         }
-        
-        
+
+        [Test]
+        public void LeTest()
+        {
+            si.Primitive = Substitute.For<IPrimitive>();
+            si.Primitive.GetAreaLight().Returns(new DiffuseAreaLight(Transform.Translate(0, 1, 0), null, new Spectrum(1.23f), 1, shape));
+            var s = si.Le(new Vector3F(0, 1, 0));
+            Check.That(s).IsEqualTo(new Spectrum(1.23f));
+            s = si.Le(new Vector3F(0, -1, 0));
+            Check.That(s).IsEqualTo(new Spectrum(0f));
+        }
     }
 }

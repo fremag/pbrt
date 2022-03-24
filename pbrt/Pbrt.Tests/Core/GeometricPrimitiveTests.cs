@@ -3,6 +3,7 @@ using NSubstitute;
 using NSubstitute.ClearExtensions;
 using NUnit.Framework;
 using pbrt.Core;
+using pbrt.Lights;
 using pbrt.Media;
 using pbrt.Shapes;
 
@@ -15,20 +16,16 @@ namespace Pbrt.Tests.Core
         private readonly IMaterial material = Substitute.For<IMaterial>();
 
         private readonly MediumInterface mediumInterface = new MediumInterface(null);
-        private readonly AreaLight light = new AreaLight();
+        private readonly AreaLight light = new DiffuseAreaLight(Transform.Translate(0, 1, 0), null, null, 1, null); 
         private GeometricPrimitive geoPrim;
 
         [SetUp]
         public void SetUp()
         {
-            geoPrim = new GeometricPrimitive
-            {
-                Shape = shape,
-                Material = material,
-                AreaLight = light,
-                MediumInterface = mediumInterface
-            };
+            geoPrim = new GeometricPrimitive(shape, material, light, mediumInterface);
+            Check.That(geoPrim.GetAreaLight()).IsSameReferenceAs(light);
         } 
+        
         [Test]
         public void BasicTest()
         {

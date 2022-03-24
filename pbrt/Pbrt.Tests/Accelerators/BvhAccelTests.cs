@@ -19,7 +19,7 @@ namespace Pbrt.Tests.Accelerators
         {
             var translation = Transform.Translate(x, y, z);
             var sphere = new Sphere(translation, translation.Inverse(), false, radius, -radius, radius, 360);
-            return new GeometricPrimitive { Shape = sphere, MediumInterface = new MediumInterface(HomogeneousMedium.Default())};
+            return new GeometricPrimitive(sphere, null, null, new MediumInterface(HomogeneousMedium.Default()));
         }
 
         [Test]

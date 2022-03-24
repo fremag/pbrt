@@ -1,3 +1,5 @@
+using pbrt.Lights;
+
 namespace pbrt.Core
 {
     public interface IPrimitive

@@ -1,6 +1,8 @@
 using System;
+using pbrt.Lights;
 using pbrt.Reflections;
 using pbrt.Shapes;
+using pbrt.Spectrums;
 
 namespace pbrt.Core
 {
@@ -161,5 +163,11 @@ namespace pbrt.Core
             DpDx = new Vector3F(0, 0, 0);
             DpDy = new Vector3F(0, 0, 0);
         }
+        
+        public Spectrum Le(Vector3F w)
+        {
+            AreaLight area = Primitive.GetAreaLight();
+            return area != null ? area.L(this, w) : new Spectrum(0f);
+        }        
     }
 }

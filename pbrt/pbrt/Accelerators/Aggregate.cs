@@ -1,5 +1,6 @@
 using System;
 using pbrt.Core;
+using pbrt.Lights;
 
 namespace pbrt.Accelerators
 {

@@ -52,7 +52,7 @@ namespace pbrt.Reflections
             return new Vector3F(vx, vy, vz);
         }        
         
-        public Spectrum F(Vector3F woW, Vector3F wiW, BxDFType flags) 
+        public Spectrum F(Vector3F woW, Vector3F wiW, BxDFType flags = BxDFType.BSDF_ALL) 
         {
             var wi = WorldToLocal(wiW);
             var wo = WorldToLocal(woW);
@@ -96,6 +96,11 @@ namespace pbrt.Reflections
 
             wt = etaRatio * -wi + (etaRatio * cosThetaI - cosThetaT) * (new Vector3F(n));
             return true;
+        }
+
+        public Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F u, out float pdf, BxDFType type)
+        {
+            throw new NotImplementedException();
         }
     }
 }
