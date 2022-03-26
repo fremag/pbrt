@@ -10,7 +10,7 @@ namespace pbrt.Core
 
         public float X { get; }
         public float Y { get; }
-        public float Z { get; }
+        public float Z { get; set; }
         private const double Epsilon = 1e-9;
 
         public Vector3F(float x, float y, float z)

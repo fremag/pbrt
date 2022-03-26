@@ -7,6 +7,7 @@ namespace pbrt.Reflections
     [Flags]
     public enum BxDFType
     {
+        BSDF_NONE = 0, // default
         BSDF_REFLECTION = 1 << 0,
         BSDF_TRANSMISSION = 1 << 1,
         BSDF_DIFFUSE = 1 << 2,
@@ -26,11 +27,18 @@ namespace pbrt.Reflections
 
         public abstract Spectrum F(Vector3F wo, Vector3F wi);
 
-        public virtual Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F sample, out float pdf, out BxDFType sampledType)
+        public virtual Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F u, out float pdf, out BxDFType sampledType)
         {
-            // The sample and pdf parameters aren’t needed for delta distribution BxDFs, so they will be explained later,
-            // in Section 14.1, when we provide implementations of this method for nonspecular reflection functions.             
-            throw new NotImplementedException();
+            // Cosine-sample the hemisphere, flipping the direction if necessary
+            wi = MathUtils.CosineSampleHemisphere(u);
+            if (wo.Z < 0)
+            {
+                wi.Z *= -1;
+            }
+
+            pdf = Pdf(wo, wi);
+            sampledType = 0;
+            return F(wo, wi);
         }
         
         // The BxDF::rho() method computes the reflectance function . Some BxDFs can compute this value
@@ -132,5 +140,6 @@ namespace pbrt.Reflections
         
         public static bool SameHemisphere(Vector3F w, Vector3F wp) => w.Z * wp.Z > 0;
         public static bool SameHemisphere(Vector3F w, Normal3F wp) => w.Z * wp.Z > 0;
+        public float Pdf(Vector3F wo, Vector3F wi) => SameHemisphere(wo, wi) ? AbsCosTheta(wi) / MathF.PI : 0;
     }
 }
