@@ -241,5 +241,160 @@ namespace Pbrt.Tests
             Check.That(sumX/n).IsCloseTo(0, 1e-2);
             Check.That(sumY/n).IsCloseTo(0, 1e-2);
         }
+
+        [Test]
+        public void UniformSampleHemisphereTest()
+        {
+            Random r = new Random(1337);
+            var sumX = 0f;
+            var sumY = 0f;
+            var n = 100_000;
+            for (int i = 0; i < n; i++)
+            {
+                Point2F uv = new Point2F((float)r.NextDouble(), (float)r.NextDouble()) ;
+                var v = MathUtils.UniformSampleHemisphere(uv);
+                sumX += v.X;
+                sumY += v.Y;
+                
+                Check.That(v.X*v.X+v.Y*v.Y+v.Z*v.Z).IsCloseTo(1, 1e-5);
+            }
+
+            Check.That(sumX/n).IsCloseTo(0, 1e-2);
+            Check.That(sumY/n).IsCloseTo(0, 1e-2);
+        }
+
+        [Test]
+        public void UniformSampleSphereTest()
+        {
+            Random r = new Random(1337);
+            var sumX = 0f;
+            var sumY = 0f;
+            var sumZ = 0f;
+            
+            var n = 100_000;
+            for (int i = 0; i < n; i++)
+            {
+                Point2F uv = new Point2F((float)r.NextDouble(), (float)r.NextDouble()) ;
+                var v = MathUtils.UniformSampleSphere(uv);
+                sumX += v.X;
+                sumY += v.Y;
+                sumZ += v.Y;
+                
+                Check.That(v.X*v.X+v.Y*v.Y+v.Z*v.Z).IsLessOrEqualThan(1+1e-6f);
+            }
+
+            Check.That(sumX/n).IsCloseTo(0, 1e-2);
+            Check.That(sumY/n).IsCloseTo(0, 1e-2);
+            Check.That(sumZ/n).IsCloseTo(0, 1e-2);
+        }
+        
+        [Test]
+        public void BasicTest()
+        {
+            Check.That(1/MathUtils.UniformHemispherePdf).IsCloseTo(2*MathF.PI, 1e-6);
+            Check.That(1/MathUtils.UniformSpherePdf).IsCloseTo(4*MathF.PI, 1e-6);
+        }
+
+        [Test]
+        public void CosineHemispherePdfTest()
+        {
+            Check.That(MathUtils.CosineHemispherePdf(1f)).IsCloseTo(1f/MathF.PI, 1e-6);
+            Check.That(MathUtils.CosineHemispherePdf(0f)).IsCloseTo(0f/MathF.PI, 1e-6);
+            Check.That(MathUtils.CosineHemispherePdf(0.5f)).IsCloseTo(0.5f/MathF.PI, 1e-6);
+        }
+ 
+        [Test]
+        public void UniformSampleDiskTest()
+        {
+            Random r = new Random(1337);
+            var sumX = 0f;
+            var sumY = 0f;
+            var n = 100_000;
+            for (int i = 0; i < n; i++)
+            {
+                Point2F uv = new Point2F((float)r.NextDouble(), (float)r.NextDouble()) ;
+                var v = MathUtils.UniformSampleDisk(uv);
+                sumX += v.X;
+                sumY += v.Y;
+                
+                Check.That(v.X*v.X+v.Y*v.Y).IsLessOrEqualThan(1+1e-5f);
+            }
+
+            Check.That(sumX/n).IsCloseTo(0, 1e-2);
+            Check.That(sumY/n).IsCloseTo(0, 1e-2);
+        }
+ 
+        [Test]
+        public void CosineSampleHemisphereTest()
+        {
+            Random r = new Random(1337);
+            var sumX = 0f;
+            var sumY = 0f;
+            var sumZ = 0f;
+            
+            var n = 100_000;
+            for (int i = 0; i < n; i++)
+            {
+                Point2F uv = new Point2F((float)r.NextDouble(), (float)r.NextDouble()) ;
+                var v = MathUtils.CosineSampleHemisphere(uv);
+                sumX += v.X;
+                sumY += v.Y;
+                sumZ += v.Y;
+                
+                Check.That(v.X*v.X+v.Y*v.Y+v.Z*v.Z).IsCloseTo(1, 1e-6f);
+            }
+
+            Check.That(sumX/n).IsCloseTo(0, 1e-2);
+            Check.That(sumY/n).IsCloseTo(0, 1e-2);
+            Check.That(sumZ/n).IsCloseTo(0, 1e-2);
+        }
+
+        [Test]
+        public void UniformConePdfTest()
+        {
+            Check.That(MathUtils.UniformConePdf(1f)).Not.IsFinite();
+            Check.That(MathUtils.UniformConePdf(0f)).IsCloseTo(0.5f/MathF.PI, 1e-6);
+            Check.That(MathUtils.UniformConePdf(0.5f)).IsCloseTo(1f/MathF.PI, 1e-6);
+        }
+        
+        [Test]
+        public void UniformSampleConeTest()
+        {
+            Random r = new Random(1337);
+            var sumX = 0f;
+            var sumY = 0f;
+            var sumZ = 0f;
+            
+            var n = 100_000;
+            for (int i = 0; i < n; i++)
+            {
+                Point2F uv = new Point2F((float)r.NextDouble(), (float)r.NextDouble()) ;
+                var v = MathUtils.UniformSampleCone(uv, 0.5f);
+                sumX += v.X;
+                sumY += v.Y;
+                sumZ += v.Y;
+                
+                Check.That(v.X*v.X+v.Y*v.Y+v.Z*v.Z).IsCloseTo(1, 1e-6f);
+            }
+
+            Check.That(sumX/n).IsCloseTo(0, 1e-2);
+            Check.That(sumY/n).IsCloseTo(0, 1e-2);
+            Check.That(sumZ/n).IsCloseTo(0, 1e-2);
+        }
+
+        [Test]
+        public void UniformSampleTriangleTest()
+        {
+            Random r = new Random(1337);
+            
+            var n = 100_000;
+            for (int i = 0; i < n; i++)
+            {
+                Point2F uv = new Point2F((float)r.NextDouble(), (float)r.NextDouble()) ;
+                var p = MathUtils.UniformSampleTriangle(uv);
+                // check all points are below the hypotenuse of the a rect isosceles triangle side = 1 
+                Check.That(p.X+p.Y).IsLessOrEqualThan(1f);
+            }
+        }
     }
 }

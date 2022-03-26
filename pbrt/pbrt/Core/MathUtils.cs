@@ -4,6 +4,9 @@ namespace pbrt.Core
 {
     public static class MathUtils
     {
+        public static float UniformHemispherePdf => 1/(2*MathF.PI);
+        public static float UniformSpherePdf => 1/(4*MathF.PI);
+
         public static float Lerp(float t, float x1, float x2) => (1 - t) * x1 + t * x2;
 
         public static float Gamma(int n)
@@ -217,6 +220,60 @@ namespace pbrt.Core
                 y = 1 - 2 * (float)rng.NextDouble();
             } while (x * x + y * y > 1);
             return new Point2F(x, y);
+        }
+        
+        public static Vector3F UniformSampleHemisphere(Point2F u) {
+            float z = u[0];
+            float r = MathF.Sqrt(MathF.Max(0f, 1 - z * z));
+            float phi = 2 * MathF.PI * u[1];
+            var x = r * MathF.Cos(phi);
+            var y = r * MathF.Sin(phi);
+            return new Vector3F(x, y, z);
+        }
+        
+        public static Vector3F UniformSampleSphere(Point2F u) 
+        {
+            float z = 1 - 2 * u[0];
+            float r = MathF.Sqrt(MathF.Max(0f, 1 - z * z));
+            float phi = 2 * MathF.PI * u[1];
+            var x = r * MathF.Cos(phi);
+            var y = r * MathF.Sin(phi);
+            return new Vector3F(x, y, z);
+        }
+        
+        public static Point2F UniformSampleDisk(Point2F u) 
+        {
+            float r = MathF.Sqrt(u[0]);
+            float theta = 2 * MathF.PI * u[1];
+            var x = r * MathF.Cos(theta);
+            var y = r * MathF.Sin(theta);
+            return new Point2F(x, y);
         }        
+        
+        public static Vector3F CosineSampleHemisphere(Point2F u) 
+        {
+            Point2F d = ConcentricSampleDisk(u);
+            float z = MathF.Sqrt(MathF.Max(0f, 1 - d.X * d.X - d.Y * d.Y));
+            return new Vector3F(d.X, d.Y, z);
+        }
+        
+        public static float CosineHemispherePdf(float cosTheta) => cosTheta / MathF.PI;
+        public static float UniformConePdf(float cosThetaMax) => 1 / (2 * MathF.PI * (1 - cosThetaMax));
+        
+        public static Vector3F UniformSampleCone(Point2F u, float cosThetaMax) 
+        {
+            float cosTheta = (1f - u[0]) + u[0] * cosThetaMax;
+            float sinTheta = MathF.Sqrt(1f - cosTheta * cosTheta);
+            float phi = u[1] * 2 * MathF.PI;
+            var x = MathF.Cos(phi) * sinTheta;
+            var y = MathF.Sin(phi) * sinTheta;
+            return new Vector3F(x, y, cosTheta);
+        }
+        
+        public static Point2F UniformSampleTriangle(Point2F u) 
+        {
+            float su0 = MathF.Sqrt(u[0]);
+            return new Point2F(1 - su0, u[1] * su0);
+        }       
     }
 }
