@@ -274,6 +274,19 @@ namespace pbrt.Core
         {
             float su0 = MathF.Sqrt(u[0]);
             return new Point2F(1 - su0, u[1] * su0);
-        }       
+        }
+        
+        public static float PowerHeuristic(int nf, float fPdf, int ng, float gPdf) 
+        {
+            float f = nf * fPdf;
+            float g = ng * gPdf;
+            var ff = f * f;
+            return ff / (ff + g * g);
+        }   
+        
+        public static float BalanceHeuristic(int nf, float fPdf, int ng, float gPdf) 
+        {
+            return (nf * fPdf) / (nf * fPdf + ng * gPdf);
+        }
     }
 }

@@ -396,5 +396,17 @@ namespace Pbrt.Tests
                 Check.That(p.X+p.Y).IsLessOrEqualThan(1f);
             }
         }
+
+        [Test]
+        public void PowerHeuristicTest()
+        {
+            Check.That(MathUtils.PowerHeuristic(1, 2, 3, 4)).IsEqualTo( (2f*1f)*(2*1) / ( (2*1f)*(2*1)+3f*4*3*4));
+        }
+
+        [Test]
+        public void BalanceHeuristicTest()
+        {
+            Check.That(MathUtils.BalanceHeuristic(1, 2, 3, 4)).IsEqualTo( (2f*1f) / ( (2*1f)+3f*4));
+        }
     }
 }
