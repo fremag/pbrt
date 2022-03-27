@@ -5,6 +5,9 @@ namespace pbrt.Reflections
 {
     public class BeckmannDistribution : MicrofacetDistribution
     {
+        // Microfacet Utility Functions
+        private static readonly float SQRT_PI_INV = 1f / MathF.Sqrt(MathF.PI);
+
         public float AlphaX { get; }
         public float AlphaY { get; }
 
@@ -59,7 +62,7 @@ namespace pbrt.Reflections
                 // Compute tan² theta and phi for Beckmann distribution sample 
                 float tan2Theta;
                 float phi;
-                if (Math.Abs(AlphaX - AlphaY) < float.Epsilon)
+                if (Math.Abs(AlphaX - AlphaY) < 1e-9f)
                 {
                     float logSample = MathF.Log(1 - u[0]);
                     if (float.IsInfinity(logSample))
@@ -89,7 +92,7 @@ namespace pbrt.Reflections
 
                 // Map sampled Beckmann angles to normal direction wh
                 float cosTheta = 1 / MathF.Sqrt(1 + tan2Theta);
-                float sinTheta = MathF.Sqrt(MathF.Max((float)0, 1 - cosTheta * cosTheta));
+                float sinTheta = MathF.Sqrt(MathF.Max(0f, 1f - cosTheta * cosTheta));
                 Vector3F wh = MathUtils.SphericalDirection(sinTheta, cosTheta, phi);
                 if (!BxDF.SameHemisphere(wo, wh))
                 {
@@ -108,9 +111,6 @@ namespace pbrt.Reflections
                 return wh;
             }
         }
-
-        // Microfacet Utility Functions
-        private static readonly float SQRT_PI_INV = 1f / MathF.Sqrt(MathF.PI);
 
         public static void BeckmannSample11(float cosThetaI, float u1, float u2, out float slopeX, out float slopeY)
         {
