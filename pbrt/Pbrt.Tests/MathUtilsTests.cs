@@ -408,5 +408,23 @@ namespace Pbrt.Tests
         {
             Check.That(MathUtils.BalanceHeuristic(1, 2, 3, 4)).IsEqualTo( (2f*1f) / ( (2*1f)+3f*4));
         }
+
+        [Test]
+        public void ErfTest()
+        {
+            Check.That(MathUtils.Erf(1)).IsEqualTo(0.8427007f); ;
+            Check.That(MathUtils.Erf(-1)).IsEqualTo(-0.8427007f); ;
+            Check.That(MathUtils.Erf(0)).IsEqualTo(0f); ;
+            Check.That(MathUtils.Erf(5)).IsEqualTo(1); ;
+        }
+
+        [Test]
+        public void ErfInvTest()
+        {
+            Check.That(MathUtils.ErfInv(1)).IsEqualTo(3.1232057f); ;
+            Check.That(MathUtils.ErfInv(-1)).IsEqualTo(-3.1232057f); ;
+            Check.That(MathUtils.ErfInv(0)).IsEqualTo(0f); ;
+            Check.That(MathUtils.ErfInv(5)).IsEqualTo(3.1232057f); ;
+        }
     }
 }

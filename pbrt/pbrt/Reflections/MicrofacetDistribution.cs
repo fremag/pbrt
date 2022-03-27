@@ -13,6 +13,7 @@ namespace pbrt.Reflections
 
         public abstract float D(Vector3F wh);
         public abstract float Lambda(Vector3F w);
+        public abstract Vector3F Sample_wh(Vector3F wo, Point2F u);
         
         public float G1(Vector3F w) => 1 / (1 + Lambda(w));
         public float G(Vector3F wo, Vector3F wi) => 1 / (1 + Lambda(wo) + Lambda(wi));
