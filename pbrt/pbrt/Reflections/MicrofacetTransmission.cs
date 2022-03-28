@@ -62,5 +62,37 @@ namespace pbrt.Reflections
             var f2 = f3 * wi.AbsDot(wh) * wo.AbsDot(wh) * factor * factor / f1;
             return (new Spectrum(1f) - F) * T * MathF.Abs(f2);            
         } 
+        
+        public override Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F u, out float pdf, out BxDFType sampledType) 
+        {
+            sampledType = BxdfType;
+            Vector3F wh = Distribution.Sample_wh(wo, u);
+            float eta = CosTheta(wo) > 0 ? (EtaA / EtaB) : (EtaB / EtaA);
+            
+            if (!BSDF.Refract(wo, new Normal3F(wh), eta, out wi))
+            {
+                pdf = 0;
+                return new Spectrum(0f);
+            }
+
+            pdf = Pdf(wo, wi);
+            return F(wo, wi);
+        }
+        
+        public float Pdf(Vector3F wo, Vector3F wi) 
+        {
+            if (SameHemisphere(wo, wi))
+            {
+                return 0;
+            }
+
+            // Compute wh from wo and wi for microfacet transmission 
+            float eta = CosTheta(wo) > 0 ? (EtaB / EtaA) : (EtaA / EtaB);
+            Vector3F wh = (wo + wi * eta).Normalized();            
+            // Compute change of variables dwh_dwi for microfacet transmission 
+            float sqrtDenom = wo.Dot(wh) + eta * wi.Dot(wh);
+            float dwh_dwi = MathF.Abs((eta * eta * wi.Dot(wh)) / (sqrtDenom * sqrtDenom));            
+            return Distribution.Pdf(wo, wh) * dwh_dwi;
+        }        
     }
 }

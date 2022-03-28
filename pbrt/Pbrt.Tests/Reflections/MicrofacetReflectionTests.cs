@@ -36,5 +36,44 @@ namespace Pbrt.Tests.Reflections
             spectrum = microfacetReflection.F(new Vector3F(-1, 1, 0.25f), new Vector3F(1, -1, 0.25f));
             Check.That(spectrum).IsEqualTo(new Spectrum(1.48850453f));
         }
+
+        [Test]
+        public void Sample_F_Test()
+        {
+            Vector3F wo = new Vector3F(0, 0, 1);
+            Point2F u = Point2F.Zero;
+            Spectrum spectrum = microfacetReflection.Sample_f(wo, out var wi, u, out var pdf, out var sampledType);
+            Check.That(spectrum).IsEqualTo(new Spectrum(0.238732398f));
+            Check.That(wi).IsEqualTo(new Vector3F(0,0,1));
+            Check.That(pdf).IsEqualTo(0.15915494f);
+            Check.That(sampledType).IsEqualTo(BxDFType.BSDF_GLOSSY |  BxDFType.BSDF_REFLECTION);
+        }
+        
+        [Test]
+        public void Sample_F_NotSameHemisphere_Test()
+        {
+            Vector3F wo = new Vector3F(0, 1, 1);
+            Point2F u = Point2F.Zero;
+            Spectrum spectrum = microfacetReflection.Sample_f(wo, out var wi, u, out var pdf, out var sampledType);
+            Check.That(spectrum).IsEqualTo(new Spectrum(0f));
+            Check.That(wi).IsEqualTo(new Vector3F(-0.97609365f, 0.9521873f, -0.37494123f));
+            Check.That(pdf).IsEqualTo(0f);
+            Check.That(sampledType).IsEqualTo(BxDFType.BSDF_GLOSSY |  BxDFType.BSDF_REFLECTION);
+        }
+
+        [Test]
+        public void PdfTest()
+        {
+            Vector3F wo = new Vector3F(-1, -1, -1);
+            // not same hemisphere
+            Vector3F wi = new Vector3F( 1,  1,  1);
+            var pdf = microfacetReflection.Pdf(wo, wi);
+            Check.That(pdf).IsEqualTo(0f);
+            
+            // Same hemisphere
+            wi = new Vector3F( -1,  -1,  -0.5f);
+            pdf = microfacetReflection.Pdf(wo, wi);
+            Check.That(pdf).IsCloseTo(0.00045551f, 1e-7);
+        }
     }
 }

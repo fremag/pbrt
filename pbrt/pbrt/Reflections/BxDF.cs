@@ -140,6 +140,7 @@ namespace pbrt.Reflections
         
         public static bool SameHemisphere(Vector3F w, Vector3F wp) => w.Z * wp.Z > 0;
         public static bool SameHemisphere(Vector3F w, Normal3F wp) => w.Z * wp.Z > 0;
-        public float Pdf(Vector3F wo, Vector3F wi) => SameHemisphere(wo, wi) ? AbsCosTheta(wi) / MathF.PI : 0;
+        public virtual float Pdf(Vector3F wo, Vector3F wi) => SameHemisphere(wo, wi) ? AbsCosTheta(wi) / MathF.PI : 0;
+        
     }
 }

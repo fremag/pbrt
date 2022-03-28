@@ -36,6 +36,34 @@ namespace pbrt.Reflections
             wh = wh.Normalized();
             var spectrum = Fresnel.Evaluate(wi.Dot(wh));
             return R * Distribution.D(wh) * Distribution.G(wo, wi) * spectrum / (4 * cosThetaI * cosThetaO);
+        }
+     
+        public override Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F u, out float pdf,  out BxDFType sampledType) 
+        {
+            sampledType = BxdfType;
+            // Sample microfacet orientation wh and reflected direction wi 
+            Vector3F wh = Distribution.Sample_wh(wo, u);
+            wi = BSDF.Reflect(wo, wh);
+            if (!SameHemisphere(wo, wi))
+            {
+                pdf = 0;
+                return new Spectrum(0f);
+            }
+
+            // Compute PDF of wi for microfacet reflection 
+            pdf = Distribution.Pdf(wo, wh) / (4 * wo.Dot(wh));
+            return F(wo, wi);
+        }
+
+        public override float Pdf(Vector3F wo, Vector3F wi)
+        {
+            if (!SameHemisphere(wo, wi))
+            {
+                return 0;
+            }
+
+            Vector3F wh = (wo + wi).Normalized();
+            return Distribution.Pdf(wo, wh) / (4 * wo.Dot(wh));
         }        
     }
 }

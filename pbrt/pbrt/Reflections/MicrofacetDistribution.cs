@@ -17,5 +17,15 @@ namespace pbrt.Reflections
         
         public float G1(Vector3F w) => 1 / (1 + Lambda(w));
         public float G(Vector3F wo, Vector3F wi) => 1 / (1 + Lambda(wo) + Lambda(wi));
+        
+        public float Pdf(Vector3F wo, Vector3F wh)
+        {
+            if (SampleVisibleArea)
+            {
+                return D(wh) * G1(wo) * wo.AbsDot(wh) / BxDF.AbsCosTheta(wo);
+            }
+
+            return D(wh) * BxDF.AbsCosTheta(wh);
+        }        
     }
 }

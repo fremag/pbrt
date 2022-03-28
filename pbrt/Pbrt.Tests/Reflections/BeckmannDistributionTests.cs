@@ -128,5 +128,20 @@ namespace Pbrt.Tests.Reflections
             Vector3F wh = distribution.Sample_wh(wo, u);
             Check.That(wh).IsEqualTo(new Vector3F(0f, 0f, -1f));
         }
+        
+        
+        [Test]
+        public void PdfTest()
+        {
+            BeckmannDistribution distribution = new BeckmannDistribution(0.5f, 0.5f, false);
+            Vector3F wo = new Vector3F(1, 0, -1);
+            Vector3F wh = new Vector3F(0, 1, 1);
+            var pdf = distribution.Pdf(wo, wh);
+            Check.That(pdf).IsCloseTo(1.27323949f, 1e-7);
+
+            distribution = new BeckmannDistribution(0.5f, 0.5f, true);
+            pdf = distribution.Pdf(wo, wh);
+            Check.That(pdf).IsCloseTo(1.27323949f, 1e-7);
+        }
     }
 }
