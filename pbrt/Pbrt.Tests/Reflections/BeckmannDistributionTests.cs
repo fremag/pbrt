@@ -94,7 +94,9 @@ namespace Pbrt.Tests.Reflections
             Vector3F wo = new Vector3F(0, -1, -1);
             Point2F u = new Point2F(0, 0);
             Vector3F wh = distribution.Sample_wh(wo, u);
-            Check.That(wh).IsEqualTo(new Vector3F(-7.54979E-08f, 1f, -0f));
+            Check.That(wh.X).IsCloseTo(-7.54979E-08f, 1e-5);
+            Check.That(wh.Y).IsCloseTo(1f, 1e-8);
+            Check.That(wh.Z).IsCloseTo(-0f, 1e-8);
         }
         
         [Test]
