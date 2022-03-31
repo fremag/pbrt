@@ -79,7 +79,7 @@ namespace pbrt.Reflections
             return F(wo, wi);
         }
         
-        public float Pdf(Vector3F wo, Vector3F wi) 
+        public override float Pdf(Vector3F wo, Vector3F wi) 
         {
             if (SameHemisphere(wo, wi))
             {

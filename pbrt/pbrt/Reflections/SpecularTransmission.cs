@@ -44,5 +44,7 @@ namespace pbrt.Reflections
 
             return new Spectrum(0f);
         }
+        
+        public override float Pdf(Vector3F wo, Vector3F wi) => 0;
     }
 }

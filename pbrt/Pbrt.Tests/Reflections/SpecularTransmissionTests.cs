@@ -57,5 +57,11 @@ namespace Pbrt.Tests.Reflections
             Check.That(pdf).IsEqualTo(1f);
             Check.That(sampledType).IsEqualTo(BxDFType.BSDF_TRANSMISSION | BxDFType.BSDF_SPECULAR);
         }
+
+        [Test]
+        public void PdfTest()
+        {
+            Check.That(specularTransmission.Pdf(null, null)).IsEqualTo(0f);
+        }
     }
 }

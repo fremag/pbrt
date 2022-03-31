@@ -93,8 +93,7 @@ namespace pbrt.Reflections
             }
 
             float cosThetaT = MathF.Sqrt(1 - sin2ThetaT);
-
-            wt = etaRatio * -wi + (etaRatio * cosThetaI - cosThetaT) * (new Vector3F(n));
+            wt = etaRatio * -wi + (etaRatio * cosThetaI - cosThetaT) * new Vector3F(n);
             return true;
         }
 

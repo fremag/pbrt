@@ -40,5 +40,11 @@ namespace Pbrt.Tests.Reflections
             Check.That(pdf).IsEqualTo(1f);
             Check.That(sampledType).IsEqualTo(BxDFType.BSDF_REFLECTION | BxDFType.BSDF_SPECULAR);
         }
+
+        [Test]
+        public void PdfTest()
+        {
+            Check.That(specRef.Pdf(null, null)).IsEqualTo(0f);
+        }
     }
 }

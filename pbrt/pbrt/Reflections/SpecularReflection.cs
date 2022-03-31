@@ -25,5 +25,7 @@ namespace pbrt.Reflections
             sampledType = BxdfType;
             return Fresnel.Evaluate(CosTheta(wi)) * R / AbsCosTheta(wi);
         }
+        
+        public override float Pdf(Vector3F wo, Vector3F wi) => 0;
     }
 }
