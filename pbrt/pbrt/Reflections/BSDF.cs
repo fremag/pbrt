@@ -97,9 +97,130 @@ namespace pbrt.Reflections
             return true;
         }
 
-        public Spectrum Sample_f(Vector3F wo, out Vector3F wi, Point2F u, out float pdf, BxDFType type)
+        public int NumComponents(BxDFType flags = BxDFType.BSDF_ALL)
         {
-            throw new NotImplementedException();
+            int num = 0;
+            for (int i = 0; i < NbBxDFs; ++i)
+            {
+                if (bxdfs[i].MatchesFlags(flags))
+                {
+                    ++num;
+                }
+            }
+
+            return num;
         }
+        
+        public Spectrum Sample_f(Vector3F woWorld, out Vector3F wiWorld, Point2F u, out float pdf, BxDFType type, ref BxDFType sampledType)
+        {
+            // Choose which BxDF to sample
+            int matchingComps = NumComponents(type);
+            if (matchingComps == 0) 
+            {
+                pdf = 0;
+                wiWorld = null;
+                sampledType = BxDFType.BSDF_NONE;
+                return new Spectrum(0f);
+            }
+            
+            int comp = (int)MathF.Min(MathF.Floor(u[0] * matchingComps), matchingComps - 1);
+            // Get BxDF pointer for chosen component
+            BxDF bxdf = null;
+            int count = comp;
+            for (int i = 0; i < NbBxDFs; ++i)
+            {
+                if (bxdfs[i].MatchesFlags(type) && count-- == 0) 
+                {
+                    bxdf = bxdfs[i];
+                    break;
+                }
+            }
+
+            // Remap BxDF sample u to (0, 1) x (0, 1) 
+            Point2F uRemapped = new Point2F(u[0] * matchingComps - comp, u[1]);
+            
+            // Sample chosen BxDF 
+            Vector3F wi;
+            Vector3F wo = WorldToLocal(woWorld);
+            pdf = 0;
+            if (sampledType != BxDFType.BSDF_NONE)
+            {
+                sampledType = bxdf.BxdfType;
+            }
+
+            Spectrum f = bxdf.Sample_f(wo, out wi, uRemapped, out pdf, out sampledType);
+            if (pdf == 0)
+            {
+                wiWorld = null;
+                sampledType = BxDFType.BSDF_NONE;
+                return new Spectrum(0f);
+            }
+
+            wiWorld = LocalToWorld(wi);
+            
+            // Compute overall PDF with all matching BxDFs
+            if ((bxdf.BxdfType & BxDFType.BSDF_SPECULAR) != 0 && matchingComps > 1)
+            {
+                for (int i = 0; i < NbBxDFs; ++i)
+                {
+                    if (bxdfs[i] != bxdf && bxdfs[i].MatchesFlags(type))
+                    {
+                        pdf += bxdfs[i].Pdf(wo, wi);
+                    }
+                }
+            }
+
+            if (matchingComps > 1)
+            {
+                pdf /= matchingComps;
+            }
+
+            // Compute value of BSDF for sampled direction
+            if ((bxdf.BxdfType & BxDFType.BSDF_SPECULAR) != 0 && matchingComps > 1) 
+            {
+                bool reflect = wiWorld.Dot(Ng) * woWorld.Dot(Ng) > 0;
+                f = new Spectrum(0f);
+                for (int i = 0; i < NbBxDFs; ++i)
+                {
+                    var matchesFlags = bxdfs[i].MatchesFlags(type);
+                    var checkReflection = reflect && (bxdfs[i].BxdfType & BxDFType.BSDF_REFLECTION)==0;
+                    var checkTransmission = !reflect && (bxdfs[i].BxdfType & BxDFType.BSDF_TRANSMISSION)==0;
+                    if (matchesFlags && (checkReflection || checkTransmission))
+                    {
+                        f += bxdfs[i].F(wo, wi);
+                    }
+                }
+            }
+            return f;
+        }
+        
+        public float Pdf(Vector3F woWorld, Vector3F wiWorld, BxDFType flags) 
+        {
+            if (NbBxDFs == 0)
+            {
+                return 0f;
+            }
+
+            Vector3F wo = WorldToLocal(woWorld);
+            Vector3F wi = WorldToLocal(wiWorld);
+            if (wo.Z == 0)
+            {
+                return 0f;
+            }
+
+            float pdf = 0f;
+            int matchingComps = 0;
+            for (int i = 0; i < NbBxDFs; ++i)
+            {
+                if (bxdfs[i].MatchesFlags(flags)) 
+                {
+                    ++matchingComps;
+                    pdf += bxdfs[i].Pdf(wo, wi);
+                }
+            }
+
+            float v = matchingComps > 0 ? pdf / matchingComps : 0f;
+            return v;
+        }        
     }
 }

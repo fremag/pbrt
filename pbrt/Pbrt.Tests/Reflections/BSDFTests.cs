@@ -1,5 +1,6 @@
 using System;
 using NFluent;
+using NSubstitute;
 using NUnit.Framework;
 using pbrt.Core;
 using pbrt.Reflections;
@@ -21,7 +22,6 @@ namespace Pbrt.Tests.Reflections
         {
             si = new SurfaceInteraction(null, null, null, null, dpdu, dpdv, null, null, 0f, null);
             bsdf = new BSDF(si, 1.5f);
-            Check.ThatCode(() => bsdf.Sample_f(null, out _, null, out _, BxDFType.BSDF_ALL)).Throws<NotImplementedException>();
         }
         
         [Test]
@@ -126,6 +126,74 @@ namespace Pbrt.Tests.Reflections
             // woW . woI < 0 =>  transmission with type reflection => no match,  spectrum = 0 
             spectrum = bsdf.F(woW, wiW, BxDFType.BSDF_REFLECTION);
             Check.That(spectrum).IsEqualTo(new Spectrum(0f));
+        }
+
+        [Test]
+        public void NumComponentsTest()
+        {
+            bsdf.Add(new SpecularReflection(new Spectrum(1f), new FresnelNoOp()));
+            bsdf.Add(new SpecularReflection(new Spectrum(2f), new FresnelNoOp()));
+            bsdf.Add(new SpecularTransmission(new Spectrum(3f), 0, 1, TransportMode.Radiance));
+            bsdf.Add(new FresnelSpecular(new Spectrum(4f), new Spectrum(1f), 1, 2, TransportMode.Importance));
+            bsdf.Add(new FresnelSpecular(new Spectrum(4f), new Spectrum(1f), 1, 2, TransportMode.Importance));
+            bsdf.Add(new OrenNayar(new Spectrum(4f), 1f));
+
+            Check.That(bsdf.NumComponents()).IsEqualTo(0);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_GLOSSY)).IsEqualTo(0);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_DIFFUSE)).IsEqualTo(1);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_SPECULAR)).IsEqualTo(5);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_REFLECTION)).IsEqualTo(5);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_TRANSMISSION)).IsEqualTo(3);
+        }
+
+        [Test]
+        public void Pdf_NoBxDF_Test()
+        {
+            Vector3F woWorld = new Vector3F(1, 0, 0);
+            Vector3F wiWorld = new Vector3F(-1, 0, 0);
+            var pdf = bsdf.Pdf(woWorld, wiWorld, BxDFType.BSDF_GLOSSY);
+            Check.That(pdf).IsEqualTo(0f);
+        }
+        
+        [Test]
+        public void Pdf_WoZ_IsZero_Test()
+        {
+            Vector3F woWorld = new Vector3F(1, 0, 0);
+            Vector3F wiWorld = new Vector3F(-1, 0, 0);
+            BxDF bxdf = Substitute.For<BxDF>(BxDFType.BSDF_REFLECTION);
+            bsdf.Add(bxdf);
+            
+            var pdf = bsdf.Pdf(woWorld, wiWorld, BxDFType.BSDF_GLOSSY);
+            Check.That(pdf).IsEqualTo(0f);
+        }
+        
+        [Test]
+        public void Pdf_WrongBxDFType_Test()
+        {
+            Vector3F woWorld = new Vector3F(1, 0, 1);
+            Vector3F wiWorld = new Vector3F(-1, 0, -1);
+            BxDF bxdf = Substitute.For<BxDF>(BxDFType.BSDF_REFLECTION);
+            bsdf.Add(bxdf);
+            
+            var pdf = bsdf.Pdf(woWorld, wiWorld, BxDFType.BSDF_GLOSSY);
+            Check.That(pdf).IsEqualTo(0f);
+        }
+        
+        [Test]
+        public void Pdf_Test()
+        {
+            Vector3F woWorld = new Vector3F(1, 0, 1);
+            Vector3F wiWorld = new Vector3F(-1, 0, -1);
+            BxDF bxdf1 = Substitute.For<BxDF>(BxDFType.BSDF_REFLECTION);
+            BxDF bxdf2 = Substitute.For<BxDF>(BxDFType.BSDF_REFLECTION);
+            bxdf1.Pdf(Arg.Any<Vector3F>(), Arg.Any<Vector3F>()).Returns(1.23f);
+            bxdf2.Pdf(Arg.Any<Vector3F>(), Arg.Any<Vector3F>()).Returns(2.34f);
+            
+            bsdf.Add(bxdf1);
+            bsdf.Add(bxdf2);
+            
+            var pdf = bsdf.Pdf(woWorld, wiWorld, BxDFType.BSDF_REFLECTION);
+            Check.That(pdf).IsEqualTo((1.23f+2.34f)/2);
         }
     }
 }
