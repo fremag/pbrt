@@ -41,13 +41,39 @@ namespace pbrt.Reflections
             return F(wo, wi);
         }
         
-        // The BxDF::rho() method computes the reflectance function . Some BxDFs can compute this value
-        // in closed form, although most use Monte Carlo integration to compute an approximation to it.
-        // For those BxDFs, the nSamples and samples parameters are used by the implementation of the Monte Carlo algorithm;
-        // they are explained in Section 14.1.5. 
-        public virtual Spectrum Rho(Vector3F wo, int nSamples, Point2F[] samples) => throw new NotImplementedException();
-        public virtual Spectrum Rho(int nSamples, out Point2F samples1, out Point2F samples2)  => throw new NotImplementedException();
+        public virtual Spectrum Rho(Vector3F w, int nSamples, Point2F[] u) 
+        {
+            Spectrum r = new Spectrum(0f);
+            for (int i = 0; i < nSamples; ++i) 
+            {
+                // Estimate one term of rho hd 
+                Vector3F wi;
+                Spectrum f = Sample_f(w, out wi, u[i], out var pdf, out _);
+                if (pdf > 0)
+                {
+                    r += f * AbsCosTheta(wi) / pdf;
+                }
+            }
+            return r / nSamples;
+        }
         
+        public Spectrum Rho(int nSamples, Point2F[] u1, Point2F[] u2) 
+        {
+            Spectrum r = new Spectrum(0f);
+            for (int i = 0; i < nSamples; ++i) 
+            {
+                // Estimate one term of rho hh
+                Vector3F wo = MathUtils.UniformSampleHemisphere(u1[i]);
+                float pdfO = MathUtils.UniformHemispherePdf;
+                Spectrum f = Sample_f(wo, out var wi, u2[i], out var pdfI, out _);
+                if (pdfI > 0)
+                {
+                    r += f * AbsCosTheta(wi) * AbsCosTheta(wo) / (pdfO * pdfI);
+                }
+            }
+            
+            return r / (MathF.PI * nSamples);
+        }
         public bool MatchesFlags(BxDFType bxDfType) => (BxdfType & bxDfType) == bxDfType;
 
         public static float FrDielectric(float cosThetaI, float etaI, float etaT)
