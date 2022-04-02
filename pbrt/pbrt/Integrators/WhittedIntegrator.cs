@@ -75,7 +75,8 @@ namespace pbrt.Integrators
             
             float pdf;
             BxDFType type = BxDFType.BSDF_REFLECTION | BxDFType.BSDF_SPECULAR;
-            Spectrum f = isect.Bsdf.Sample_f(wo, out wi, sampler.Get2D(), out pdf, type);            
+            BxDFType sampledType = BxDFType.BSDF_NONE;
+            Spectrum f = isect.Bsdf.Sample_f(wo, out wi, sampler.Get2D(), out pdf, type, ref sampledType);            
             // Return contribution of specular reflection
             throw new NotImplementedException();
         }
