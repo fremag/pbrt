@@ -127,7 +127,7 @@ namespace pbrt.Reflections
             // Get BxDF pointer for chosen component
             BxDF bxdf = null;
             int count = comp;
-            for (int i = 0; i < NbBxDFs; ++i)
+            for (int i = 0; i < NbBxDFs; i++)
             {
                 if (bxdfs[i].MatchesFlags(type) && count-- == 0) 
                 {
@@ -143,7 +143,7 @@ namespace pbrt.Reflections
             Vector3F wi;
             Vector3F wo = WorldToLocal(woWorld);
             pdf = 0;
-            if (sampledType != BxDFType.BSDF_NONE)
+            if (sampledType == BxDFType.BSDF_NONE)
             {
                 sampledType = bxdf.BxdfType;
             }
@@ -159,7 +159,7 @@ namespace pbrt.Reflections
             wiWorld = LocalToWorld(wi);
             
             // Compute overall PDF with all matching BxDFs
-            if ((bxdf.BxdfType & BxDFType.BSDF_SPECULAR) != 0 && matchingComps > 1)
+            if ((bxdf.BxdfType & BxDFType.BSDF_SPECULAR)==0 && matchingComps > 1)
             {
                 for (int i = 0; i < NbBxDFs; ++i)
                 {
@@ -175,16 +175,18 @@ namespace pbrt.Reflections
                 pdf /= matchingComps;
             }
 
+            
             // Compute value of BSDF for sampled direction
-            if ((bxdf.BxdfType & BxDFType.BSDF_SPECULAR) != 0 && matchingComps > 1) 
+            var checkSpecular = (bxdf.BxdfType & BxDFType.BSDF_SPECULAR) == 0;
+            if (checkSpecular && matchingComps > 1) 
             {
                 bool reflect = wiWorld.Dot(Ng) * woWorld.Dot(Ng) > 0;
                 f = new Spectrum(0f);
                 for (int i = 0; i < NbBxDFs; ++i)
                 {
                     var matchesFlags = bxdfs[i].MatchesFlags(type);
-                    var checkReflection = reflect && (bxdfs[i].BxdfType & BxDFType.BSDF_REFLECTION)==0;
-                    var checkTransmission = !reflect && (bxdfs[i].BxdfType & BxDFType.BSDF_TRANSMISSION)==0;
+                    var checkReflection = reflect && (bxdfs[i].BxdfType & BxDFType.BSDF_REFLECTION) !=0;
+                    var checkTransmission = !reflect && (bxdfs[i].BxdfType & BxDFType.BSDF_TRANSMISSION) !=0;
                     if (matchesFlags && (checkReflection || checkTransmission))
                     {
                         f += bxdfs[i].F(wo, wi);

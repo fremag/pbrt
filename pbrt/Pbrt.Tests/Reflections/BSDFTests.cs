@@ -195,5 +195,79 @@ namespace Pbrt.Tests.Reflections
             var pdf = bsdf.Pdf(woWorld, wiWorld, BxDFType.BSDF_REFLECTION);
             Check.That(pdf).IsEqualTo((1.23f+2.34f)/2);
         }
+
+        [Test]
+        public void Sample_f_NoMatchingComponent_Test()
+        {
+            BxDF bxdf1 = Substitute.For<BxDF>(BxDFType.BSDF_TRANSMISSION);
+            BxDF bxdf2 = Substitute.For<BxDF>(BxDFType.BSDF_REFLECTION);
+            bsdf.Add(bxdf1);
+            bsdf.Add(bxdf2);
+
+            BxDFType sampledType = BxDFType.BSDF_NONE;
+            Vector3F woWorld = new Vector3F(1, 0, 1);
+            Point2F u = new Point2F(0.5f, 0.5f);
+            var spectrum = bsdf.Sample_f(woWorld, out var wiWorld, u, out var pdf, BxDFType.BSDF_DIFFUSE, ref sampledType);
+            Check.That(spectrum).IsEqualTo(new Spectrum(0f));
+            Check.That(wiWorld).IsNull();
+            Check.That(pdf).IsEqualTo(0);
+        }
+        
+        [Test]
+        public void Sample_f_NoPdf_Test()
+        {
+            BxDF bxdf1 = Substitute.For<BxDF>(BxDFType.BSDF_TRANSMISSION | BxDFType.BSDF_SPECULAR);
+            BxDF bxdf2 = Substitute.For<BxDF>(BxDFType.BSDF_REFLECTION);
+            bsdf.Add(bxdf1);
+            bsdf.Add(bxdf2);
+
+            BxDFType sampledType = BxDFType.BSDF_NONE;
+            Vector3F woWorld = new Vector3F(1, 0, 1);
+            Point2F u = new Point2F(0.5f, 0.5f);
+            
+            var spectrum = bsdf.Sample_f(woWorld, out var wiWorld, u, out var pdf, BxDFType.BSDF_TRANSMISSION, ref sampledType);
+            
+            Check.That(spectrum).IsEqualTo(new Spectrum(0f));
+            Check.That(wiWorld).IsNull();
+            Check.That(pdf).IsEqualTo(0);
+        }
+
+        [Test]
+        public void Sample_f_Test()
+        {
+            BxDF bxdf1 = Substitute.For<BxDF>(BxDFType.BSDF_TRANSMISSION | BxDFType.BSDF_SPECULAR);
+            BxDF bxdf2 = Substitute.For<BxDF>(BxDFType.BSDF_REFLECTION);
+            BxDF bxdf3 = Substitute.For<BxDF>(BxDFType.BSDF_REFLECTION);
+
+            bxdf2.Pdf(Arg.Any<Vector3F>(), Arg.Any<Vector3F>()).Returns(3.45f);
+            bxdf3.Pdf(Arg.Any<Vector3F>(), Arg.Any<Vector3F>()).Returns(4.56f);
+            bxdf2.F(Arg.Any<Vector3F>(), Arg.Any<Vector3F>()).Returns(new Spectrum(3.45f));
+            bxdf3.F(Arg.Any<Vector3F>(), Arg.Any<Vector3F>()).Returns(new Spectrum(4.56f));
+            
+            bsdf.Add(bxdf1);
+            bsdf.Add(bxdf2);
+            bsdf.Add(bxdf3);
+            
+            
+            Vector3F wi = new Vector3F(1, 2, 3);
+            
+            bxdf3.Sample_f(Arg.Any<Vector3F>(), out Arg.Any<Vector3F>(), Arg.Any<Point2F>(), out Arg.Any<float>(), out Arg.Any<BxDFType>()).Returns(info =>
+            {
+                info[1] = wi;
+                info[3] = 2.34f;
+                info[4] = bxdf2.BxdfType;
+                return new Spectrum(1.23f);
+            });
+            
+            BxDFType sampledType = BxDFType.BSDF_NONE;
+            Vector3F woWorld = new Vector3F(1, 0, 1);
+            Point2F u = new Point2F(0.5f, 0.5f);
+            
+            var spectrum = bsdf.Sample_f(woWorld, out var wiWorld, u, out var pdf, BxDFType.BSDF_REFLECTION, ref sampledType);
+            
+            Check.That(spectrum).IsEqualTo(new Spectrum(3.45f+4.56f));
+            Check.That(wiWorld).IsEqualTo(wi);
+            Check.That(pdf).IsEqualTo((2.34f+3.45f)/2f);
+        }
     }
 }
