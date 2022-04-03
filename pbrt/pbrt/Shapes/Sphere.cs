@@ -184,5 +184,89 @@ namespace pbrt.Shapes
             tHit = (float)tShapeHit;
             return true;
         }
+
+        public override Interaction Sample(Point2F u)
+        {
+            Point3F pObj = new Point3F(0, 0, 0) + Radius * MathUtils.UniformSampleSphere(u);
+            Interaction it = new Interaction();
+            var n = new Normal3F(pObj.X, pObj.Y, pObj.Z);
+            it.N = ObjectToWorld.Apply(n).Normalize();
+            if (ReverseOrientation)
+            {
+                it.N *= -1;
+            }
+
+            // Reproject pObj to sphere surface and compute pObjError 
+            pObj *= Radius / pObj.Distance(new Point3F(0, 0, 0));
+            Vector3F pObjError = MathUtils.Gamma(5) * (new Vector3F(pObj).Abs());
+            
+            it.P = ObjectToWorld.Apply(pObj, pObjError, out var itPError);
+            it.PError = itPError;
+            
+            return it;
+        }
+        
+        public override Interaction Sample(Interaction interaction, Point2F u) 
+        {
+            // Compute coordinate system for sphere sampling
+            Point3F pCenter = ObjectToWorld.Apply(Point3F.Zero);
+            Vector3F wc = (pCenter - interaction.P).Normalized();
+            Vector3F.CoordinateSystem(wc, out var wcX, out var wcY);
+            
+            // Sample uniformly on sphere if p is inside it 
+            Point3F pOrigin = Interaction.OffsetRayOrigin(interaction.P, interaction.PError, interaction.N, pCenter - interaction.P);
+            if (pOrigin.DistanceSquared(pCenter) <= Radius * Radius)
+            {
+                return Sample(u);
+            }
+            // Sample sphere uniformly inside subtended cone 
+            // Compute theta and phi values for sample in cone 
+            float sinThetaMax2 = Radius * Radius / interaction.P.DistanceSquared(pCenter);
+            float cosThetaMax = MathF.Sqrt(MathF.Max(0f, 1 - sinThetaMax2));
+            float cosTheta = (1 - u[0]) + u[0] * cosThetaMax;
+            float sinTheta = MathF.Sqrt(MathF.Max(0f, 1 - cosTheta * cosTheta));
+            float phi = u[1] * 2 * MathF.PI;
+            
+            // Compute angle alpha from center of sphere to sampled point on surface 
+            float dc = interaction.P.Distance(pCenter);
+            float ds = dc * cosTheta - MathF.Sqrt(MathF.Max(0f, Radius * Radius - dc * dc * sinTheta * sinTheta));
+            float cosAlpha = (dc * dc + Radius * Radius - ds * ds) / (2 * dc * Radius);
+            float sinAlpha = MathF.Sqrt(MathF.Max(0f, 1 - cosAlpha * cosAlpha));
+            
+            // Compute surface normal and sampled point on sphere 
+            Vector3F nObj = MathUtils.SphericalDirection(sinAlpha, cosAlpha, phi, -wcX, -wcY, -wc);
+            Point3F pObj = new Point3F(Radius * nObj.X, Radius * nObj.Y, Radius * nObj.Z);            
+            // Return Interaction for sampled point on sphere
+            // Reproject pObj to sphere surface and compute pObjError 
+            pObj *= Radius / pObj.Distance(Point3F.Zero);
+            Vector3F pObjError = MathUtils.Gamma(5) * (new Vector3F(pObj).Abs());
+
+            Interaction it = new Interaction();
+            it.P = ObjectToWorld.Apply(pObj, pObjError, out var itPError);
+            it.PError = itPError;
+            it.N = ObjectToWorld.Apply(new Normal3F(nObj));
+            if (ReverseOrientation)
+            {
+                it.N *= -1;
+            }
+
+            return it;
+        }   
+        
+        public override float Pdf(Interaction interaction, Vector3F wi) 
+        {
+            Point3F pCenter = ObjectToWorld.Apply(Point3F.Zero);
+            //Return uniform PDF if point is inside sphere 
+            Point3F pOrigin = Interaction.OffsetRayOrigin(interaction.P, interaction.PError, interaction.N, pCenter - interaction.P);
+            if (pOrigin.DistanceSquared(pCenter) <= Radius * Radius)
+            {
+                return base.Pdf(interaction, wi);
+            }
+
+            // Compute general sphere PDF 
+            float sinThetaMax2 = Radius * Radius / interaction.P.DistanceSquared(pCenter);
+            float cosThetaMax = MathF.Sqrt(MathF.Max(0f, 1 - sinThetaMax2));
+            return MathUtils.UniformConePdf(cosThetaMax);
+        }        
     }
 }

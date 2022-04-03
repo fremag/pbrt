@@ -13,5 +13,9 @@ namespace pbrt.Shapes
         Bounds3F WorldBound();
         bool Intersect(Ray ray, out float tHit, out SurfaceInteraction isect, bool testAlphaTexture = true);
         bool IntersectP(Ray ray, bool testAlphaTexture = true);
+        Interaction Sample(Point2F u);
+        float Pdf(Interaction interaction);
+        Interaction Sample(Interaction interaction, Point2F u);
+        float Pdf(Interaction interaction, Vector3F wi);
     }
 }

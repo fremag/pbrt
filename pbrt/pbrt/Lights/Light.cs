@@ -17,7 +17,8 @@ namespace pbrt.Lights
 
         public abstract Spectrum Power();
         public abstract Spectrum Sample_Li(Interaction interaction, Point2F u, out Vector3F wi, out float pdf, out VisibilityTester vis);
-
+        public abstract float Pdf_Li(Interaction interaction, Vector3F wi);
+        
         public Light() // Needed for NSubstitute
         {
         }
@@ -30,7 +31,7 @@ namespace pbrt.Lights
             NSamples = nSamples;
             WorldToLight = LightToWorld.Inverse();
             
-            // Warn if light has transformation with non-uniform scale>>
+            // Warn if light has transformation with non-uniform scale
         }
 
         

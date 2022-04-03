@@ -23,15 +23,21 @@ namespace pbrt.Lights
             return Lemit * Area * MathF.PI;
         }
 
-        public override Spectrum Sample_Li(Interaction interaction, Point2F u, out Vector3F wi, out float pdf, out VisibilityTester vis)
+        public override float Pdf_Li(Interaction interaction, Vector3F wi)
         {
-            wi = null;
-            pdf = 1;
-            vis = null;
-            // We will defer answering this question and providing an implementation of this method until Section 14.2, after Monte Carlo integration has been introduced. 
-            throw new NotImplementedException();
+            return Shape.Pdf(interaction, wi);
         }
 
+        public override Spectrum Sample_Li(Interaction interaction, Point2F u, out Vector3F wi, out float pdf, out VisibilityTester vis) 
+        {
+            Interaction pShape = Shape.Sample(interaction, u);
+            pShape.MediumInterface = MediumInterface;
+            wi = (pShape.P - interaction.P).Normalized();
+            pdf = Shape.Pdf(interaction, wi);
+            vis = new VisibilityTester(interaction, pShape);
+            return L(pShape, - wi);
+        }        
+        
         public override Spectrum L(Interaction intr, Vector3F w)
         {
             return intr.N.Dot(w) > 0f ? Lemit : new Spectrum(0f);

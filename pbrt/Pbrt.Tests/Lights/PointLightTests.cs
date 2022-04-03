@@ -56,5 +56,11 @@ namespace Pbrt.Tests.Lights
         {
             Check.That(light.Le(null)).IsEqualTo(new Spectrum(0f));
         }
+ 
+        [Test]
+        public void Pdf_Li_Test()
+        {
+            Check.That(light.Pdf_Li(null, null)).IsEqualTo(0f);
+        }
     }
 }

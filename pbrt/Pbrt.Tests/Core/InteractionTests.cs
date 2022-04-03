@@ -75,9 +75,9 @@ namespace Pbrt.Tests.Core
         [Test]
         public void OffsetRayOrigin()
         {
-            var p = interaction.OffsetRayOrigin(point, pError, normal, wo);
+            var p = Interaction.OffsetRayOrigin(point, pError, normal, wo);
             Check.That(p).IsEqualTo(new Point3F(1, 1.1000001f, 1));
-            p = interaction.OffsetRayOrigin(point, pError, normal, -wo);
+            p = Interaction.OffsetRayOrigin(point, pError, normal, -wo);
             Check.That(p).IsEqualTo(new Point3F(1, 0.9f, 1));
         }
 

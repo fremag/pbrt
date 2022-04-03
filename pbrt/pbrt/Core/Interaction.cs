@@ -42,7 +42,7 @@ namespace pbrt.Core
         public Medium GetMedium() => MediumInterface.Inside;
 
         // https://github.com/mmp/pbrt-v3/blob/aaa552a4b9cbf9dccb71450f47b268e0ed6370e2/src/core/geometry.h#L1440
-        public Point3F OffsetRayOrigin(Point3F p, Vector3F pError, Normal3F n, Vector3F w)
+        public static Point3F OffsetRayOrigin(Point3F p, Vector3F pError, Normal3F n, Vector3F w)
         {
             float d = n.AbsDot(pError);
             float offsetX = d * n.X;

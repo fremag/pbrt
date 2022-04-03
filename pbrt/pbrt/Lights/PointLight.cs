@@ -25,5 +25,10 @@ namespace pbrt.Lights
             vis = new VisibilityTester(interaction, new Interaction(PLight, interaction.Time, MediumInterface));
             return I / Point3F.DistanceSquared(PLight, interaction.P);
         }
+        
+        public override float Pdf_Li(Interaction interaction, Vector3F wi)
+        {
+            return 0;
+        }        
     }
 }

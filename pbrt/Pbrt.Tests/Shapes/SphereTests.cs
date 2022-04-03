@@ -293,5 +293,105 @@ namespace Pbrt.Tests.Shapes
             var hit = sphere.IntersectP(ray);
             Check.That(hit).IsTrue();
         }
+
+        [Test]
+        public void SamplePointTest()
+        {
+            var interaction =sphere.Sample(Point2F.Zero);
+            Check.That(interaction.N).IsEqualTo(new Normal3F(0, 0, 1));
+            Check.That(interaction.P).IsEqualTo(new Point3F(0, 1, 2));
+        }
+        
+        [Test]
+        public void SamplePoint_ReverseOrientation_Test()
+        {
+            sphere.ReverseOrientation = true;
+            var interaction =sphere.Sample(Point2F.Zero);
+            Check.That(interaction.N).IsEqualTo(new Normal3F(0, 0, -1));
+            Check.That(interaction.P).IsEqualTo(new Point3F(0, 1, 2));
+        }
+
+        [Test]
+        public void Pdf_OutsideSphere_Test()
+        {
+            var interaction = new Interaction
+            {
+                P = new Point3F(-2, 0, 0),
+                N = new Normal3F(-1, 0, 0),
+                PError = new Vector3F(float.Epsilon, float.Epsilon, float.Epsilon)
+            };
+            
+            var wi = new Vector3F(1, 0, 0);
+            var pdf = sphere.Pdf(interaction, wi);
+            Check.That(pdf).IsEqualTo(0.287914008f);
+        }
+        
+        [Test]
+        public void Pdf_InsideSphere_Test()
+        {
+            var interaction = new Interaction
+            {
+                P = new Point3F(0, 0, 0),
+                N = new Normal3F(-1, 0, 0),
+                PError = new Vector3F(float.Epsilon, float.Epsilon, float.Epsilon),
+                MediumInterface = new MediumInterface(null)
+            };
+            
+            var wi = new Vector3F(1, 0, 0);
+            var pdf = sphere.Pdf(interaction, wi);
+            Check.That(pdf).IsEqualTo(0.137832224f);
+        }
+
+        [Test]
+        public void SampleTest()
+        {
+            var interaction = new Interaction
+            {
+                P = new Point3F(-2, 0, 0),
+                N = new Normal3F(-1, 0, 0),
+                PError = new Vector3F(float.Epsilon, float.Epsilon, float.Epsilon)
+            };
+
+            var inter = sphere.Sample(interaction, Point2F.Zero);
+            Check.That(inter.N).IsEqualTo(new Normal3F(-0.89442718f, -0.44721359f, 0));
+            Check.That(inter.P).IsEqualTo(new Point3F(-1.7888546f, 0.1055727f, 0));
+        }
+
+        [Test]
+        public void Sample_ReverseOrientationTest()
+        {
+            var interaction = new Interaction
+            {
+                P = new Point3F(-2, 0, 0),
+                N = new Normal3F(-1, 0, 0),
+                PError = new Vector3F(float.Epsilon, float.Epsilon, float.Epsilon)
+            };
+            sphere.ReverseOrientation = true;
+            var inter = sphere.Sample(interaction, Point2F.Zero);
+            Check.That(inter.N).IsEqualTo(new Normal3F(0.89442718f, 0.44721359f, 0));
+            Check.That(inter.P).IsEqualTo(new Point3F(-1.7888546f, 0.1055727f, 0));
+        }
+        
+        [Test]
+        public void Sample_Inside_Test()
+        {
+            var interaction = new Interaction
+            {
+                P = new Point3F(0, 0, 0),
+                N = new Normal3F(-1, 0, 0),
+                PError = new Vector3F(float.Epsilon, float.Epsilon, float.Epsilon)
+            };
+
+            var inter = sphere.Sample(interaction, Point2F.Zero);
+            Check.That(inter.N).IsEqualTo(new Normal3F(0, 0, 1));
+            Check.That(inter.P).IsEqualTo(new Point3F(0, 1, 2));
+        }
+
+        [Test]
+        public void PdfTest()
+        {
+            var pdf = sphere.Pdf(null);
+            Check.That(pdf).IsEqualTo(1f / 8 /  MathF.PI);
+        }
     }
 }
