@@ -12,13 +12,14 @@ namespace pbrt.Accelerators
         EqualCounts
     }
 
-    public class BvhAccel
+    public class BvhAccel : Aggregate
     {
         public int MaxPrimsInNode { get; }
         public SplitMethod SplitMethod { get; }
         public IPrimitive[] Primitives { get; }
         public LinearBVHNode[] Nodes { get; }
         public List<BVHPrimitiveInfo> PrimitiveInfos { get; }
+        
         public BvhAccel(List<IPrimitive> primitives, int maxPrimsInNode, SplitMethod splitMethod)
         {
             MaxPrimsInNode = maxPrimsInNode;
@@ -156,7 +157,7 @@ namespace pbrt.Accelerators
         }
         
         // BVHAccel Method Definitions 
-        public bool Intersect(Ray ray, out SurfaceInteraction isect) 
+        public override bool Intersect(Ray ray, out SurfaceInteraction isect) 
         {
             bool hit = false;
             isect = null;
@@ -177,8 +178,9 @@ namespace pbrt.Accelerators
                         // Intersect ray with primitives in leaf BVH node
                         for (int i = 0; i < node.NPrimitives; ++i)
                         {
-                            if (Primitives[node.PrimitivesOffset + i].Intersect(ray, out isect))
+                            if (Primitives[node.PrimitivesOffset + i].Intersect(ray, out var primSurfInteraction))
                             {
+                                isect = primSurfInteraction;
                                 hit = true;
                             }
                         }
@@ -218,5 +220,72 @@ namespace pbrt.Accelerators
             
             return hit;
         }
+        
+        public override Bounds3F WorldBound()
+        {
+            return Nodes != null ? Nodes[0].Bounds : new Bounds3F();
+        }
+        
+
+        public override bool IntersectP(Ray ray) 
+        {
+            if (Nodes == null)
+            {
+                return false;
+            }
+
+            Vector3F invDir = new Vector3F(1f / ray.D.X, 1 / ray.D.Y, 1 / ray.D.Z);
+            int[] dirIsNeg = {invDir.X < 0 ? 1 : 0, invDir.Y < 0 ? 1 : 0, invDir.Z < 0 ? 1 : 0};
+            int[] nodesToVisit = new int[64];
+            
+            int toVisitOffset = 0, currentNodeIndex = 0;
+            while (true) {
+                LinearBVHNode node = Nodes[currentNodeIndex];
+                if (node.Bounds.IntersectP(ray, invDir, dirIsNeg)) {
+                    // Process BVH node _node_ for traversal
+                    if (node.NPrimitives > 0) 
+                    {
+                        for (int i = 0; i < node.NPrimitives; ++i) 
+                        {
+                            if (Primitives[node.PrimitivesOffset + i].IntersectP(ray)) 
+                            {
+                                return true;
+                            }
+                        }
+                        if (toVisitOffset == 0)
+                        {
+                            break;
+                        }
+
+                        currentNodeIndex = nodesToVisit[--toVisitOffset];
+                    } 
+                    else 
+                    {
+                        if (dirIsNeg[node.Axis] == 0) 
+                        {
+                            // second child first
+                            nodesToVisit[toVisitOffset++] = currentNodeIndex + 1;
+                            currentNodeIndex = node.SecondChildOffset;
+                        }
+                        else 
+                        {
+                            nodesToVisit[toVisitOffset++] = node.SecondChildOffset;
+                            currentNodeIndex = currentNodeIndex + 1;
+                        }
+                    }
+                }
+                else 
+                {
+                    if (toVisitOffset == 0)
+                    {
+                        break;
+                    }
+
+                    currentNodeIndex = nodesToVisit[--toVisitOffset];
+                }
+            }
+            return false;
+        }
+        
     }
 }

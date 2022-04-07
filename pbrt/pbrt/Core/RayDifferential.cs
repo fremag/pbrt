@@ -21,6 +21,10 @@ namespace pbrt.Core
             HasDifferentials = false;
         }
 
+        public RayDifferential(Ray ray) : this(ray.O, ray.D, ray.TMax, ray.Time, ray.Medium)
+        {
+        }
+
         public void ScaleDifferentials(float spacing)
         {
             RxOrigin = O + (RxOrigin - O) * spacing;

@@ -24,7 +24,7 @@ namespace pbrt.Films
 
         private object objLock = new object();
 
-        public Film(int width, int heigth) : this(new Point2I(width, heigth), new Bounds2F(new Point2F(0, 0), new Point2F(1, 1)), new BoxFilter(new Vector2F(1, 1)), 1, null, 1)
+        public Film(int width, int heigth) : this(new Point2I(width, heigth), new Bounds2F(new Point2F(0, 0), new Point2F(1, 1)), new BoxFilter(new Vector2F(1, 1)), 1, null, 255)
         {
         }
 
@@ -149,7 +149,7 @@ namespace pbrt.Films
             pixel.AddSplatXyz(xyz[0], xyz[1], xyz[2]);
         }
 
-        public Bitmap WriteImage(float splatScale)
+        public Bitmap WriteImage(float splatScale=1)
         {
             // Convert image to RGB and compute final pixel values
             float[] rgbs = new float[3 * CroppedPixelBounds.SurfaceArea];
@@ -195,7 +195,15 @@ namespace pbrt.Films
             {
                 for (int x = 0; x < FullResolution.X; x++)
                 {
-                    bmp.SetPixel(x, y, Color.FromArgb((int)rgbs[pos], (int)rgbs[pos + 1], (int)rgbs[pos + 2]));
+                    var red = (int)rgbs[pos];
+                    var green = (int)rgbs[pos + 1];
+                    var blue = (int)rgbs[pos + 2];
+                    var r = Math.Min(255, red);
+                    var g = Math.Min(255, green);
+                    var b = Math.Min(255, blue);
+                    
+                    var fromArgb = Color.FromArgb(r, g, b);
+                    bmp.SetPixel(x, y, fromArgb);
                     pos += 3;
                 }
             }

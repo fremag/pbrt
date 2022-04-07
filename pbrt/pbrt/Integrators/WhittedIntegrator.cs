@@ -1,8 +1,5 @@
-using System;
 using pbrt.Cameras;
 using pbrt.Core;
-using pbrt.Lights;
-using pbrt.Reflections;
 using pbrt.Samplers;
 using pbrt.Spectrums;
 
@@ -13,18 +10,19 @@ namespace pbrt.Integrators
         public TransportMode TransportMode { get; }
         public int MaxDepth { get; }
 
-        public WhittedIntegrator(int maxDepth, AbstractSampler sampler, AbstractCamera camera) : base(sampler, camera)
+        public WhittedIntegrator(int maxDepth, AbstractSampler sampler, AbstractCamera camera, int nbThreads=1) : base(sampler, camera, nbThreads)
         {
             MaxDepth = maxDepth;
             TransportMode = new TransportMode();
         }
 
-        public override Spectrum Li(RayDifferential ray, Scene scene, AbstractSampler sampler, int depth = 0)
+        public override Spectrum Li(RayDifferential ray, IScene scene, AbstractSampler sampler, int depth = 0)
         {
             Spectrum l = new Spectrum(0f);
-            
             // Find closest ray intersection or return background radiance
-            if (!scene.Intersect(ray, out var isect)) 
+            var intersect = scene.Intersect(ray, out var isect);
+
+            if (!intersect) 
             {
                 foreach (var light in scene.Lights)
                 {
@@ -55,35 +53,27 @@ namespace pbrt.Integrators
                 }
 
                 Spectrum f = isect.Bsdf.F(wo, wi);
-                if (!f.IsBlack() && visibility.Unoccluded(scene))
+
+                var isBlack = f.IsBlack();
+                if (isBlack)
+                {
+                    continue;
+                }
+                
+                var unOccluded = visibility.Unoccluded(scene);
+                if (unOccluded)
+                {
                     l += f * li * wi.AbsDot(n) / pdf;
+                }
             }
             
-            if (depth + 1 < MaxDepth) {
+            if (depth + 1 < MaxDepth)
+            {
                 // Trace rays for specular reflection and refraction 
                 l += SpecularReflect(ray, isect, scene, sampler, depth);
                 l += SpecularTransmit(ray, isect, scene, sampler, depth);
             }            
             return l;
-        }
-        
-        public Spectrum SpecularReflect(RayDifferential ray, SurfaceInteraction isect, Scene scene, AbstractSampler sampler, int depth) 
-        {
-            // Compute specular reflection direction wi and BSDF value 
-            Vector3F wo = isect.Wo;
-            Vector3F wi;
-            
-            float pdf;
-            BxDFType type = BxDFType.BSDF_REFLECTION | BxDFType.BSDF_SPECULAR;
-            BxDFType sampledType = BxDFType.BSDF_NONE;
-            Spectrum f = isect.Bsdf.Sample_f(wo, out wi, sampler.Get2D(), out pdf, type, ref sampledType);            
-            // Return contribution of specular reflection
-            throw new NotImplementedException();
-        }
-
-        public Spectrum SpecularTransmit(RayDifferential ray, SurfaceInteraction isect, Scene scene, AbstractSampler sampler, int depth)
-        {
-            throw new NotImplementedException();
         }
     }
 }

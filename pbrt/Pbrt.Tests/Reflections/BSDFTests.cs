@@ -110,14 +110,14 @@ namespace Pbrt.Tests.Reflections
 
             woW = new Vector3F(1,1,1);
             wiW = new Vector3F(1,1,-1);
-            // woW . woI < 0 =>  transmission with type transmission => match, spectrum = sum(Transmission) 
-            spectrum = bsdf.F(woW, wiW, BxDFType.BSDF_TRANSMISSION);
+            // woW . woI < 0 =>  transmission with type transmission+diffuse => match, spectrum = sum(LambertianTransmission) 
+            spectrum = bsdf.F(woW, wiW, BxDFType.BSDF_TRANSMISSION | BxDFType.BSDF_DIFFUSE);
             Check.That(spectrum).IsEqualTo(new Spectrum((3f+4f)/MathF.PI));
 
             woW = new Vector3F(1,1,1);
             wiW = new Vector3F(-1,1,1);
-            // woW . woI > 0 =>  reflection with ype treflection =>  match, spectrum = sum(reflection) 
-            spectrum = bsdf.F(woW, wiW, BxDFType.BSDF_REFLECTION);
+            // woW . woI > 0 =>  reflection with type reflection+diffuse =>  match, spectrum = sum(LambertianReflection) 
+            spectrum = bsdf.F(woW, wiW, BxDFType.BSDF_REFLECTION | BxDFType.BSDF_DIFFUSE);
             var f = (1f + 2f) / MathF.PI;
             Check.That(spectrum.C[0]).IsCloseTo(f, 1e-6);
 
@@ -138,12 +138,16 @@ namespace Pbrt.Tests.Reflections
             bsdf.Add(new FresnelSpecular(new Spectrum(4f), new Spectrum(1f), 1, 2, TransportMode.Importance));
             bsdf.Add(new OrenNayar(new Spectrum(4f), 1f));
 
-            Check.That(bsdf.NumComponents()).IsEqualTo(0);
+            Check.That(bsdf.NumComponents()).IsEqualTo(6);
             Check.That(bsdf.NumComponents(BxDFType.BSDF_GLOSSY)).IsEqualTo(0);
-            Check.That(bsdf.NumComponents(BxDFType.BSDF_DIFFUSE)).IsEqualTo(1);
-            Check.That(bsdf.NumComponents(BxDFType.BSDF_SPECULAR)).IsEqualTo(5);
-            Check.That(bsdf.NumComponents(BxDFType.BSDF_REFLECTION)).IsEqualTo(5);
-            Check.That(bsdf.NumComponents(BxDFType.BSDF_TRANSMISSION)).IsEqualTo(3);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_DIFFUSE)).IsEqualTo(0);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_SPECULAR)).IsEqualTo(0);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_REFLECTION)).IsEqualTo(0);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_TRANSMISSION)).IsEqualTo(0);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_REFLECTION | BxDFType.BSDF_SPECULAR)).IsEqualTo(2);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_TRANSMISSION | BxDFType.BSDF_SPECULAR)).IsEqualTo(1);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_REFLECTION | BxDFType.BSDF_TRANSMISSION | BxDFType.BSDF_SPECULAR)).IsEqualTo(5);
+            Check.That(bsdf.NumComponents(BxDFType.BSDF_REFLECTION | BxDFType.BSDF_DIFFUSE)).IsEqualTo(1);
         }
 
         [Test]

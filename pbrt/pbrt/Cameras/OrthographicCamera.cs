@@ -94,6 +94,5 @@ namespace pbrt.Cameras
             
             return 1;
         }
-        
     }
 }

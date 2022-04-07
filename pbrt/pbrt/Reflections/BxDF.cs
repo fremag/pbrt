@@ -74,7 +74,12 @@ namespace pbrt.Reflections
             
             return r / (MathF.PI * nSamples);
         }
-        public bool MatchesFlags(BxDFType bxDfType) => (BxdfType & bxDfType) == bxDfType;
+        public bool MatchesFlags(BxDFType bxDfType)
+        {
+            var checkType = BxdfType & bxDfType;
+            var result = checkType == BxdfType;
+            return result;
+        }
 
         public static float FrDielectric(float cosThetaI, float etaI, float etaT)
         {

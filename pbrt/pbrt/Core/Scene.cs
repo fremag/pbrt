@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using pbrt.Lights;
 using pbrt.Samplers;
 using pbrt.Spectrums;
@@ -6,6 +7,10 @@ namespace pbrt.Core
 {
     public interface IScene
     {
+        IPrimitive Aggregate { get; }
+        Light[] Lights { get; }
+        Bounds3F WorldBound { get; }
+
         bool IntersectP(Ray ray);
         bool Intersect(Ray ray, out SurfaceInteraction isect);
         bool IntersectTr(Ray ray, AbstractSampler sampler, out SurfaceInteraction isect, out Spectrum tr);
@@ -13,11 +18,20 @@ namespace pbrt.Core
 
     public class Scene : IScene
     {
-        public IPrimitive Aggregate { get; }
-        public Light[] Lights { get; }
-        public Bounds3F WorldBound { get; }
+        public IPrimitive Aggregate { get; private set; }
+        public Light[] Lights { get;  private set;}
+        public Bounds3F WorldBound { get;  private set;}
+
+        public Scene()
+        {
+        }
 
         public Scene(IPrimitive aggregate, Light[] lights)
+        {
+            Init(aggregate, lights);
+        }
+
+        protected void Init(IPrimitive aggregate, Light[] lights)
         {
             Aggregate = aggregate;
             Lights = lights;
@@ -36,7 +50,8 @@ namespace pbrt.Core
 
         public bool Intersect(Ray ray, out SurfaceInteraction isect)
         {
-            return Aggregate.Intersect(ray, out isect);
+            var intersect = Aggregate.Intersect(ray, out isect);
+            return intersect;
         }
         
         public bool IntersectTr(Ray ray, AbstractSampler sampler, out SurfaceInteraction isect, out Spectrum tr) 

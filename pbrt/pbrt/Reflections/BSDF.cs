@@ -64,8 +64,10 @@ namespace pbrt.Reflections
             {
                 var bxdf = bxdfs[i];
                 var matchesFlags = bxdf.MatchesFlags(flags);
-                var matchReflection = reflect && (bxdf.BxdfType & BxDFType.BSDF_REFLECTION)!=0;
-                var matchTransmission = !reflect && (bxdf.BxdfType & BxDFType.BSDF_TRANSMISSION)!=0;
+                var bsdfReflection = bxdf.BxdfType & BxDFType.BSDF_REFLECTION;
+                var bsdfTransmission = bxdf.BxdfType & BxDFType.BSDF_TRANSMISSION;
+                var matchReflection = reflect && bsdfReflection != BxDFType.BSDF_NONE;
+                var matchTransmission = !reflect && bsdfTransmission != BxDFType.BSDF_NONE;
                 
                 if (matchesFlags && (matchReflection || matchTransmission))
                 {

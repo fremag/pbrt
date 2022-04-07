@@ -161,7 +161,7 @@ namespace Pbrt.Tests.Films
             }
             
             film.MergeFilmTile(filmTile);
-            var bmp = film.WriteImage(256);
+            var bmp = film.WriteImage();
 
 #if WriteFile
             var tempFileName = Path.GetTempFileName();

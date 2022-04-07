@@ -16,12 +16,12 @@ namespace pbrt.Core
         public Interaction() {}
 
         public Interaction(Point3F p, Vector3F wo, float time, MediumInterface mediumInterface)
-            : this(p, null, null, wo, time, mediumInterface)
+            : this(p, new Normal3F(), new Vector3F(0,0,0), wo, time, mediumInterface)
         {
             
         }
 
-        public Interaction(Point3F p, float time, MediumInterface mediumInterface) : this(p, null, time, mediumInterface)
+        public Interaction(Point3F p, float time, MediumInterface mediumInterface) : this(p, new Vector3F(0,0,0), time, mediumInterface)
         {
             
         }        

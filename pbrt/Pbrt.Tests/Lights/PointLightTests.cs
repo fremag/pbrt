@@ -43,7 +43,7 @@ namespace Pbrt.Tests.Lights
             var li = light.Sample_Li(interaction, u, out var wi, out var pdf, out var visibilityTester);
             Check.That(wi).IsEqualTo(new Vector3F(0, 1, 0));
             Check.That(visibilityTester.P0).IsSameReferenceAs(interaction);
-            Check.That(visibilityTester.P1.N).IsNull();
+            Check.That(visibilityTester.P1.N).IsEqualTo(new Normal3F(0, 0, 0));
             Check.That(visibilityTester.P1.P).IsEqualTo(new Point3F(0, 1, 0));
             Check.That(visibilityTester.P1.MediumInterface).IsSameReferenceAs(mediumInterface);
             

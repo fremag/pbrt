@@ -79,7 +79,7 @@ namespace Pbrt.Tests.Reflections
         [Test]
         public void MatchesFlagsTest()
         {
-            Check.That(scaled.MatchesFlags(BxDFType.BSDF_ALL)).IsFalse();
+            Check.That(scaled.MatchesFlags(BxDFType.BSDF_ALL)).IsTrue();
             Check.That(scaled.MatchesFlags(BxDFType.BSDF_SPECULAR)).IsTrue();
             Check.That(scaled.MatchesFlags(BxDFType.BSDF_DIFFUSE)).IsFalse();
             Check.That(scaled.MatchesFlags(BxDFType.BSDF_GLOSSY)).IsFalse();
