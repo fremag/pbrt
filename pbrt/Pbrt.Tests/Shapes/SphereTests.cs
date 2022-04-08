@@ -53,6 +53,26 @@ namespace Pbrt.Tests.Shapes
         }
 
         [Test]
+        public void BasicConstructorTest()
+        {
+            var myTranslation = Transform.Translate(1, 2, 3);
+            var mySphere = new Sphere(myTranslation, 2);
+            Check.That(mySphere.Radius).IsEqualTo(2);
+            Check.That(mySphere.ZMax).IsEqualTo(2);
+            Check.That(mySphere.ZMin).IsEqualTo(-2);
+            Check.That(mySphere.ThetaMax).IsEqualTo(0);
+            Check.That(mySphere.ThetaMin).IsEqualTo(MathF.PI);
+            Check.That(mySphere.PhiMax).IsCloseTo(6.28f, 1e-2);
+            Check.That(mySphere.Area).IsCloseTo(4 * 3.14f * sphere.Radius * sphere.Radius, 1e-1);
+            Check.That(mySphere.ObjectBound.PMin).IsEqualTo(new Point3F(-2, -2, -2));
+            Check.That(mySphere.ObjectBound.PMax).IsEqualTo(new Point3F(2, 2, 2));
+            Check.That(mySphere.ReverseOrientation).IsFalse();
+            Check.That(mySphere.ObjectToWorld).IsEqualTo(myTranslation);
+            Check.That(mySphere.WorldToObject).IsEqualTo(myTranslation.Inverse());
+            Check.That(mySphere.TransformSwapsHandedness).IsFalse();
+        }
+
+        [Test]
         public void BasicIntersectTest()
         {
             var o = new Point3F(-10, 1, 0);

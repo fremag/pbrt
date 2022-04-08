@@ -32,7 +32,16 @@ namespace Pbrt.Tests.Core
             aggregate = new GeometricPrimitive(shape, material,  null, new MediumInterface(HomogeneousMedium.Default(), HomogeneousMedium.Default()));
             scene = new Scene(aggregate, new [] { light });
         }
-        
+
+        [Test]
+        public void EmptyConstructorTest()
+        {
+            var emptyScene = new Scene();
+            Check.That(emptyScene.Aggregate).IsNull();
+            Check.That(emptyScene.Lights).IsNull();
+            Check.That(emptyScene.WorldBound).IsNull();
+        }
+
         [Test]
         public void BasicTest()
         {

@@ -252,7 +252,6 @@ namespace Pbrt.Tests.Reflections
             bsdf.Add(bxdf2);
             bsdf.Add(bxdf3);
             
-            
             Vector3F wi = new Vector3F(1, 2, 3);
             
             bxdf3.Sample_f(Arg.Any<Vector3F>(), out Arg.Any<Vector3F>(), Arg.Any<Point2F>(), out Arg.Any<float>(), out Arg.Any<BxDFType>()).Returns(info =>
@@ -272,6 +271,37 @@ namespace Pbrt.Tests.Reflections
             Check.That(spectrum).IsEqualTo(new Spectrum(3.45f+4.56f));
             Check.That(wiWorld).IsEqualTo(wi);
             Check.That(pdf).IsEqualTo((2.34f+3.45f)/2f);
+        }
+
+        [Test]
+        public void Sample_f_PdfZero_Test()
+        {
+            BxDF bxdf2 = Substitute.For<BxDF>(BxDFType.BSDF_REFLECTION);
+
+            bxdf2.Pdf(Arg.Any<Vector3F>(), Arg.Any<Vector3F>()).Returns(3.45f);
+            bxdf2.F(Arg.Any<Vector3F>(), Arg.Any<Vector3F>()).Returns(new Spectrum(3.45f));
+            
+            bsdf.Add(bxdf2);
+            
+            Vector3F wi = new Vector3F(1, 2, 3);
+            
+            bxdf2.Sample_f(Arg.Any<Vector3F>(), out Arg.Any<Vector3F>(), Arg.Any<Point2F>(), out Arg.Any<float>(), out Arg.Any<BxDFType>()).Returns(info =>
+            {
+                info[1] = wi;
+                info[3] = 0f; // Pdf = 0 !
+                info[4] = bxdf2.BxdfType;
+                return new Spectrum(1.23f);
+            });
+            
+            BxDFType sampledType = BxDFType.BSDF_NONE;
+            Vector3F woWorld = new Vector3F(1, 0, 1);
+            Point2F u = new Point2F(0.5f, 0.5f);
+            
+            var spectrum = bsdf.Sample_f(woWorld, out var wiWorld, u, out var pdf, BxDFType.BSDF_REFLECTION, ref sampledType);
+            
+            Check.That(spectrum).IsEqualTo(new Spectrum(0f));
+            Check.That(wiWorld).IsNull();
+            Check.That(pdf).IsEqualTo(0f);
         }
     }
 }

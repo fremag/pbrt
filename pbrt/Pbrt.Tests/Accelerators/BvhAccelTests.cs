@@ -72,7 +72,21 @@ namespace Pbrt.Tests.Accelerators
             Check.That(linearBvhNode.Bounds.PMin).IsEqualTo(new Point3F(-1, -1, -1));
             Check.That(linearBvhNode.Bounds.PMax).IsEqualTo(new Point3F(1, 1, 1));
         }
-        
+
+        [Test]
+        public void WorldBoundsTest()
+        {
+            List<IPrimitive> primitives = new List<IPrimitive>
+            {
+                CreateSphere(0, -1, 0),
+                CreateSphere(5, 2, 1)
+            };
+            
+            var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
+            var worldBounds = bvh.WorldBound();
+            Check.That(worldBounds.PMin).IsEqualTo(new Point3F(-1,-2,-1));
+            Check.That(worldBounds.PMax).IsEqualTo(new Point3F(6,3,2));
+        }
         [Test]
         public void TwoSpheres_RecursiveBuildTest()
         {
@@ -238,7 +252,100 @@ namespace Pbrt.Tests.Accelerators
             Check.That(bvh.Nodes).CountIs(1);
             Check.That(bvh.Nodes[0].Bounds.PMin).Check((-10, -10, -10));
             Check.That(bvh.Nodes[0].Bounds.PMax).Check((10, 10, 10));
+        }
+        
+        [Test]
+        public void TwoSpheres_IntersectP_Test()
+        {
+            var sphere1 = CreateSphere(0, 0, 0);
+            var sphere2 = CreateSphere(5, 0, 0);
+            List<IPrimitive> primitives = new List<IPrimitive>
+            {
+                sphere1, sphere2
+            };
+            
+            var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
+            Ray ray = new Ray((10, 0, 0), (-1, 0, 0), 1000, 1, HomogeneousMedium.Default());
+            
+            var inter = bvh.IntersectP(ray);
+            Check.That(inter).IsTrue();
+        }
+        
+        [Test]
+        public void TwoSpheres_IntersectP_2_Test()
+        {
+            var sphere1 = CreateSphere(0, 0, 0);
+            var sphere2 = CreateSphere(5, 0, 0);
+            List<IPrimitive> primitives = new List<IPrimitive>
+            {
+                sphere1, sphere2
+            };
+            
+            var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
+            Ray ray = new Ray((0, 0, -5), (0, 0, 1), 1000, 1, HomogeneousMedium.Default());
+            
+            var inter = bvh.IntersectP(ray);
+            Check.That(inter).IsTrue();
+        }
+        
+        [Test]
+        public void TwoSpheres_IntersectP_3_Test()
+        {
+            var sphere1 = CreateSphere(0, 0, 0);
+            var sphere2 = CreateSphere(5, 0, 0);
+            List<IPrimitive> primitives = new List<IPrimitive>
+            {
+                sphere1, sphere2
+            };
+            
+            var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
+            Ray ray = new Ray((0.9f, 0.9f, -5), (0, 0, 1), 1000, 1, HomogeneousMedium.Default());
+            
+            var inter = bvh.IntersectP(ray);
+            Check.That(inter).IsFalse();
+        }
+        
+        [Test]
+        public void TwoSpheres_IntersectP_4_Test()
+        {
+            var sphere1 = CreateSphere(0, 0, 0);
+            var sphere2 = CreateSphere(5, 0, 0);
+            var sphere3 = CreateSphere(4, 0, 0);
+            List<IPrimitive> primitives = new List<IPrimitive>
+            {
+                sphere1, sphere2, sphere3
+            };
+            
+            var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
+            Ray ray = new Ray((4.5f, 0.9f, -5), (0, 0, 1), 1000, 1, HomogeneousMedium.Default());
+            
+            var inter = bvh.IntersectP(ray);
+            Check.That(inter).IsFalse();
+        }
+        
+        [Test]
+        public void TwoSpheres_IntersectP_OutsideBounds_Test()
+        {
+            var sphere1 = CreateSphere(0, 0, 0);
+            var sphere2 = CreateSphere(5, 0, 0);
+            List<IPrimitive> primitives = new List<IPrimitive>
+            {
+                sphere1, sphere2
+            };
+            
+            var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
+            Ray ray = new Ray((10, 10, 0), (-1, 0, 0), 1000, 1, HomogeneousMedium.Default());
+            
+            var inter = bvh.IntersectP(ray);
+            Check.That(inter).IsFalse();
+        }
 
+        [Test]
+        public void NoPrimitive_IntersectP_Test()
+        {
+            var bvh = new BvhAccel(null, 2, SplitMethod.Middle);
+            var inter = bvh.IntersectP(null);
+            Check.That(inter).IsFalse();
         }
     }
 }

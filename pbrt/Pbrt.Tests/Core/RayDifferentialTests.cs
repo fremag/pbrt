@@ -33,6 +33,19 @@ namespace Pbrt.Tests.Core
         }
 
         [Test]
+        public void BasicConstructorTest()
+        {
+            Ray ray = new Ray(origin, direction, tMax, time, medium);
+            var myRayDiff = new RayDifferential(ray);
+            Check.That(myRayDiff.O).IsEqualTo(origin);
+            Check.That(myRayDiff.D).IsEqualTo(direction);
+            Check.That(myRayDiff.TMax).IsEqualTo(tMax);
+            Check.That(myRayDiff.Time).IsEqualTo(time);
+            Check.That(myRayDiff.Medium).IsEqualTo(medium);
+            Check.That(myRayDiff.HasDifferentials).IsFalse();
+        }
+
+        [Test]
         public void ScaleDifferentialsTest()
         {
             Check.That(rayDiff.RxDirection).IsEqualTo(Vector3F.Zero);

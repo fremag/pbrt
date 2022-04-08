@@ -225,7 +225,6 @@ namespace pbrt.Accelerators
         {
             return Nodes != null ? Nodes[0].Bounds : new Bounds3F();
         }
-        
 
         public override bool IntersectP(Ray ray) 
         {
@@ -239,9 +238,11 @@ namespace pbrt.Accelerators
             int[] nodesToVisit = new int[64];
             
             int toVisitOffset = 0, currentNodeIndex = 0;
-            while (true) {
+            while (true) 
+            {
                 LinearBVHNode node = Nodes[currentNodeIndex];
-                if (node.Bounds.IntersectP(ray, invDir, dirIsNeg)) {
+                if (node.Bounds.IntersectP(ray, invDir, dirIsNeg)) 
+                {
                     // Process BVH node _node_ for traversal
                     if (node.NPrimitives > 0) 
                     {
@@ -286,6 +287,5 @@ namespace pbrt.Accelerators
             }
             return false;
         }
-        
     }
 }
