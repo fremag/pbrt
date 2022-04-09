@@ -22,7 +22,7 @@ namespace Pbrt.Tests.Integrators
             internal List<RayDifferential> rays = new List<RayDifferential>();
             internal float spectrumValue = 1.23f;
 
-            public DummySamplerIntegrator(AbstractSampler sampler, AbstractCamera camera, int nbThreads = 1) : base(sampler, camera, nbThreads)
+            public DummySamplerIntegrator(AbstractSampler sampler, AbstractCamera camera, int nbThreads = 1, int tileSize=16) : base(sampler, camera, nbThreads, tileSize)
             {
             }
 
@@ -45,7 +45,7 @@ namespace Pbrt.Tests.Integrators
             Medium medium = HomogeneousMedium.Default();
             
             AbstractCamera camera = new OrthographicCamera(cameraToWorld, screenWindow, film, medium);
-            samplerIntegrator = new DummySamplerIntegrator(sampler, camera);
+            samplerIntegrator = new DummySamplerIntegrator(sampler, camera, 1, 4);
         }
 
         [Test]
@@ -53,8 +53,12 @@ namespace Pbrt.Tests.Integrators
         {
             Check.That(samplerIntegrator.NbThreads).IsEqualTo(1);
             IScene scene = new Scene();
+            int n = 0;
+            samplerIntegrator.TileRendered += (i, j, t) => n++;
             var img = samplerIntegrator.Render(scene);
             Check.That(samplerIntegrator.rays).CountIs(144);
+            Check.That(n).IsEqualTo(9);
+            
             for (int i = 0; i < img.Width; i++)
             {
                 for (int j = 0; j < img.Height; j++)

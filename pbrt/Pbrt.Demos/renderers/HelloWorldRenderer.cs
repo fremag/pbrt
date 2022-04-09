@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using Pbrt.Demos.scenes;
 using pbrt.Integrators;
@@ -12,7 +13,7 @@ namespace Pbrt.Demos.renderers
         {
             Camera = GetOrthoCam((0, 0, -5));
             Sampler = new PixelSampler(1, 1, 0);
-            Integrator = new WhittedIntegrator(5, Sampler, Camera, 8);
+            Integrator = new WhittedIntegrator(5, Sampler, Camera, Environment.ProcessorCount/2);
             Scene = new HelloWorldScene();
         }
     }

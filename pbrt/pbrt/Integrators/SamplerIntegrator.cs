@@ -19,13 +19,15 @@ namespace pbrt.Integrators
         protected AbstractSampler Sampler { get; }
         protected AbstractCamera Camera { get; }
         public int NbThreads { get; }
-        const int tileSize = 16;
+        public int TileSize { get; }
+        const int DefaultTileSize = 16;
 
-        protected SamplerIntegrator(AbstractSampler sampler, AbstractCamera camera, int nbThreads=1)
+        protected SamplerIntegrator(AbstractSampler sampler, AbstractCamera camera, int nbThreads=1, int tileSize = DefaultTileSize)
         {
             Sampler = sampler;
             Camera = camera;
             NbThreads = nbThreads;
+            TileSize = tileSize;
         }
 
         public override Bitmap Render(IScene scene)
@@ -34,7 +36,7 @@ namespace pbrt.Integrators
 
             Bounds2I sampleBounds = Camera.Film.GetSampleBounds();
             Vector2I sampleExtent = sampleBounds.Diagonal();
-            Point2I nTiles = new Point2I((sampleExtent.X + tileSize - 1) / tileSize, (sampleExtent.Y + tileSize - 1) / tileSize);
+            Point2I nTiles = new Point2I((sampleExtent.X + TileSize - 1) / TileSize, (sampleExtent.Y + TileSize - 1) / TileSize);
             var nbTiles = nTiles.X * nTiles.Y;
 
             void RenderTile(int tile)
@@ -63,10 +65,10 @@ namespace pbrt.Integrators
             var tileSampler = Sampler.Clone(seed);
 
             // Compute sample bounds for tile
-            int x0 = sampleBounds.PMin.X + tileX * tileSize;
-            int x1 = Math.Min(x0 + tileSize, sampleBounds.PMax.X);
-            int y0 = sampleBounds.PMin.Y + tileY * tileSize;
-            int y1 = Math.Min(y0 + tileSize, sampleBounds.PMax.Y);
+            int x0 = sampleBounds.PMin.X + tileX * TileSize;
+            int x1 = Math.Min(x0 + TileSize, sampleBounds.PMax.X);
+            int y0 = sampleBounds.PMin.Y + tileY * TileSize;
+            int y1 = Math.Min(y0 + TileSize, sampleBounds.PMax.Y);
             Bounds2I tileBounds = new Bounds2I(new Point2I(x0, y0), new Point2I(x1, y1));
             
             // Get FilmTile for tile 

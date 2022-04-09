@@ -13,9 +13,9 @@ namespace Pbrt.Demos
         
         static void Main(string[] args)
         {
-            // Render(new HelloWorldRenderer());
-            // Render(new CheckerPlaneRenderer());
-            // Render(new MirrorRenderer());
+            Render(new HelloWorldRenderer());
+            Render(new CheckerPlaneRenderer());
+            Render(new MirrorRenderer());
             Render(new GlassRenderer());
             Console.WriteLine("Done.");
         }

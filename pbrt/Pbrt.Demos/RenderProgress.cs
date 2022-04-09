@@ -21,7 +21,7 @@ namespace Pbrt.Demos
 
         private void PrintStats()
         {
-            string msg = $"\r{Renderer.GetType().Name,20}: {n/(float)nbTiles:p2} {swTotal.Elapsed:hh\\:mm\\:ss}";
+            string msg = $"\r{Renderer.GetType().Name,20}: {n/(float)nbTiles:p2} {swTotal.Elapsed:hh\\:mm\\:ss\\.fff}";
             Console.Write(msg);
         }
 

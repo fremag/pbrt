@@ -56,38 +56,38 @@ namespace pbrt.Materials
             if (isSpecular && allowMultipleLobes) 
             {
                 si.Bsdf.Add(new FresnelSpecular(R, T, 1f, eta, mode));
+                return;
             }
-            else 
+
+            if (RemapRoughness)
             {
-                if (RemapRoughness)
-                {
-                    urough = TrowbridgeReitzDistribution.RoughnessToAlpha(urough);
-                    vrough = TrowbridgeReitzDistribution.RoughnessToAlpha(vrough);
-                }
+                urough = TrowbridgeReitzDistribution.RoughnessToAlpha(urough);
+                vrough = TrowbridgeReitzDistribution.RoughnessToAlpha(vrough);
+            }
                 
-                MicrofacetDistribution distrib = isSpecular ? null : new TrowbridgeReitzDistribution(urough, vrough);
-                if (!R.IsBlack()) 
+            MicrofacetDistribution distrib = isSpecular ? null : new TrowbridgeReitzDistribution(urough, vrough);
+            if (!R.IsBlack()) 
+            {
+                Fresnel fresnel = new FresnelDielectric(1f, eta);
+                if (isSpecular)
                 {
-                    Fresnel fresnel = new FresnelDielectric(1f, eta);
-                    if (isSpecular)
-                    {
-                        si.Bsdf.Add(new SpecularReflection(R, fresnel));
-                    }
-                    else
-                    {
-                        si.Bsdf.Add(new MicrofacetReflection(R, distrib, fresnel));
-                    }
+                    si.Bsdf.Add(new SpecularReflection(R, fresnel));
                 }
-                if (!T.IsBlack()) 
+                else
                 {
-                    if (isSpecular)
-                    {
-                        si.Bsdf.Add(new SpecularTransmission(T, 1f, eta, mode));
-                    }
-                    else
-                    {
-                        si.Bsdf.Add(new MicrofacetTransmission(T, distrib, 1f, eta, mode));
-                    }
+                    si.Bsdf.Add(new MicrofacetReflection(R, distrib, fresnel));
+                }
+            }
+                
+            if (!T.IsBlack()) 
+            {
+                if (isSpecular)
+                {
+                    si.Bsdf.Add(new SpecularTransmission(T, 1f, eta, mode));
+                }
+                else
+                {
+                    si.Bsdf.Add(new MicrofacetTransmission(T, distrib, 1f, eta, mode));
                 }
             }
         }
