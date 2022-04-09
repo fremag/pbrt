@@ -42,6 +42,7 @@ namespace pbrt.Reflections
                 return ft / AbsCosTheta(wi);
             }
 
+            pdf = 0;
             return new Spectrum(0f);
         }
         

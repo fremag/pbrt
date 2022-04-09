@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using pbrt.Core;
 using pbrt.Spectrums;
 
@@ -158,6 +159,10 @@ namespace pbrt.Reflections
                 return new Spectrum(0f);
             }
 
+            if (wi == null)
+            {
+                Debug.WriteLine("???");
+            }
             wiWorld = LocalToWorld(wi);
             
             // Compute overall PDF with all matching BxDFs

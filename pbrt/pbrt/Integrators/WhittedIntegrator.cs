@@ -7,13 +7,11 @@ namespace pbrt.Integrators
 {
     public class WhittedIntegrator : SamplerIntegrator
     {
-        public TransportMode TransportMode { get; }
         public int MaxDepth { get; }
 
         public WhittedIntegrator(int maxDepth, AbstractSampler sampler, AbstractCamera camera, int nbThreads=1) : base(sampler, camera, nbThreads)
         {
             MaxDepth = maxDepth;
-            TransportMode = new TransportMode();
         }
 
         public override Spectrum Li(RayDifferential ray, IScene scene, AbstractSampler sampler, int depth = 0)
@@ -38,8 +36,14 @@ namespace pbrt.Integrators
             Vector3F wo = isect.Wo;
             
             // Compute scattering functions for surface interaction 
-            isect.ComputeScatteringFunctions(ray, null, true, TransportMode);
-            
+            isect.ComputeScatteringFunctions(ray, null, false, TransportMode.Radiance);
+            if (isect.Bsdf == null)
+            {
+                var spawnRay = isect.SpawnRay(ray.D);
+                RayDifferential spawnRayDiff = new RayDifferential(spawnRay);
+                return Li(spawnRayDiff, scene, sampler, depth);
+            }
+
             // Compute emitted light if ray hit an area light source 
             l += isect.Le(wo);
             
