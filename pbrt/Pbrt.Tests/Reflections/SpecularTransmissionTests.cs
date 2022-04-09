@@ -54,7 +54,7 @@ namespace Pbrt.Tests.Reflections
             var spec = specularTransmission.Sample_f(wo, out var wi, sample, out var pdf, out var sampledType);
             Check.That(spec).IsEqualTo(new Spectrum(0f));
             Check.That(wi).IsNull();
-            Check.That(pdf).IsEqualTo(1f);
+            Check.That(pdf).IsEqualTo(0f);
             Check.That(sampledType).IsEqualTo(BxDFType.BSDF_TRANSMISSION | BxDFType.BSDF_SPECULAR);
         }
 

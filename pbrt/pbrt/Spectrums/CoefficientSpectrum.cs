@@ -21,7 +21,8 @@ namespace pbrt.Spectrums
         public CoefficientSpectrum(int nSpectrumSamples, float v)
         {
             NSpectrumSamples = nSpectrumSamples;
-            C = Enumerable.Range(0, nSpectrumSamples).Select(_ => v).ToArray();
+            C = new float[nSpectrumSamples];
+            Array.Fill(C, v);
         }
 
         public float this[int i] => C[i];

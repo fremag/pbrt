@@ -13,7 +13,7 @@ namespace Pbrt.Demos.renderers
         {
             Camera = GetCam((-1f, 1, -1), (0, 0, 1));
             Sampler = new PixelSampler(1, 1, 0);
-            Integrator = new WhittedIntegrator(5, Sampler, Camera, Environment.ProcessorCount);
+            Integrator = new WhittedIntegrator(5, Sampler, Camera,Environment.ProcessorCount/2);
             Scene = new GlassScene();
         }
     }
