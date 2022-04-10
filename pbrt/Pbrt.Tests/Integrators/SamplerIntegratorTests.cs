@@ -121,6 +121,10 @@ namespace Pbrt.Tests.Integrators
             isect.Bsdf = bsdf;
             var f = samplerIntegrator.SpecularReflect(rayDiff, isect, scene, sampler, 1);
             Check.That(f).IsEqualTo(new Spectrum(1.23f));
+
+            isect.Wo = Vector3F.Zero;
+            f = samplerIntegrator.SpecularReflect(rayDiff, isect, scene, sampler, 1);
+            Check.That(f).IsEqualTo(new Spectrum(0f));
         }
         
         [Test]
