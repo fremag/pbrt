@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using pbrt.Cameras;
 using pbrt.Core;
 using pbrt.Samplers;
@@ -5,6 +6,7 @@ using pbrt.Spectrums;
 
 namespace pbrt.Integrators
 {
+    [ExcludeFromCodeCoverage]
     public class WhittedIntegrator : SamplerIntegrator
     {
         public int MaxDepth { get; }
