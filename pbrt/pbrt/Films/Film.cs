@@ -12,7 +12,7 @@ namespace pbrt.Films
     {
         public Point2I FullResolution { get; }
         public Bounds2F CropWindow { get; }
-        public AbstractFilter Filter { get; }
+        public AbstractFilter Filter { get; set; }
         public float Diagonal { get; }
         public string Filename { get; }
         public float Scale { get; }
