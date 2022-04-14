@@ -17,7 +17,8 @@ namespace Pbrt.Demos
             // Render(new CheckerPlaneRenderer());
             // Render(new MirrorRenderer());
             // Render(new GlassRenderer());
-            Render(new CylinderRenderer());
+            // Render(new CylinderRenderer());
+            Render(new DiskRenderer());
             Console.WriteLine("Done.");
         }
 

@@ -9,8 +9,14 @@ namespace pbrt.Shapes
         public float Radius { get; }
         public float InnerRadius { get; }
         public float PhiMax { get; }
-        public override float Area { get; } 
+        public override float Area { get; }
 
+        public Disk(Transform objectToWorld, float radius=1)
+            : this(objectToWorld, objectToWorld.Inverse(), false, 0, radius, 0, 360)
+        {
+            
+        }
+            
         public Disk(Transform objectToWorld, Transform worldToObject, bool reverseOrientation, 
             float height, float radius, float innerRadius, float phiMax)
             : base(objectToWorld, worldToObject, reverseOrientation)

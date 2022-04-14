@@ -1,3 +1,4 @@
+using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
@@ -9,6 +10,20 @@ namespace Pbrt.Tests.Shapes
     [TestFixture]
     public class DiskTests
     {
+        [Test]
+        public void ConstructorTest()
+        {
+            var disk = new Disk(Transform.Translate(1, 0, 0));
+            var worldBound = disk.WorldBound();
+            Check.That(worldBound.PMin).Check((0, -1, 0));
+            Check.That(worldBound.PMax).Check((2, 1, 0));
+
+            Check.That(disk.WorldToObject).IsEqualTo(Transform.Translate(-1, 0, 0));
+            Check.That(disk.Radius).IsEqualTo(1);
+            Check.That(disk.InnerRadius).IsEqualTo(0);
+            Check.That(disk.PhiMax).IsEqualTo(MathF.PI*2);
+        }
+        
         [Test]
         public void SampleTest()
         {
