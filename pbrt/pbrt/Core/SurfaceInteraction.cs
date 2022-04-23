@@ -43,9 +43,10 @@ namespace pbrt.Core
         public SurfaceInteraction(Point3F p, Vector3F pError, Point2F uv, Vector3F wo,
             Vector3F dpdu, Vector3F dpdv,
             Normal3F dndu, Normal3F dndv,
-            float time, AbstractShape shape)
+            float time, AbstractShape shape, int faceIndex=0)
             : base(p, new Normal3F(dpdu.Cross(dpdv).Normalized()), pError, wo, time, null)
         {
+            FaceIndex = faceIndex;
             Uv = uv;
             DpDu = dpdu;
             DpDv = dpdv;

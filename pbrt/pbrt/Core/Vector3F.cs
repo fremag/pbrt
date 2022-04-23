@@ -75,6 +75,7 @@ namespace pbrt.Core
         public static float AbsDot(Vector3F v, Normal3F n) => MathF.Abs(Dot(v,n));
         public static float Dot(Normal3F n1, Vector3F v) => n1.X * v.X + n1.Y * v.Y + n1.Z * v.Z;
         public static float AbsDot(Normal3F n, Vector3F v) => MathF.Abs(Dot(n,v));
+        public static explicit operator Vector3F(Normal3F n) => new Vector3F(n.X, n.Y, n.Z);
 
         public float Dot(Vector3F v) => Dot(this, v);
         public float AbsDot(Vector3F v) => AbsDot(this, v);
@@ -93,7 +94,7 @@ namespace pbrt.Core
 
         public float MinComponent => MathF.Min(X, MathF.Min(Y, Z));
         public float MaxComponent => MathF.Max(X, MathF.Max(Y, Z));
-        public float MaxDimension
+        public int MaxDimension
         {
             get
             {
