@@ -723,7 +723,8 @@ namespace Pbrt.Tests.Shapes
             Check.That(triangles[0].P0).IsEqualTo(new Point3F(-1,0,0));
             Check.That(triangles[0].P1).IsEqualTo(new Point3F(1,0,0));
             Check.That(triangles[0].P2).IsEqualTo(new Point3F(0,1,0));
-            Check.That(triangles[1].P0).IsEqualTo(new Point3F(-1,0,0));
+            var p0 = triangles[1].P0;
+            Check.That(p0).IsEqualTo(new Point3F(-1,0,0));
             Check.That(triangles[1].P1).IsEqualTo(new Point3F(1,0,0));
             Check.That(triangles[1].P2).IsEqualTo(new Point3F(0,-1,0));
         }

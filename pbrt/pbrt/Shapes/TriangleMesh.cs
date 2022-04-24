@@ -32,12 +32,11 @@ namespace pbrt.Shapes
             AlphaMask = alphaMask;
             ShadowAlphaMask = shadowAlphaMask;
             
-            P = new Point3F[nbTriangles*3];
+            P = new Point3F[p.Length];
             // Transform mesh vertices to world space
-            for (int i = 0; i < nbVertices; ++i)
+            for (int i = 0; i < p.Length; ++i)
             {
-                var vertexIndex = vertexIndices[i];
-                var point = p[vertexIndex];
+                var point = p[i];
                 P[i] = objectToWorld.Apply(point);
             }
 

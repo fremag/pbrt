@@ -10,9 +10,32 @@ namespace pbrt.Shapes
         readonly int faceIndex;
         private readonly int triIndex;
 
-        public Point3F P0 => mesh.P[triIndex];
-        public Point3F P1 => mesh.P[triIndex + 1];
-        public Point3F P2 => mesh.P[triIndex + 2];
+        public Point3F P0
+        {
+            get
+            {
+                var meshVertexIndex = mesh.VertexIndices[triIndex];
+                return mesh.P[meshVertexIndex];
+            }
+        }
+
+        public Point3F P1
+        {
+            get
+            {
+                var meshVertexIndex = mesh.VertexIndices[triIndex + 1];
+                return mesh.P[meshVertexIndex];
+            }
+        }
+
+        public Point3F P2
+        {
+            get
+            {
+                var meshVertexIndex = mesh.VertexIndices[triIndex + 2];
+                return mesh.P[meshVertexIndex];
+            }
+        }
 
         public Triangle(Transform objectToWorld, Transform worldToObject,
             bool reverseOrientation, TriangleMesh mesh, int triNumber)
