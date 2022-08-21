@@ -19,8 +19,9 @@ namespace Pbrt.Demos
             // Render(new GlassRenderer());
             // Render(new CylinderRenderer());
             // Render(new DiskRenderer());
-            // Render(new TorusRenderer());
-            Render(new TriangleRenderer());
+            //  Render(new TorusRenderer());
+            // Render(new TriangleRenderer());
+            Render(new CloverRenderer());
             Console.WriteLine("Done.");
         }
 

@@ -524,5 +524,41 @@ namespace pbrt.Core
             };
             return surfaceInteraction;
         }
+        
+        public static Transform Rotation(Vector3F u, Vector3F v)
+        {
+            float cosPhi = u.Dot(v);
+            var uv = u.Cross(v);
+            var uvMagnitude = u.Length * v.Length;
+            float sinPhi = uv.Length / uvMagnitude;
+            // https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula            
+            var m1 = new Matrix4x4(
+                cosPhi, 0, 0, 0,
+                0, cosPhi, 0, 0,
+                0, 0, cosPhi, 0,
+                0, 0, 0, 1
+            );
+
+            if (Math.Abs(sinPhi) < double.Epsilon)
+            {
+                return new Transform(m1);
+            }
+
+            Vector3F n = uv / sinPhi;
+            var m2 = new Matrix4x4(
+                n.X * n.X, n.X * n.Y, n.X * n.Z, 0,
+                n.X * n.Y, n.Y * n.Y, n.Y * n.Z, 0,
+                n.X * n.Z, n.Z * n.Y, n.Z * n.Z, 0,
+                0, 0, 0, 0
+            );
+
+            var m3 = new Matrix4x4(
+                0, -n.Z, n.Y, 0,
+                n.Z, 0, -n.X, 0,
+                -n.Y, n.X, 0, 0,
+                0, 0, 0, 0);
+            var m = m1 + Matrix4x4.Multiply(m2, 1 - cosPhi) + Matrix4x4.Multiply(m3, sinPhi);
+            return new Transform(m);
+        }
     }
 }
