@@ -430,7 +430,7 @@ namespace Pbrt.Tests.Core
 
             var p1 = translation.Apply(p, out var pError);
             Check.That(p1).IsEqualTo(new Point3F(1,1,1));
-            Check.That(pError).IsEqualTo(3 * new Vector3F(float.Epsilon,float.Epsilon,float.Epsilon));
+            Check.That(pError).IsCloseTo((3*MathUtils.MachineEpsilon, 3*MathUtils.MachineEpsilon, 3*MathUtils.MachineEpsilon));
         }
 
         [Test]
@@ -442,7 +442,7 @@ namespace Pbrt.Tests.Core
             Vector3F vError =2* new Vector3F(float.Epsilon,float.Epsilon,float.Epsilon);
             var p1 = translation.Apply(p, vError, out var pError);
             Check.That(p1).IsEqualTo(new Point3F(1,1,1));
-            Check.That(pError).IsEqualTo(5 * new Vector3F(float.Epsilon,float.Epsilon,float.Epsilon));
+            Check.That(pError).IsCloseTo((3*MathUtils.MachineEpsilon, 3*MathUtils.MachineEpsilon, 3*MathUtils.MachineEpsilon));
         }
 
         [Test]
@@ -467,7 +467,7 @@ namespace Pbrt.Tests.Core
             var v = new Vector3F(1, 1, 1);
 
             var v1 = rotation.Apply(v, out var pError);
-            Check.That(pError).IsEqualTo(3 * new Vector3F(float.Epsilon,float.Epsilon,float.Epsilon));
+            Check.That(pError).IsCloseTo((3*MathUtils.MachineEpsilon, 3*MathUtils.MachineEpsilon, 3*MathUtils.MachineEpsilon));
             Check.That(v1.X).IsCloseTo(1, 1e-6);
             Check.That(v1.Y).IsCloseTo( -1, 1e-6);
             Check.That(v1.Z).IsCloseTo( -1, 1e-6);
@@ -487,8 +487,8 @@ namespace Pbrt.Tests.Core
             Check.That(newRay.O.Y).IsCloseTo( -1, 1e-6);
             Check.That(newRay.O.Z).IsCloseTo( -1, 1e-6);
             Check.That(newRay.D).IsEqualTo(dir);
-            Check.That(oError).IsEqualTo(3 * new Vector3F(float.Epsilon,float.Epsilon,float.Epsilon));
-            Check.That(vError).IsEqualTo(3 * new Vector3F(float.Epsilon,0, 0));
+            Check.That(oError).IsCloseTo((3*MathUtils.MachineEpsilon, 3*MathUtils.MachineEpsilon, 3*MathUtils.MachineEpsilon));
+            Check.That(vError).IsCloseTo((3*MathUtils.MachineEpsilon,0, 0));
         }
 
         [Test]
@@ -524,6 +524,39 @@ namespace Pbrt.Tests.Core
             Check.That(newSurfInter.Shading.DpDv).IsEqualTo(translation * dpdv);
             Check.That(newSurfInter.DpDx).IsEqualTo(translation * si.DpDx);
             Check.That(newSurfInter.DpDy).IsEqualTo(translation * si.DpDy);
+        }
+
+        [Test]
+        public void RotationVectorTest()
+        {
+            var v1 = new Vector3F(1, 0, 0);
+            var v2 = new Vector3F(0, 1, 0);
+            Transform mat = Transform.Rotation(v1, v2);
+            Check.That(mat).IsEqualTo(new Transform(new Matrix4x4(
+                0, -1, 0, 0 ,
+                1, 0, 0, 0, 
+                0, 0, 1, 0, 
+                0, 0, 0, 1)));
+        }
+        
+        [Test]
+        public void RotationVector_SinPhi_Test()
+        {
+            var v1 = new Vector3F(1, 0, 0);
+            var v2 = new Vector3F(2, 0, 0);
+            Transform mat = Transform.Rotation(v1, v2);
+            Check.That(mat).IsEqualTo(new Transform(new Matrix4x4(
+                2, 0, 0, 0 ,
+                0, 2, 0, 0, 
+                0, 0, 2, 0, 
+                0, 0, 0, 1)));
+        }
+
+        [Test]
+        public void ToStringTest()
+        {
+            var mat = Transform.Translate(1, 2, 3);
+            Check.That(mat.ToString()).IsEqualTo("{ {M11:1 M12:0 M13:0 M14:1} {M21:0 M22:1 M23:0 M24:2} {M31:0 M32:0 M33:1 M34:3} {M41:0 M42:0 M43:0 M44:1} }");
         }
     }
 }

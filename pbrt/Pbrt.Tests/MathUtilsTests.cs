@@ -40,8 +40,8 @@ namespace Pbrt.Tests
             Check.That(delta).IsLessOrEqualThan(1e-6f);
             Check.That(delta).IsStrictlyPositive();
 
-            var nextFloatDown = MathUtils.NextFloatUp(float.PositiveInfinity);
-            Check.That(float.IsPositiveInfinity(nextFloatDown)).IsTrue();
+            var nextFloatUp = MathUtils.NextFloatUp(float.PositiveInfinity);
+            Check.That(float.IsPositiveInfinity(nextFloatUp)).IsTrue();
             Check.That(MathUtils.NextFloatUp(0f)).IsEqualTo(float.Epsilon);
 
             Check.That(MathUtils.NextFloatUp(-float.Epsilon)).IsZero();
@@ -59,6 +59,35 @@ namespace Pbrt.Tests
             var nextFloatDown = MathUtils.NextFloatDown(float.NegativeInfinity);
             Check.That(float.IsNegativeInfinity(nextFloatDown)).IsTrue();
             Check.That(MathUtils.NextFloatDown(0f)).IsEqualTo(-float.Epsilon);
+        }
+        [Test]
+        public void _NextFloatUpTest()
+        {
+            var f = 1.23f;
+            var nextF = MathUtils._NextFloatUp(f);
+            var delta = nextF-f;
+            Check.That(delta).IsLessOrEqualThan(1e-6f);
+            Check.That(delta).IsStrictlyPositive();
+
+            var nextFloatUp = MathUtils._NextFloatUp(float.PositiveInfinity);
+            Check.That(float.IsPositiveInfinity(nextFloatUp)).IsTrue();
+            Check.That(MathUtils._NextFloatUp(0f)).IsEqualTo(float.Epsilon);
+
+            Check.That(MathUtils._NextFloatUp(-float.Epsilon)).IsZero();
+        }
+        
+        [Test]
+        public void _NextFloatDownTest()
+        {
+            var f = 1.23f;
+            var nextF = MathUtils._NextFloatDown(f);
+            var delta = nextF-f;
+            Check.That(Math.Abs(delta)).IsLessOrEqualThan(1e-6f);
+            Check.That(delta).IsStrictlyNegative();
+
+            var nextFloatDown = MathUtils._NextFloatDown(float.NegativeInfinity);
+            Check.That(float.IsNegativeInfinity(nextFloatDown)).IsTrue();
+            Check.That(MathUtils._NextFloatDown(0f)).IsEqualTo(-float.Epsilon);
         }
         [Test]
         public void NextDoubletUpTest()
@@ -94,8 +123,8 @@ namespace Pbrt.Tests
         public void GammaTest()
         {
             Check.That(MathUtils.Gamma(0)).IsEqualTo(0);
-            Check.That(MathUtils.Gamma(1)).IsEqualTo(float.Epsilon);
-            Check.That(MathUtils.Gamma(3)).IsEqualTo(4e-45f);
+            Check.That(MathUtils.Gamma(1)).IsCloseTo(MathUtils.MachineEpsilon, 1e-12);
+            Check.That(MathUtils.Gamma(3)).IsCloseTo(3.576271E-07f, 1e-12);
         }
 
         [Test]

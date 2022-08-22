@@ -265,7 +265,7 @@ namespace Pbrt.Tests.Core
                 Check.That(t0).IsCloseTo(expT0, 1e-6);
             }
 
-            Check.That(t1).IsCloseTo(expT1, 1e-6);
+            Check.That(t1).IsCloseTo(expT1, 1e-5);
         }
 
         [TestCase(-2,  0,  0, 1, 0, 0, true)] 

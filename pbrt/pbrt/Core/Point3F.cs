@@ -4,7 +4,7 @@ namespace pbrt.Core
 {
     public class Point3F
     {
-        private static readonly double Epsilon = 1e-7;
+        private static readonly double Epsilon = 1e-5;
         public float X { get; set; } 
         public float Y { get; set; } 
         public float Z { get; set; }

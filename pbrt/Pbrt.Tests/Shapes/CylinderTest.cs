@@ -41,7 +41,7 @@ namespace Pbrt.Tests.Shapes
             var ray = new Ray(o, dir, max, time, null);
             var hit = cyl.Intersect(ray, out var tHit, out var iSec);
             Check.That(hit).IsTrue();
-            Check.That(tHit).IsEqualTo(5.5f);
+            Check.That(tHit).IsCloseTo(5.5f, 1e-5f);
         }
 
         [Test]

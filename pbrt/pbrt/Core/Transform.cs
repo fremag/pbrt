@@ -560,5 +560,7 @@ namespace pbrt.Core
             var m = m1 + Matrix4x4.Multiply(m2, 1 - cosPhi) + Matrix4x4.Multiply(m3, sinPhi);
             return new Transform(m);
         }
+
+        public override string ToString() => M.ToString();
     }
 }

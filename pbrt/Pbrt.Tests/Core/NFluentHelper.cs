@@ -1,3 +1,4 @@
+using System;
 using NFluent;
 using NFluent.Extensibility;
 using NFluent.Kernel;
@@ -18,6 +19,21 @@ namespace Pbrt.Tests.Core
                 }
             }, "failed");
         }
+
+        public static ICheckLink<ICheck<Vector3F>> IsCloseTo(this ICheck<Vector3F> check, (float x, float y, float z) expected, float within=1e-8f)
+        {
+            var runCheck = ExtensibilityHelper.ExtractChecker<Vector3F>(check); 
+            return runCheck.ExecuteCheck(() =>
+            {
+                if (MathF.Abs(runCheck.Value.X - expected.x) >  within
+                || MathF.Abs(runCheck.Value.Y - expected.y) >  within
+                || MathF.Abs(runCheck.Value.Z - expected.z) >  within)
+                {
+                    throw new FluentCheckException($"{runCheck.Value} != {expected}");
+                }
+            }, "failed");
+        }
+        
         public static ICheckLink<ICheck<Vector3F>> Check(this ICheck<Vector3F> check, (int x, int y, int z) expected)
         {
             var runCheck = ExtensibilityHelper.ExtractChecker<Vector3F>(check); 

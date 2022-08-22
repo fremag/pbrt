@@ -8,11 +8,9 @@ namespace pbrt.Core
         public static float UniformSpherePdf => 1/(4*MathF.PI);
 
         public static float Lerp(float t, float x1, float x2) => (1 - t) * x1 + t * x2;
+        public static readonly float MachineEpsilon = 1.19209e-07f; // https://en.cppreference.com/w/cpp/types/climits
 
-        public static float Gamma(int n)
-        {
-            return (n * float.Epsilon) / (1 - n * float.Epsilon);
-        }
+        public static float Gamma(int n) => n * MachineEpsilon / (1 - n * MachineEpsilon);
 
         public static float Clamp(this float val, float low, float high)
         {
@@ -99,8 +97,12 @@ namespace pbrt.Core
             double* refDouble = (double*)refVoid;
             return *refDouble;
         }
-        
-        public static float NextFloatUp(float v) {
+
+        public static float NextFloatUp(float v) => MathF.BitIncrement(v);
+        public static float NextFloatDown(float v) => MathF.BitDecrement(v); 
+
+        public static float _NextFloatUp(float v) 
+        {
             // Handle infinity and negative zero for _NextFloatUp()_
             if (float.IsInfinity(v) && v > 0f) return v;
             if (v == -0f) v = 0f;
@@ -114,7 +116,8 @@ namespace pbrt.Core
             return BitsToFloat(ui);
         }
 
-        public static float NextFloatDown(float v) {
+        public static float _NextFloatDown(float v) 
+        {
             // Handle infinity and positive zero for _NextFloatDown()_
             if (float.IsInfinity(v) && v < 0f) return v;
             if (v == 0f) v = -0f;
@@ -126,7 +129,8 @@ namespace pbrt.Core
             return BitsToFloat(ui);
         }
         
-        public static double NextDoubleUp(double v, ulong delta = 1) {
+        public static double NextDoubleUp(double v, ulong delta = 1) 
+        {
             if (double.IsInfinity(v) && v > 0d) return v;
             if (v == -0d) v = 0d;
             ulong ul = DoubleToBits(v);
@@ -137,7 +141,8 @@ namespace pbrt.Core
             return BitsToDouble(ul);
         }
 
-        public static  double NextDoubleDown(double v, ulong delta = 1) {
+        public static  double NextDoubleDown(double v, ulong delta = 1) 
+        {
             if (double.IsInfinity(v) && v < 0) return v;
             if (v == 0) v = -0d;
             ulong ul = DoubleToBits(v);

@@ -82,7 +82,7 @@ namespace Pbrt.Tests.Shapes
             var ray = new Ray(o, dir, max, time, null);
             var hit = sphere.Intersect(ray, out var tHit, out var iSec);
             Check.That(hit).IsTrue();
-            Check.That(tHit).IsEqualTo(8);
+            Check.That(tHit).IsCloseTo(8, 1e-5f);
             Check.That(iSec.Uv.X).IsEqualTo(0.5);
             Check.That(iSec.Uv.Y).IsEqualTo(0.5);
             Check.That(iSec.Shading.N).IsEqualTo(new Normal3F(-1, 0, 0));
@@ -108,7 +108,7 @@ namespace Pbrt.Tests.Shapes
             var ray = new Ray(o, dir, max, time, null);
             var hit = sphere.Intersect(ray, out var tHit, out var iSec);
             Check.That(hit).IsTrue();
-            Check.That(tHit).IsEqualTo(4);
+            Check.That(tHit).IsCloseTo(4, 1e-5f);
         }
 
         [Test]
@@ -254,7 +254,7 @@ namespace Pbrt.Tests.Shapes
             var ray = new Ray(o, dir, max, time, null);
             var hit = sphere.Intersect(ray, out var tHit, out var iSec);
             Check.That(hit).IsTrue();
-            Check.That(tHit).IsEqualTo(10+MathF.Sqrt(2));
+            Check.That(tHit).IsCloseTo(10+MathF.Sqrt(2), 1e-5f);
             Check.That(iSec.P.X).IsCloseTo(-1, 1e-4);
             Check.That(iSec.P.Y).IsCloseTo(-1, 1e-4);
             Check.That(iSec.P.Z).IsCloseTo(MathF.Sqrt(2), 1e-4);
@@ -268,7 +268,7 @@ namespace Pbrt.Tests.Shapes
         {
             Transform transZero = Transform.Translate(0, 0, 0);
             sphere = new Sphere(transZero, transZero, false, 0.1f, -2, 2, 360);
-            var o = new Point3F(0, 0, -1e15f);
+            var o = new Point3F(0, 0, -1e7f);
             var dir = new Vector3F(0, 0, 1);
             float max = float.PositiveInfinity;
             var time = 1;
