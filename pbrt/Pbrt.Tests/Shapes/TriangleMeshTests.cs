@@ -173,14 +173,14 @@ namespace Pbrt.Tests.Shapes
            var point3Fs = new Point3F[]
             {
                 new Point3F(2, 0, 0),
-                new Point3F(0, 1e-30f, 0),
+                new Point3F(0, 1e-23f, 0),
                 new Point3F(1, 0, 0)
             }; 
             var uvs = new Point2F[] {Point2F.Zero, new Point2F(0, 0), new Point2F(0,0 ) };
             mesh = new TriangleMesh(t, 1, vertexIndices, vertexIndices.Length, point3Fs, s, normals, uvs, null, null, null);
             triangle = mesh.GetTriangles().OfType<Triangle>().First();
  
-            Point3F o = new Point3F(0f, 0f, -1);
+            Point3F o = new Point3F(0f, 0f, -1e-18f);
             Vector3F d = new Vector3F(0, 0, 1);
             Ray ray = new Ray(o, d) { TMax = 10f };
             var result = triangle.Intersect(ray, out var tHit, out var isect);
@@ -566,7 +566,7 @@ namespace Pbrt.Tests.Shapes
            var point3Fs = new Point3F[]
             {
                 new Point3F(2, 0, 0),
-                new Point3F(0, 1e-30f, 0),
+                new Point3F(0, 1e-23f, 0),
                 new Point3F(1, 0, 0)
             }; 
             var uvs = new Point2F[] {Point2F.Zero, new Point2F(0, 0), new Point2F(0,0 ) };
@@ -574,7 +574,7 @@ namespace Pbrt.Tests.Shapes
             mesh = new TriangleMesh(t, 1, vertexIndices, vertexIndices.Length, point3Fs, s, normals, uvs, alphaMask, null, null);
             triangle = mesh.GetTriangles().OfType<Triangle>().First();
  
-            Point3F o = new Point3F(0f, 0f, -1);
+            Point3F o = new Point3F(0f, 0f, -1e-18f);
             Vector3F d = new Vector3F(0, 0, 1);
             Ray ray = new Ray(o, d) { TMax = 10f };
             var result = triangle.IntersectP(ray);

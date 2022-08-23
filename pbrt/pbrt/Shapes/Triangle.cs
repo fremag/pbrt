@@ -228,8 +228,11 @@ namespace pbrt.Shapes
             if (degenerateUv || dpdu.Cross(dpdv).LengthSquared == 0)
             {
                 // Handle zero determinant for triangle partial derivative matrix
-                Vector3F ng = (P2 - P0).Cross(P1 - P0);
-                if (ng.LengthSquared == 0)
+                var v1 = P2 - P0;
+                var v2 = P1 - P0;
+                Vector3F ng = v1.Cross(v2);
+                var lengthSquared = ng.LengthSquared;
+                if (lengthSquared == 0)
                 {
                     // The triangle is actually degenerate; the intersection is bogus.
                     return false;
