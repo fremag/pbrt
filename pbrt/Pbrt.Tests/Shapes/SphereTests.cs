@@ -281,7 +281,7 @@ namespace Pbrt.Tests.Shapes
         public void ZMax_WithRefineSphereIntersectionPointTest()
         {
             Transform transZero = Transform.Translate(0, 0, 0);
-            sphere = new Sphere(transZero, transZero, false, 0.2e-16f, -float.Epsilon, float.Epsilon, 360);
+            sphere = new Sphere(transZero, transZero, false, 0.2e14f, -MathUtils.MachineEpsilon, MathUtils.MachineEpsilon, 360);
             var o = new Point3F(0, 0, -1e16f);
             var dir = new Vector3F(0, 0, 1);
             float max = float.PositiveInfinity;
