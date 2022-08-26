@@ -13,15 +13,16 @@ namespace Pbrt.Demos
         
         static void Main(string[] args)
         {
-            Render(new HelloWorldRenderer());
-            Render(new CheckerPlaneRenderer());
-            Render(new MirrorRenderer());
-            Render(new GlassRenderer());
-            Render(new CylinderRenderer());
-            Render(new DiskRenderer());
-            Render(new TorusRenderer());
-            Render(new TriangleRenderer());
-            Render(new CloverRenderer());
+            // Render(new HelloWorldRenderer());
+            // Render(new CheckerPlaneRenderer());
+            // Render(new MirrorRenderer());
+            // Render(new GlassRenderer());
+            // Render(new CylinderRenderer());
+            // Render(new DiskRenderer());
+            // Render(new TorusRenderer());
+            // Render(new TriangleRenderer());
+            // Render(new CloverRenderer());
+            Render(new LensFocalSamplerTestRenderer());
             Console.WriteLine("Done.");
         }
 
