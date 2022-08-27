@@ -122,5 +122,35 @@ namespace Pbrt.Tests.Samplers
         {
             Check.That(AbstractSampler.OneMinusEpsilon + float.Epsilon).IsEqualTo(1);
         }
+
+        [Test]
+        public void Get_Request1DArrayTest()
+        {
+            pixSamp.Request1DArray(5);
+            var floats = pixSamp.Get1DArray(5);
+            Check.That(floats).IsNotNull();
+            Check.That(floats).CountIs(5*pixSamp.SamplesPerPixel);
+            
+            floats = pixSamp.Get1DArray(5);
+            Check.That(floats).IsNull();
+            
+            floats = pixSamp.Get1DArray(5);
+            Check.That(floats).IsNull();
+        }
+
+        [Test]
+        public void Get_Request2DArrayTest()
+        {
+            pixSamp.Request2DArray(5);
+            var point2Fs = pixSamp.Get2DArray(5);
+            Check.That(point2Fs).IsNotNull();
+            Check.That(point2Fs).CountIs(5*pixSamp.SamplesPerPixel);
+            
+            point2Fs = pixSamp.Get2DArray(5);
+            Check.That(point2Fs).IsNull();
+            
+            point2Fs = pixSamp.Get2DArray(5);
+            Check.That(point2Fs).IsNull();
+        }
     }
 }
