@@ -6,14 +6,19 @@ namespace Pbrt.Demos
 {
     internal class RenderProgress : IDisposable
     {
+        private readonly int num;
+        private readonly int max;
         public AbstractRenderer Renderer { get; }
         private int nbTiles;
         private int n;
-        Stopwatch sw = Stopwatch.StartNew();
-        Stopwatch swTotal = Stopwatch.StartNew();
-        private object objLock = new object();
-        public RenderProgress(AbstractRenderer renderer)
+        readonly Stopwatch sw = Stopwatch.StartNew();
+        readonly Stopwatch swTotal = Stopwatch.StartNew();
+        private readonly object objLock = new();
+        
+        public RenderProgress(AbstractRenderer renderer, int num, int max)
         {
+            this.num = num;
+            this.max = max;
             Renderer = renderer;
             renderer.Integrator.TileRendered += OnTileRendered;
             PrintStats();
@@ -21,7 +26,7 @@ namespace Pbrt.Demos
 
         private void PrintStats()
         {
-            string msg = $"\r{Renderer.GetType().Name,20}: {n/(float)nbTiles:p2} {swTotal.Elapsed:hh\\:mm\\:ss\\.fff}";
+            string msg = $"\r[{num,3} / {max,3}] {Renderer.GetType().Name,-40}: {n/(float)nbTiles:p2} {swTotal.Elapsed:hh\\:mm\\:ss\\.fff}";
             Console.Write(msg);
         }
 

@@ -13,22 +13,31 @@ namespace Pbrt.Demos
         
         static void Main(string[] args)
         {
-            // Render(new HelloWorldRenderer());
-            // Render(new CheckerPlaneRenderer());
-            // Render(new MirrorRenderer());
-            // Render(new GlassRenderer());
-            // Render(new CylinderRenderer());
-            // Render(new DiskRenderer());
-            // Render(new TorusRenderer());
-            // Render(new TriangleRenderer());
-            // Render(new CloverRenderer());
-            Render(new LensFocalSamplerTestRenderer());
+            AbstractRenderer[] renderers = 
+            {
+                new HelloWorldRenderer(),
+                new CheckerPlaneRenderer(),
+                new MirrorRenderer(),
+                new GlassRenderer(),
+                new CylinderRenderer(),
+                new DiskRenderer(),
+                new TorusRenderer(),
+                new TriangleRenderer(),
+                new CloverRenderer(),
+                new LensFocalSamplerTestRenderer()
+            };
+
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                Render(renderers[i], i+1, renderers.Length);
+            }
             Console.WriteLine("Done.");
         }
 
-        private static void Render(AbstractRenderer renderer)
+        private static void Render(AbstractRenderer renderer, int num, int max)
         {
-            using var progress = new RenderProgress(renderer);
+            renderer.Init();
+            using var progress = new RenderProgress(renderer, num,  max);
             var img = renderer.Integrator.Render(renderer.Scene);
             if (renderer.Text != null)
             {

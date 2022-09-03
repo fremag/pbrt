@@ -1,6 +1,7 @@
 using System.Drawing;
 using pbrt.Cameras;
 using pbrt.Core;
+using Pbrt.Demos.Scenes;
 using pbrt.Films;
 using pbrt.Integrators;
 using pbrt.Media;
@@ -13,7 +14,7 @@ namespace Pbrt.Demos
         public AbstractCamera Camera { get; protected set; }
         public AbstractSampler Sampler { get; protected set;}
         public Integrator Integrator { get; protected set;}
-        public IScene Scene { get; protected set;}
+        public DemoScene Scene { get; protected set;}
 
         public abstract string FileName { get; }
         public string Text { get; protected set; }
@@ -22,6 +23,11 @@ namespace Pbrt.Demos
         protected AbstractRenderer()
         {
             
+        }
+
+        public void Init()
+        {
+            Scene.Init();
         }
         
         protected AbstractRenderer(string text, Brush brush)

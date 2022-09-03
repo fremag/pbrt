@@ -1,6 +1,6 @@
 using System;
 using System.Drawing;
-using Pbrt.Demos.scenes;
+using Pbrt.Demos.Scenes;
 using pbrt.Integrators;
 using pbrt.Samplers;
 

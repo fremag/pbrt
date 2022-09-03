@@ -14,6 +14,7 @@ namespace pbrt.Core
         bool IntersectP(Ray ray);
         bool Intersect(Ray ray, out SurfaceInteraction isect);
         bool IntersectTr(Ray ray, AbstractSampler sampler, out SurfaceInteraction isect, out Spectrum tr);
+        void Init();
     }
 
     public class Scene : IScene
@@ -25,6 +26,8 @@ namespace pbrt.Core
         public Scene()
         {
         }
+        
+        public virtual void Init() { }
 
         public Scene(IPrimitive aggregate, Light[] lights)
         {
@@ -80,6 +83,6 @@ namespace pbrt.Core
 
                 ray = isect.SpawnRay(ray.D);                
             }
-        }        
+        }
     }
 }
