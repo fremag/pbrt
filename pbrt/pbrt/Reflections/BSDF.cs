@@ -120,7 +120,7 @@ namespace pbrt.Reflections
             if (matchingComps == 0) 
             {
                 pdf = 0;
-                wiWorld = null;
+                wiWorld = new Vector3F(0,0,0);
                 sampledType = BxDFType.BSDF_NONE;
                 return new Spectrum(0f);
             }
@@ -153,7 +153,7 @@ namespace pbrt.Reflections
             Spectrum f = bxdf.Sample_f(wo, out wi, uRemapped, out pdf, out sampledType);
             if (pdf == 0)
             {
-                wiWorld = null;
+                wiWorld = new Vector3F(0, 0, 0);
                 sampledType = BxDFType.BSDF_NONE;
                 return new Spectrum(0f);
             }
@@ -176,7 +176,6 @@ namespace pbrt.Reflections
             {
                 pdf /= matchingComps;
             }
-
             
             // Compute value of BSDF for sampled direction
             var checkSpecular = (bxdf.BxdfType & BxDFType.BSDF_SPECULAR) == 0;

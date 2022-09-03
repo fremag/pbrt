@@ -213,7 +213,7 @@ namespace Pbrt.Tests.Reflections
             Point2F u = new Point2F(0.5f, 0.5f);
             var spectrum = bsdf.Sample_f(woWorld, out var wiWorld, u, out var pdf, BxDFType.BSDF_DIFFUSE, ref sampledType);
             Check.That(spectrum).IsEqualTo(new Spectrum(0f));
-            Check.That(wiWorld).IsNull();
+            Check.That(wiWorld).IsEqualTo(new Vector3F(0,0,0));
             Check.That(pdf).IsEqualTo(0);
         }
         
@@ -232,7 +232,7 @@ namespace Pbrt.Tests.Reflections
             var spectrum = bsdf.Sample_f(woWorld, out var wiWorld, u, out var pdf, BxDFType.BSDF_TRANSMISSION, ref sampledType);
             
             Check.That(spectrum).IsEqualTo(new Spectrum(0f));
-            Check.That(wiWorld).IsNull();
+            Check.That(wiWorld).IsEqualTo(new Vector3F(0,0,0));
             Check.That(pdf).IsEqualTo(0);
         }
 
@@ -300,7 +300,7 @@ namespace Pbrt.Tests.Reflections
             var spectrum = bsdf.Sample_f(woWorld, out var wiWorld, u, out var pdf, BxDFType.BSDF_REFLECTION, ref sampledType);
             
             Check.That(spectrum).IsEqualTo(new Spectrum(0f));
-            Check.That(wiWorld).IsNull();
+            Check.That(wiWorld).IsEqualTo(new Vector3F(0,0,0));
             Check.That(pdf).IsEqualTo(0f);
         }
     }
