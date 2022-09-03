@@ -6,6 +6,7 @@ namespace pbrt.Core
     {
         public static float UniformHemispherePdf => 1/(2*MathF.PI);
         public static float UniformSpherePdf => 1/(4*MathF.PI);
+        public static float Inv4PI => 1/(4*MathF.PI);
 
         public static float Lerp(float t, float x1, float x2) => (1 - t) * x1 + t * x2;
         public static readonly float MachineEpsilon = 1.19209e-07f; // https://en.cppreference.com/w/cpp/types/climits
