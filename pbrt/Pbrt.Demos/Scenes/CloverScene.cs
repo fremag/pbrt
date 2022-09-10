@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using pbrt.Core;
 using Pbrt.Demos.Mesh;
-using Pbrt.Demos.Scenes;
 using pbrt.Shapes;
 
 namespace Pbrt.Demos.Scenes

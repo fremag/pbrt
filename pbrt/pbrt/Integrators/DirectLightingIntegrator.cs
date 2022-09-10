@@ -10,8 +10,8 @@ using pbrt.Reflections;
 using pbrt.Samplers;
 using pbrt.Spectrums;
 
-namespace pbrt.Integrators {
-
+namespace pbrt.Integrators 
+{
     public enum LightStrategy
     {
         UniformSampleAll,
@@ -21,9 +21,16 @@ namespace pbrt.Integrators {
     [ExcludeFromCodeCoverage]
     public class DirectLightingIntegrator : SamplerIntegrator
     {
-        public LightStrategy Strategy { get; set; }
-        public int MaxDepth { get; set; }
-        public List<int> NLightSamples { get; set; }
+        public LightStrategy Strategy { get; }
+        public int MaxDepth { get; }
+        public List<int> NLightSamples { get; }
+
+        public DirectLightingIntegrator(AbstractSampler sampler, AbstractCamera camera, LightStrategy strategy, int maxDepth, int nbThreads = 1, int tileSize = 16) : base(sampler, camera, nbThreads, tileSize)
+        {
+            Strategy = strategy;
+            MaxDepth = maxDepth;
+            NLightSamples = new List<int>();
+        }
 
         public void Preprocess(IScene scene, AbstractSampler sampler)
         {
@@ -32,7 +39,8 @@ namespace pbrt.Integrators {
                 // Compute number of samples to use for each light
                 foreach (var light in scene.Lights)
                 {
-                    NLightSamples.Add(sampler.RoundCount(light.NSamples));
+                    var roundCount = sampler.RoundCount(light.NSamples);
+                    NLightSamples.Add(roundCount);
                 }
 
                 // Request samples for sampling all lights
@@ -45,13 +53,6 @@ namespace pbrt.Integrators {
                     }
                 }
             }
-        }
-
-        public DirectLightingIntegrator(AbstractSampler sampler, AbstractCamera camera, LightStrategy strategy, int maxDepth, List<int> nLightSamples, int nbThreads = 1, int tileSize = 16) : base(sampler, camera, nbThreads, tileSize)
-        {
-            Strategy = strategy;
-            MaxDepth = maxDepth;
-            NLightSamples = nLightSamples;
         }
 
         public override Spectrum Li(RayDifferential ray, IScene scene, AbstractSampler sampler, int depth = 0)
@@ -284,7 +285,10 @@ namespace pbrt.Integrators {
                         Li = light.Le(rayDiff);
                     }
 
-                    if (!Li.IsBlack()) Ld += f * Li * Tr * weight / scatteringPdf;
+                    if (!Li.IsBlack())
+                    {
+                        Ld += f * Li * Tr * (weight / scatteringPdf);
+                    }
                 }
             }
 

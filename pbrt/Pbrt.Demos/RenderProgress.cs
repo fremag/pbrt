@@ -26,7 +26,7 @@ namespace Pbrt.Demos
 
         private void PrintStats()
         {
-            string msg = $"\r[{num,3} / {max,3}] {Renderer.GetType().Name,-40}: {n/(float)nbTiles:p2} {swTotal.Elapsed:hh\\:mm\\:ss\\.fff}";
+            string msg = $"\r[{num,3} / {max,3}] {Renderer.GetType().Name,-40}: {swTotal.Elapsed:hh\\:mm\\:ss} [{n,5} / {nbTiles,5}] {(100f*n)/nbTiles,-5:##0.00} %";
             Console.Write(msg);
         }
 

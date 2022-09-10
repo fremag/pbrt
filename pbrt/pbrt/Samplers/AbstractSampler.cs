@@ -30,7 +30,7 @@ namespace pbrt.Samplers
             SamplesPerPixel = samplesPerPixel;
         }
 
-        public void StartPixel(Point2I p)
+        public virtual void StartPixel(Point2I p)
         {
             CurrentPixel = p;
             CurrentPixelSampleIndex = 0;
@@ -68,7 +68,13 @@ namespace pbrt.Samplers
         public void Request2DArray(int n)
         {
             Samples2DArraySizes.Add(n);
-            SampleArray2D.Add(new Point2F[n * SamplesPerPixel]);            
+            var m = n * SamplesPerPixel;
+            var point2Fs = new Point2F[m];
+            for (int i = 0; i < m; i++)
+            {
+                point2Fs[i] = new Point2F();
+            }
+            SampleArray2D.Add(point2Fs);            
         }
         
         public virtual int RoundCount(int n)

@@ -18,8 +18,8 @@ namespace pbrt.Integrators
 
         protected AbstractSampler Sampler { get; }
         protected AbstractCamera Camera { get; }
-        public int NbThreads { get; }
-        public int TileSize { get; }
+        public int NbThreads { get; set; }
+        public int TileSize { get; set; }
         const int DefaultTileSize = 16;
 
         protected SamplerIntegrator(AbstractSampler sampler, AbstractCamera camera, int nbThreads=1, int tileSize = DefaultTileSize)

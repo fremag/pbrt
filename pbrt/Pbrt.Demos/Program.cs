@@ -15,16 +15,21 @@ namespace Pbrt.Demos
         {
             AbstractRenderer[] renderers = 
             {
-                new HelloWorldRenderer(),
-                new CheckerPlaneRenderer(),
-                new MirrorRenderer(),
-                new GlassRenderer(),
-                new CylinderRenderer(),
-                new DiskRenderer(),
-                new TorusRenderer(),
-                new TriangleRenderer(),
-                new CloverRenderer(),
-                new LensFocalSamplerTestRenderer()
+                // new HelloWorldRenderer(),
+                // new CheckerPlaneRenderer(),
+                // new MirrorRenderer(),
+                // new GlassRenderer(),
+                // new CylinderRenderer(),
+                // new DiskRenderer(),
+                // new TorusRenderer(),
+                // new TriangleRenderer(),
+                // new CloverRenderer(),
+                // new LensFocalSamplerTestRenderer(),
+                new AreaLightRenderer(1),
+                new AreaLightRenderer(4),
+                new AreaLightRenderer(16),
+                new AreaLightRenderer(64),
+                new AreaLightRenderer(256),
             };
 
             for (int i = 0; i < renderers.Length; i++)
