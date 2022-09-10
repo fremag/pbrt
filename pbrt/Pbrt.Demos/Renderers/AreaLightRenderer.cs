@@ -11,15 +11,15 @@ namespace Pbrt.Demos.renderers
 {
     public class AreaLightRenderer : AbstractRenderer
     {
-        public override string FileName => $"AreaLight_NbSample={NbSamples}.png";
-        private int NbSamples { get; } 
-        public AreaLightRenderer(int nbSamples=16) : base($"Area light {nameof(NbSamples)}={nbSamples}", Brushes.White)
+        public override string FileName => $"AreaLight_NbSample={SamplesPerPixel}.png";
+        private int SamplesPerPixel { get; } 
+        public AreaLightRenderer(int samplesPerPixel=16) : base($"Area light {nameof(SamplesPerPixel)}={samplesPerPixel}", Brushes.White)
         {
-            NbSamples = nbSamples;
+            SamplesPerPixel = samplesPerPixel;
             Camera = GetCam((-0f, 3, -2), (0, 0, 1));
-            //Sampler = new PixelSampler(1, 1);
-            Sampler = new StratifiedSampler(2, 2, true, 1);
-            Scene = new AreaLightScene(NbSamples);
+            Sampler = new PixelSampler(samplesPerPixel, 1);
+            //Sampler = new StratifiedSampler(2, 2, true, 1);
+            Scene = new AreaLightScene(SamplesPerPixel);
             Scene.Init();
 
             var integrator = new DirectLightingIntegrator(Sampler, Camera, LightStrategy.UniformSampleAll, 5)
