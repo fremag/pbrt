@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using pbrt.Core;
 
 namespace pbrt.Samplers
@@ -55,7 +56,7 @@ namespace pbrt.Samplers
             base.StartPixel(p);
         }
         
-        public void LatinHypercube(Point2F[] samples, int nSamples, Random rng) 
+        public static void LatinHypercube(Point2F[] samples, int nSamples, Random rng) 
         {
             // Generate LHS samples along diagonal 
             float invNSamples = 1f / nSamples;
@@ -78,7 +79,7 @@ namespace pbrt.Samplers
             }
         }        
         
-        public void StratifiedSample1D(float[] samp, int start, int nSamples, Random rng, bool jitter) 
+        public static void StratifiedSample1D(float[] samp, int start, int nSamples, Random rng, bool jitter) 
         {
             var invNSamples = 1f / nSamples;
             for (int i = start; i < nSamples; ++i) 
@@ -88,7 +89,7 @@ namespace pbrt.Samplers
             }
         }    
         
-        public void StratifiedSample2D(Point2F[] samp, int nx, int ny, Random rng, bool jitter)
+        public static void StratifiedSample2D(Point2F[] samp, int nx, int ny, Random rng, bool jitter)
         {
             var dx = 1f / nx;
             var dy = 1f / ny;
@@ -124,8 +125,21 @@ namespace pbrt.Samplers
         
         public override AbstractSampler Clone(int seed)
         {
-            var sampler = MemberwiseClone();
-            return (AbstractSampler)sampler;
+            var sampler = new StratifiedSampler(XPixelSamples, YPixelSamples, JitterSamples, NSampledDimensions, seed);
+            sampler.Samples1DArraySizes.AddRange(Samples1DArraySizes);
+            sampler.Samples2DArraySizes.AddRange(Samples2DArraySizes);
+            foreach (var sampleArray1D in SampleArray1D)
+            {
+                var copy = sampleArray1D.ToArray();
+                sampler.SampleArray1D.Add(copy);
+            }
+            foreach (var sampleArray2D in SampleArray2D)
+            {
+                var copy = sampleArray2D.ToArray();
+                sampler.SampleArray2D.Add(copy);
+            }
+
+            return sampler;
         }
     }
 }

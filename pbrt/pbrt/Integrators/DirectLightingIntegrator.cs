@@ -130,7 +130,9 @@ namespace pbrt.Integrators
                     Spectrum Ld = new(0f);
                     for (int k = 0; k < nSamples; ++k)
                     {
-                        Ld += EstimateDirect(it, uScatteringArray[k], light, uLightArray[k], scene, sampler, handleMedia);
+                        var uScattering = uScatteringArray[k];
+                        var point2F = uLightArray[k];
+                        Ld += EstimateDirect(it, uScattering, light, point2F, scene, sampler, handleMedia);
                     }
 
                     L += Ld / nSamples;
