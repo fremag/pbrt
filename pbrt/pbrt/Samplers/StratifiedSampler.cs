@@ -23,14 +23,16 @@ namespace pbrt.Samplers
             // Generate single stratified samples for the pixel
             for (var i = 0; i < Samples1D.Count; ++i) 
             {
-                StratifiedSample1D(Samples1D[i], 0, XPixelSamples * YPixelSamples, Rng, JitterSamples);
-                Shuffle(Samples1D[i], 0, XPixelSamples * YPixelSamples, 1, Rng);
+                var sample1D = Samples1D[i];
+                StratifiedSample1D(sample1D, 0, XPixelSamples * YPixelSamples, Rng, JitterSamples);
+                Shuffle(sample1D, 0, XPixelSamples * YPixelSamples, 1, Rng);
             }
             
             for (var i = 0; i < Samples2D.Count; ++i) 
             {
-                StratifiedSample2D(Samples2D[i], XPixelSamples, YPixelSamples, Rng, JitterSamples);
-                Shuffle(Samples2D[i], 0, XPixelSamples * YPixelSamples, 1, Rng);
+                var sample2D = Samples2D[i];
+                StratifiedSample2D(sample2D, XPixelSamples, YPixelSamples, Rng, JitterSamples);
+                Shuffle(sample2D, 0, XPixelSamples * YPixelSamples, 1, Rng);
             }            
             
             // Generate arrays of stratified samples for the pixel 
@@ -39,8 +41,9 @@ namespace pbrt.Samplers
                 for (var j = 0; j < SamplesPerPixel; ++j) 
                 {
                     int count = Samples1DArraySizes[i];
-                    StratifiedSample1D(SampleArray1D[i], j * count, count, Rng, JitterSamples);
-                    Shuffle(SampleArray1D[i], j * count, count, 1, Rng);
+                    var sampleArray1D = SampleArray1D[i];
+                    StratifiedSample1D(sampleArray1D, j * count, count, Rng, JitterSamples);
+                    Shuffle(sampleArray1D, j * count, count, 1, Rng);
                 }
             }
 
@@ -49,7 +52,8 @@ namespace pbrt.Samplers
                 for (var j = 0; j < SamplesPerPixel; ++j) 
                 {
                     int count = Samples2DArraySizes[i];
-                    LatinHypercube(SampleArray2D[i], j * count, Rng);
+                    var sampleArray2D = SampleArray2D[i];
+                    LatinHypercube(sampleArray2D, j * count, Rng);
                 }
             }
 

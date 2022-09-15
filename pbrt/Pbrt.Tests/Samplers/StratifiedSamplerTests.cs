@@ -10,14 +10,20 @@ namespace Pbrt.Tests.Samplers
     [TestFixture]
     public class StratifiedSamplerTests
     {
-        private readonly StratifiedSampler sampler = new StratifiedSampler(2, 2, true, 1);
+        private StratifiedSampler sampler;
 
+        [SetUp]
+        public void SetUp()
+        {
+            sampler = new StratifiedSampler(2, 3, true, 1);
+        }
+        
         [Test]
         public void BasicTest()
         {
             Check.That(sampler.JitterSamples).IsTrue();
             Check.That(sampler.XPixelSamples).IsEqualTo(2);
-            Check.That(sampler.YPixelSamples).IsEqualTo(2);
+            Check.That(sampler.YPixelSamples).IsEqualTo(3);
             Check.That(sampler.NSampledDimensions).IsEqualTo(1);
         }
 
@@ -143,6 +149,49 @@ namespace Pbrt.Tests.Samplers
                 var ratio = sumValue / expectedValue; 
                 Check.That(ratio).IsCloseTo(1, n*MathF.Sqrt(m));
             }
+        }
+
+        [Test]
+        public void CloneTest()
+        {
+            for (int i = 1; i < 4; i++)
+            {
+                sampler.Request1DArray(i);
+                sampler.Request2DArray(i);
+            }
+
+            Check.That(sampler.Samples1DArraySizes).ContainsExactly(1, 2, 3);
+            Check.That(sampler.SampleArray1D).CountIs(3);
+            Check.That(sampler.SampleArray1D[0].Length).IsEqualTo(6);
+            Check.That(sampler.SampleArray1D[1].Length).IsEqualTo(12);
+            Check.That(sampler.SampleArray1D[2].Length).IsEqualTo(18);
+            Check.That(sampler.SampleArray2D).CountIs(3);
+            Check.That(sampler.SampleArray2D[0].Length).IsEqualTo(6);
+            Check.That(sampler.SampleArray2D[1].Length).IsEqualTo(12);
+            Check.That(sampler.SampleArray2D[2].Length).IsEqualTo(18);
+
+            var clone = sampler.Clone(0);
+            Check.That(clone.Samples1DArraySizes).ContainsExactly(1, 2, 3);
+            Check.That(clone.SampleArray1D).CountIs(3);
+            Check.That(clone.SampleArray1D[0].Length).IsEqualTo(6);
+            Check.That(clone.SampleArray1D[1].Length).IsEqualTo(12);
+            Check.That(clone.SampleArray1D[2].Length).IsEqualTo(18);
+            Check.That(clone.SampleArray2D).CountIs(3);
+            Check.That(clone.SampleArray2D[0].Length).IsEqualTo(6);
+            Check.That(clone.SampleArray2D[1].Length).IsEqualTo(12);
+            Check.That(clone.SampleArray2D[2].Length).IsEqualTo(18);
+        }
+
+        [Test]
+        // just for coverage because i don't know what to test... too many random values
+        public void StartPixelTest()
+        {
+            for (int i = 1; i < 4; i++)
+            {
+                sampler.Request1DArray(i);
+                sampler.Request2DArray(i);
+            }
+            sampler.StartPixel(null);
         }
     }
 }
