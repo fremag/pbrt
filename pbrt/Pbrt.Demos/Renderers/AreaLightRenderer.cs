@@ -17,15 +17,16 @@ namespace Pbrt.Demos.renderers
         {
             SamplesPerPixel = samplesPerPixel;
             Camera = GetCam((-0f, 3, -2), (0, 0, 1));
-            Sampler = new PixelSampler(samplesPerPixel, 1);
-            //Sampler = new StratifiedSampler(2, 2, true, 1);
-            Scene = new AreaLightScene(SamplesPerPixel);
+            //Sampler = new PixelSampler(samplesPerPixel, 1);
+            int n = (int)MathF.Sqrt(samplesPerPixel);
+            Sampler = new StratifiedSampler(n, n, true, 1);
+            Scene = new AreaLightScene(1);
             Scene.Init();
 
             var integrator = new DirectLightingIntegrator(Sampler, Camera, LightStrategy.UniformSampleAll, 5)
             {
-                NbThreads = Environment.ProcessorCount
-//               NbThreads = 1
+               NbThreads = Environment.ProcessorCount
+               //NbThreads = 1
             };
             
             integrator.Preprocess(Scene, Sampler);

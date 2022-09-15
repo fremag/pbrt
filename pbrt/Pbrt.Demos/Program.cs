@@ -26,9 +26,9 @@ namespace Pbrt.Demos
                 // new CloverRenderer(),
                 // new LensFocalSamplerTestRenderer(),
                 new AreaLightRenderer(1),
-                //new AreaLightRenderer(4),
+                new AreaLightRenderer(4),
                 new AreaLightRenderer(16),
-                //new AreaLightRenderer(64),
+                new AreaLightRenderer(64),
                 new AreaLightRenderer(256),
             };
 
