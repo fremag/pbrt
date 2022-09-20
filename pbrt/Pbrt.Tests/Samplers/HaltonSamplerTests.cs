@@ -86,9 +86,7 @@ namespace Pbrt.Tests.Samplers
         [Test]
         public void RadicalInverse_Error_Test()
         {
-            Check.ThatCode(() => HaltonSampler.RadicalInverse(5, 0)).Throws<IndexOutOfRangeException>();
-            Check.ThatCode(() => HaltonSampler.RadicalInverse(6, 0)).Throws<IndexOutOfRangeException>();
-            Check.ThatCode(() => HaltonSampler.RadicalInverse(7, 0)).Throws<IndexOutOfRangeException>();
+            Check.ThatCode(() => HaltonSampler.RadicalInverse(1_000_000_000, 0)).Throws<IndexOutOfRangeException>();
         }
 
         [Test]
@@ -110,6 +108,25 @@ namespace Pbrt.Tests.Samplers
             Check.That(perms[2..5]).Contains(0, 1, 2);
             Check.That(perms[6..11]).Contains(0, 1, 2, 3, 4);
             Check.That(perms[12..19]).Contains(0, 1, 2, 3, 4, 5, 6);
+            Check.That(perms[12..19]).Not.ContainsExactly(0, 1, 2, 3, 4, 5, 6);
+        }
+
+        [Test]
+        public void ScrambledRadicalInverseTest()
+        {
+            var rng = new Random(0);
+            ushort[] perms = HaltonSampler.ComputeRadicalInversePermutations(rng);
+
+            var scrambledRadicalInverse = HaltonSampler.ScrambledRadicalInverse(0, 1234, perms);
+            Check.That(scrambledRadicalInverse).IsCloseTo(0.70654297, 1e-4);
+            
+            scrambledRadicalInverse = HaltonSampler.ScrambledRadicalInverse(1, 1234, perms);
+            Check.That(scrambledRadicalInverse).IsCloseTo(0.12780067, 1e-4);
+            
+            scrambledRadicalInverse = HaltonSampler.ScrambledRadicalInverse(2, 1234, perms);
+            Check.That(scrambledRadicalInverse).IsCloseTo(0.41928002, 1e-4);
+
+            Check.ThatCode(() => HaltonSampler.ScrambledRadicalInverse(1_000_000_000, 1234, perms)).Throws<IndexOutOfRangeException>();
         }
     }
 }

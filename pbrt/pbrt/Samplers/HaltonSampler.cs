@@ -26,23 +26,12 @@ namespace pbrt.Samplers
 
         public static float RadicalInverse(int baseIndex, ulong a)
         {
-            switch (baseIndex)
+            if (baseIndex < Primes.Length)
             {
-                case 0:
-                    // Compute base-2 radical inverse  
-                    return RadicalInverseSpecialized(a, 2);
-                case 1:
-                    return RadicalInverseSpecialized(a, 3);
-                case 2:
-                    return RadicalInverseSpecialized(a, 5);
-                case 3:
-                    return RadicalInverseSpecialized(a, 7);
-                case 4:
-                    return RadicalInverseSpecialized(a, 11);
-                // Remainder of cases for RadicalInverse() 
-                default:
-                    throw new IndexOutOfRangeException();
-            }
+                var prime = Primes[baseIndex];
+                return RadicalInverseSpecialized(a, (ulong)prime);
+            } 
+            throw new IndexOutOfRangeException();
         }
 
         public static uint ReverseBits32(uint n)
@@ -226,5 +215,34 @@ namespace pbrt.Samplers
 
             return perms;
         }
+        
+        public static float ScrambledRadicalInverse(int baseIndex, ulong a, ushort[] perm) 
+        {
+            if (baseIndex >= Primes.Length)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            var prime = Primes[baseIndex];
+            return ScrambledRadicalInverseSpecialized(perm, a, (ulong)prime);
+        }        
+        
+        public static float ScrambledRadicalInverseSpecialized(ushort[] perm, ulong a, ulong @base) 
+        {
+            float invBase = 1f / @base;
+            ulong reversedDigits = 0;
+            float invBaseN = 1;
+            while (a != 0) 
+            {
+                ulong next  = a / @base;
+                ulong digit = a - next * @base;
+                reversedDigits = reversedDigits * @base + perm[digit];
+                invBaseN *= invBase;
+                a = next;
+            }
+
+            var rad = invBaseN * (reversedDigits + invBase * perm[0] / (1 - invBase));
+            return MathF.Min(rad, OneMinusEpsilon);
+        }        
     }
 }
