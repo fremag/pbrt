@@ -25,11 +25,11 @@ namespace Pbrt.Demos
                 // new TriangleRenderer(),
                 // new CloverRenderer(),
                 // new LensFocalSamplerTestRenderer(),
-                new AreaLightRenderer(1),
-                new AreaLightRenderer(4),
+                // new AreaLightRenderer(1),
+                // new AreaLightRenderer(4),
                 new AreaLightRenderer(16),
-                new AreaLightRenderer(64),
-                new AreaLightRenderer(256),
+                // new AreaLightRenderer(64),
+                // new AreaLightRenderer(256),
             };
 
             for (int i = 0; i < renderers.Length; i++)

@@ -31,6 +31,7 @@ namespace Pbrt.Tests.Core
             shape = Create();
             aggregate = new GeometricPrimitive(shape, material,  null, new MediumInterface(HomogeneousMedium.Default(), HomogeneousMedium.Default()));
             scene = new Scene(aggregate, new [] { light });
+            scene.Init();
         }
 
         [Test]

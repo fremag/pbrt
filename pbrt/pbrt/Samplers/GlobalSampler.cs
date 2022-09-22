@@ -4,7 +4,7 @@ namespace pbrt.Samplers
 {
     public abstract class GlobalSampler : AbstractSampler
     {
-        int dimension;
+        public int Dimension { get; private set; }
         ulong intervalSampleIndex;
         const int ArrayStartDim = 5;
         int arrayEndDim;
@@ -20,7 +20,7 @@ namespace pbrt.Samplers
         public override void StartPixel(Point2I p) 
         {
             base.StartPixel(p);
-            dimension = 0;
+            Dimension = 0;
             intervalSampleIndex = GetIndexForSample(0);
             // Compute arrayEndDim for dimensions used for array samples 
             arrayEndDim = ArrayStartDim + SampleArray1D.Count + 2 * SampleArray2D.Count;
@@ -51,39 +51,39 @@ namespace pbrt.Samplers
         
         public override bool StartNextSample() 
         {
-            dimension = 0;
+            Dimension = 0;
             intervalSampleIndex = GetIndexForSample((ulong)CurrentPixelSampleIndex + 1);
             return base.StartNextSample();
         }
 
         public override bool SetSampleNumber(int sampleNum)
         {
-            dimension = 0;
+            Dimension = 0;
             intervalSampleIndex = GetIndexForSample((ulong)sampleNum);
             return base.SetSampleNumber(sampleNum);
         }
 
         public override float Get1D() 
         {
-            if (dimension >= ArrayStartDim && dimension < arrayEndDim)
+            if (Dimension >= ArrayStartDim && Dimension < arrayEndDim)
             {
-                dimension = arrayEndDim;
+                Dimension = arrayEndDim;
             }
 
-            return SampleDimension(intervalSampleIndex, dimension++);
+            return SampleDimension(intervalSampleIndex, Dimension++);
         }
 
         public override Point2F Get2D() 
         {
-            if (dimension + 1 >= ArrayStartDim && dimension < arrayEndDim)
+            if (Dimension + 1 >= ArrayStartDim && Dimension < arrayEndDim)
             {
-                dimension = arrayEndDim;
+                Dimension = arrayEndDim;
             }
 
-            var sampleDimension = SampleDimension(intervalSampleIndex, dimension);
-            var sampleDimension2 = SampleDimension(intervalSampleIndex, dimension + 1);
+            var sampleDimension = SampleDimension(intervalSampleIndex, Dimension);
+            var sampleDimension2 = SampleDimension(intervalSampleIndex, Dimension + 1);
             Point2F p = new Point2F(sampleDimension, sampleDimension2);
-            dimension += 2;
+            Dimension += 2;
             return p;
         }
    }

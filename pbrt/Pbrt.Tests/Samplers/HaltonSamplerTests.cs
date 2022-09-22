@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using NFluent;
 using NUnit.Framework;
+using pbrt.Core;
 using pbrt.Samplers;
 
 namespace Pbrt.Tests.Samplers
@@ -9,6 +10,16 @@ namespace Pbrt.Tests.Samplers
     [TestFixture]
     public class HaltonSamplerTests
     {
+        Point2I p1 = new Point2I(0,0);
+        Point2I p2 = new Point2I(15,15);
+        private HaltonSampler haltonSampler;
+        
+        [SetUp]
+        public void SetUp()
+        {
+            haltonSampler = new HaltonSampler(4, new Bounds2I(p1, p2));
+        }
+        
         [Test]
         public void Reverse32Test()
         {
@@ -142,6 +153,121 @@ namespace Pbrt.Tests.Samplers
             Check.That(HaltonSampler.PrimeSums[7]).IsEqualTo(58);
             Check.That(HaltonSampler.PrimeSums[8]).IsEqualTo(77);
             Check.That(HaltonSampler.PrimeSums[9]).IsEqualTo(100);
+        }
+        
+        [Test]
+        public void CloneTest()
+        {
+            var clone = haltonSampler.Clone(0) as HaltonSampler;
+            Check.That(clone.SamplesPerPixel).IsEqualTo(4);
+            Check.That(clone.SampleBounds.PMin).IsEqualTo(p1);
+            Check.That(clone.SampleBounds.PMax).IsEqualTo(p2);
+        }
+
+        [Test]
+        [TestCase( (ulong)0 ,0, 0)]
+        [TestCase( (ulong)1 ,0, 0)]
+        [TestCase( (ulong)2 ,0, 0)]
+        [TestCase( (ulong)0 ,1, 0)]
+        [TestCase( (ulong)1 ,1, 0)]
+        [TestCase( (ulong)2 ,1, 0)]
+        [TestCase( (ulong)0 ,3, 1f/6)]
+        [TestCase( (ulong)1 ,3, 1f/6)]
+        [TestCase( (ulong)2 ,3, 0.309523f)]
+        public void SampleDimensionTest(ulong index, int dimension, float expected)
+        {
+            var s = haltonSampler.SampleDimension(index, dimension);
+            Check.That(s).IsCloseTo(expected, 1e-5);
+        }
+
+        [Test]
+        public void GetIndexForSampleTest()
+        {
+            haltonSampler.StartPixel(new Point2I(0, 0));
+            var idx = haltonSampler.GetIndexForSample(0);
+            Check.That(idx).IsEqualTo(0);
+            
+            haltonSampler.StartPixel(new Point2I(5, 7));
+            idx = haltonSampler.GetIndexForSample(0);
+            Check.That(idx).IsEqualTo(42);
+        }
+
+        [Test]
+        public void StartPixelTest()
+        {
+            haltonSampler.Request1DArray(5);
+            haltonSampler.Request2DArray(3);
+            haltonSampler.StartPixel(p1);
+            Check.That(haltonSampler.SamplesPerPixel).IsEqualTo(4);
+            Check.That(haltonSampler.SampleStride).IsEqualTo(432ul);
+            Check.That(haltonSampler.SampleArray1D).CountIs(1);
+            Check.That(haltonSampler.SampleArray1D[0]).CountIs(5*haltonSampler.SamplesPerPixel);
+            Check.That(haltonSampler.SampleArray2D).CountIs(1);
+            Check.That(haltonSampler.SampleArray2D[0]).CountIs(3*haltonSampler.SamplesPerPixel);
+            Check.That(haltonSampler.Samples1DArraySizes).CountIs(1);
+            Check.That(haltonSampler.Samples1DArraySizes[0]).IsEqualTo(5);
+            Check.That(haltonSampler.Samples2DArraySizes).CountIs(1);
+            Check.That(haltonSampler.Samples2DArraySizes[0]).IsEqualTo(3);
+        }
+
+        [Test]
+        public void Get1DTest()
+        {
+            haltonSampler.Request1DArray(5);
+            haltonSampler.Request2DArray(3);
+            haltonSampler.StartPixel(p1);
+
+            Check.That(haltonSampler.Get1D()).IsEqualTo(0);
+            Check.That(haltonSampler.Get1D()).IsEqualTo(0);
+            Check.That(haltonSampler.Get1D()).IsEqualTo(1/4f);
+            Check.That(haltonSampler.Get1D()).IsEqualTo(1/6f);
+            Check.That(haltonSampler.Get1D()).IsCloseTo(1/10f, 1e-5f);
+            Check.That(haltonSampler.Get1D()).IsCloseTo(1/22f, 1e-5f);
+            Check.That(haltonSampler.Get1D()).IsCloseTo(1/28f, 1e-5f);
+        }
+        
+        [Test]
+        public void Get2DTest()
+        {
+            haltonSampler.Request1DArray(5);
+            haltonSampler.Request2DArray(3);
+            haltonSampler.StartPixel(p1);
+
+            Check.That(haltonSampler.Get2D()).IsEqualTo(new Point2F(0, 0));
+            Check.That(haltonSampler.Get2D()).IsEqualTo(new Point2F(1/4f, 1/6f));
+            Check.That(haltonSampler.Get2D()).IsEqualTo(new Point2F(1/22f, 1/28f));
+            Check.That(haltonSampler.Get2D()).IsEqualTo(new Point2F(1/30f, 1/36f));
+            Check.That(haltonSampler.Get2D()).IsEqualTo(new Point2F(1/40f, 1/42f));
+            Check.That(haltonSampler.Get2D()).IsEqualTo(new Point2F(1/46f, 1/52f));
+            Check.That(haltonSampler.Get2D()).IsEqualTo(new Point2F(1/58f, 1/60f));
+        }
+
+        [Test]
+        public void StartNextSampleTest()
+        {
+            haltonSampler.Request1DArray(5);
+            haltonSampler.Request2DArray(3);
+            haltonSampler.StartPixel(p1);
+            haltonSampler.Get1D();
+            haltonSampler.Get1D();
+            haltonSampler.Get1D();
+            Check.That(haltonSampler.Dimension).IsEqualTo(3);
+            haltonSampler.StartNextSample();
+            Check.That(haltonSampler.Dimension).IsEqualTo(0);
+        }
+
+        [Test]
+        public void SetSampleNumberTest()
+        {
+            haltonSampler.Request1DArray(5);
+            haltonSampler.Request2DArray(3);
+            haltonSampler.StartPixel(p1);
+            haltonSampler.Get1D();
+            haltonSampler.Get1D();
+            haltonSampler.Get1D();
+            Check.That(haltonSampler.Dimension).IsEqualTo(3);
+            haltonSampler.SetSampleNumber(0);
+            Check.That(haltonSampler.Dimension).IsEqualTo(0);
         }
     }
 }
