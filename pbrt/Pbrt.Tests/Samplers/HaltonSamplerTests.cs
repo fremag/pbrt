@@ -128,5 +128,20 @@ namespace Pbrt.Tests.Samplers
 
             Check.ThatCode(() => HaltonSampler.ScrambledRadicalInverse(1_000_000_000, 1234, perms)).Throws<IndexOutOfRangeException>();
         }
+
+        [Test]
+        public void PrimeSumsTest()
+        {
+            Check.That(HaltonSampler.PrimeSums[0]).IsEqualTo(0);
+            Check.That(HaltonSampler.PrimeSums[1]).IsEqualTo(2);
+            Check.That(HaltonSampler.PrimeSums[2]).IsEqualTo(5);
+            Check.That(HaltonSampler.PrimeSums[3]).IsEqualTo(10);
+            Check.That(HaltonSampler.PrimeSums[4]).IsEqualTo(17);
+            Check.That(HaltonSampler.PrimeSums[5]).IsEqualTo(28);
+            Check.That(HaltonSampler.PrimeSums[6]).IsEqualTo(41);
+            Check.That(HaltonSampler.PrimeSums[7]).IsEqualTo(58);
+            Check.That(HaltonSampler.PrimeSums[8]).IsEqualTo(77);
+            Check.That(HaltonSampler.PrimeSums[9]).IsEqualTo(100);
+        }
     }
 }

@@ -1,29 +1,133 @@
 using System;
-using System.Collections.Generic;
+using pbrt.Core;
 
 namespace pbrt.Samplers
 {
     public class HaltonSampler : GlobalSampler
     {
-        public HaltonSampler(int samplesPerPixel) : base(samplesPerPixel)
+        public Bounds2I SampleBounds { get; }
+        static int kMaxResolution => 128;
+        private static ushort[] radicalInversePermutations;
+        Point2I baseScales;
+        Point2I baseExponents;
+        ulong sampleStride;
+        int[] multInverse;
+        Point2I pixelForOffset = new Point2I(int.MaxValue, int.MaxValue);
+        ulong offsetForCurrentPixel;
+        public static ulong[] PrimeSums { get; }
+        
+        static HaltonSampler()
         {
+            Random rng = new Random(0);
+            radicalInversePermutations = ComputeRadicalInversePermutations(rng);
+            PrimeSums = new ulong[Primes.Length];
+            for (int i = 1; i < Primes.Length; i++)
+            {
+                PrimeSums[i] = PrimeSums[i - 1] + (ulong)Primes[i-1];
+            }
+        }
+        
+        public HaltonSampler(int samplesPerPixel, Bounds2I sampleBounds) : base(samplesPerPixel)
+        {
+            SampleBounds = sampleBounds;
+            
+            // Find radical inverse base scales and exponents that cover sampling area 
+            Vector2I res = sampleBounds.PMax - sampleBounds.PMin;
+            int[] baseScalesXY = new int[2];
+            int[] baseExponentsXY = new int[2];
+            
+            for (int i = 0; i < 2; ++i) 
+            {
+                int @base = (i == 0) ? 2 : 3;
+                int scale = 1, exp = 0;
+                while (scale < MathF.Min(res[i], kMaxResolution)) 
+                {
+                    scale *= @base;
+                    ++exp;
+                }
+                baseScalesXY[i] = scale;
+                baseExponentsXY[i] = exp;
+            }
+            
+            baseScales = new Point2I(baseScalesXY[0], baseScalesXY[1]);
+            baseExponents = new Point2I(baseExponentsXY[0], baseExponentsXY[1]);
+            
+            // Compute stride in samples for visiting each pixel area>> 
+            sampleStride = (ulong)(baseScales.X * baseScales.Y);   
+            
+            // Compute multiplicative inverses for baseScales
+            multInverse = new int[2];
+            multInverse[0] = MultiplicativeInverse(baseScales[1], baseScales[0]);
+            multInverse[1] = MultiplicativeInverse(baseScales[0], baseScales[1]);            
         }
 
-        public override AbstractSampler Clone(int seed)
+        public static void ExtendedGCD(int a, int b, out int x, out int y)
         {
-            throw new NotImplementedException();
+            if (b == 0) {
+                x = 1;
+                y = 0;
+                return;
+            }
+            int d = a / b;
+            int xp;
+            int yp;
+            ExtendedGCD(b, a % b, out xp, out yp);
+            x = yp;
+            y = xp - (d * yp);            
+        }
+        
+        public static int Mod(int a, int b) 
+        {
+            int result = a - (a / b) * b;
+            return result < 0 ? result + b : result;
+        }
+        
+        static int MultiplicativeInverse(int a, int n) {
+            int x, y;
+            ExtendedGCD(a, n, out x, out y);
+            return Mod(x, n);
         }
 
-        public override int GetIndexForSample(long sampleNum)
+        public override AbstractSampler Clone(int seed) => new HaltonSampler(SamplesPerPixel, SampleBounds);
+
+        public override ulong GetIndexForSample(ulong sampleNum)
         {
-            throw new NotImplementedException();
+            if (CurrentPixel != pixelForOffset) {
+                // Compute Halton sample offset for currentPixel 
+                offsetForCurrentPixel = 0;
+                if (sampleStride > 1) 
+                {
+                    Point2I pm = new (Mod(CurrentPixel[0], kMaxResolution), Mod(CurrentPixel[1], kMaxResolution));
+                    
+                    for (int i = 0; i < 2; ++i) 
+                    {
+                        ulong dimOffset = (i == 0) ?
+                            InverseRadicalInverse((ulong)pm[i], baseExponents[i], 2) :
+                            InverseRadicalInverse((ulong)pm[i], baseExponents[i], 3);
+                        offsetForCurrentPixel += dimOffset * (sampleStride / (ulong)baseScales[i]) * (ulong)multInverse[i];
+                    }
+                    offsetForCurrentPixel %= sampleStride;
+                }
+
+                pixelForOffset = CurrentPixel;
+            }
+            return offsetForCurrentPixel + sampleNum * sampleStride;
         }
 
-        public override float SampleDimension(long index, int dimension)
+        public override float SampleDimension(ulong index, int dimension)
         {
-            throw new NotImplementedException();
+            return dimension switch
+            {
+                0 => RadicalInverse(dimension, index >> baseExponents[0]),
+                1 => RadicalInverse(dimension, index / (ulong)baseScales[1]),
+                _ => ScrambledRadicalInverse(dimension, index, radicalInversePermutations, PermutationForDimension(dimension))
+            };
         }
 
+        private ulong PermutationForDimension(int dim)
+ {
+    return PrimeSums[dim];
+}
         public static float RadicalInverse(int baseIndex, ulong a)
         {
             if (baseIndex < Primes.Length)
@@ -216,7 +320,7 @@ namespace pbrt.Samplers
             return perms;
         }
         
-        public static float ScrambledRadicalInverse(int baseIndex, ulong a, ushort[] perm) 
+        public static float ScrambledRadicalInverse(int baseIndex, ulong a, ushort[] perm, ulong start=0) 
         {
             if (baseIndex >= Primes.Length)
             {
@@ -224,10 +328,10 @@ namespace pbrt.Samplers
             }
 
             var prime = Primes[baseIndex];
-            return ScrambledRadicalInverseSpecialized(perm, a, (ulong)prime);
+            return ScrambledRadicalInverseSpecialized(perm, a, (ulong)prime, start);
         }        
         
-        public static float ScrambledRadicalInverseSpecialized(ushort[] perm, ulong a, ulong @base) 
+        public static float ScrambledRadicalInverseSpecialized(ushort[] perm, ulong a, ulong @base, ulong start) 
         {
             float invBase = 1f / @base;
             ulong reversedDigits = 0;
@@ -236,7 +340,7 @@ namespace pbrt.Samplers
             {
                 ulong next  = a / @base;
                 ulong digit = a - next * @base;
-                reversedDigits = reversedDigits * @base + perm[digit];
+                reversedDigits = reversedDigits * @base + perm[digit+start];
                 invBaseN *= invBase;
                 a = next;
             }

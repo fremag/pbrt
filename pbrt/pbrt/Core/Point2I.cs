@@ -71,7 +71,7 @@ namespace pbrt.Core
 
         public Point2I Abs() => new Point2I(Math.Abs(X), Math.Abs(Y));
         
-        public float this[int i] {
+        public int this[int i] {
             get
             {
                 return i switch

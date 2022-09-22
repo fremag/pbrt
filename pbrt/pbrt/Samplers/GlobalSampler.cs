@@ -5,12 +5,12 @@ namespace pbrt.Samplers
     public abstract class GlobalSampler : AbstractSampler
     {
         int dimension;
-        long intervalSampleIndex;
+        ulong intervalSampleIndex;
         const int ArrayStartDim = 5;
         int arrayEndDim;
 
-        public abstract int GetIndexForSample(long sampleNum);
-        public abstract float SampleDimension(long index, int dimension);
+        public abstract ulong GetIndexForSample(ulong sampleNum);
+        public abstract float SampleDimension(ulong index, int dimension);
         
         public GlobalSampler(int samplesPerPixel) : base(samplesPerPixel)
         {
@@ -30,7 +30,7 @@ namespace pbrt.Samplers
                 var nSamples = Samples1DArraySizes[i] * SamplesPerPixel;
                 for (var j = 0; j < nSamples; ++j) 
                 {
-                    var index = GetIndexForSample(j);
+                    var index = GetIndexForSample((ulong)j);
                     SampleArray1D[i][j] = SampleDimension(index, ArrayStartDim + i);
                 }
             }            
@@ -42,7 +42,7 @@ namespace pbrt.Samplers
                 var nSamples = Samples2DArraySizes[i] * SamplesPerPixel;
                 for (var j = 0; j < nSamples; ++j) 
                 {
-                    var idx = GetIndexForSample(j);
+                    var idx = GetIndexForSample((ulong)j);
                     SampleArray2D[i][j] = new Point2F(SampleDimension(idx, dim), SampleDimension(idx, dim + 1));
                 }
                 dim += 2;
@@ -52,13 +52,14 @@ namespace pbrt.Samplers
         public override bool StartNextSample() 
         {
             dimension = 0;
-            intervalSampleIndex = GetIndexForSample(CurrentPixelSampleIndex + 1);
+            intervalSampleIndex = GetIndexForSample((ulong)CurrentPixelSampleIndex + 1);
             return base.StartNextSample();
         }
 
-        public override bool SetSampleNumber(int sampleNum) {
+        public override bool SetSampleNumber(int sampleNum)
+        {
             dimension = 0;
-            intervalSampleIndex = GetIndexForSample(sampleNum);
+            intervalSampleIndex = GetIndexForSample((ulong)sampleNum);
             return base.SetSampleNumber(sampleNum);
         }
 

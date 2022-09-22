@@ -18,8 +18,9 @@ namespace Pbrt.Demos.renderers
             SamplesPerPixel = samplesPerPixel;
             Camera = GetCam((-0f, 3, -2), (0, 0, 1));
             //Sampler = new PixelSampler(samplesPerPixel, 1);
-            int n = (int)MathF.Sqrt(samplesPerPixel);
-            Sampler = new StratifiedSampler(n, n, true, 1);
+            // int n = (int)MathF.Sqrt(samplesPerPixel);
+            // Sampler = new StratifiedSampler(n, n, true, 1);
+            Sampler = new HaltonSampler(samplesPerPixel, Camera.Film.GetSampleBounds());
             Scene = new AreaLightScene(1);
             Scene.Init();
 
