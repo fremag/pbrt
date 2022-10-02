@@ -7,7 +7,12 @@
 @using Color = System.Drawing.Color
 <PageTitle>Pbrt</PageTitle>
 
-  <i class="fa-solid fa-thumbs-up fa-5x"></i>
+<select @onchange="SelectRenderer">
+    @foreach (var renderer in renderers )
+    {
+        <option value=@renderer>@renderer</option>
+    }
+</select>
 
 <button class="btn btn-primary" @onclick="Run">Run</button>
 <button class="btn btn-primary" @onclick="Refresh">Refresh</button>
