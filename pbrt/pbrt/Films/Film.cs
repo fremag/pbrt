@@ -1,6 +1,4 @@
 using System;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using pbrt.Core;
 using pbrt.Filters;
@@ -149,7 +147,7 @@ namespace pbrt.Films
             pixel.AddSplatXyz(xyz[0], xyz[1], xyz[2]);
         }
 
-        public Bitmap WriteImage(float splatScale=1)
+        public float[] GetRgb(float splatScale=1)
         {
             // Convert image to RGB and compute final pixel values
             float[] rgbs = new float[3 * CroppedPixelBounds.SurfaceArea];
@@ -188,27 +186,7 @@ namespace pbrt.Films
                 ++offset;
             }
 
-            // Write RGB image
-            Bitmap bmp = new Bitmap(FullResolution.X, FullResolution.Y, PixelFormat.Format24bppRgb);
-            int pos = 0;
-            for (int y = 0; y < FullResolution.Y; y++)
-            {
-                for (int x = 0; x < FullResolution.X; x++)
-                {
-                    var red = (int)rgbs[pos];
-                    var green = (int)rgbs[pos + 1];
-                    var blue = (int)rgbs[pos + 2];
-                    var r = Math.Min(255, red);
-                    var g = Math.Min(255, green);
-                    var b = Math.Min(255, blue);
-                    
-                    var fromArgb = Color.FromArgb(r, g, b);
-                    bmp.SetPixel(x, y, fromArgb);
-                    pos += 3;
-                }
-            }
-
-            return bmp;
+            return rgbs;
         }
     }
 }

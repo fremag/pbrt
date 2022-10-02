@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 using NLog;
 using pbrt.Cameras;
@@ -30,7 +30,7 @@ namespace pbrt.Integrators
             TileSize = tileSize;
         }
 
-        public override Bitmap Render(IScene scene)
+        public override float[] Render(IScene scene)
         {
             Preprocess(scene);
 
@@ -38,11 +38,14 @@ namespace pbrt.Integrators
             Vector2I sampleExtent = sampleBounds.Diagonal();
             Point2I nTiles = new Point2I((sampleExtent.X + TileSize - 1) / TileSize, (sampleExtent.Y + TileSize - 1) / TileSize);
             var nbTiles = nTiles.X * nTiles.Y;
-
+            var tilesId = Enumerable.Range(0, nbTiles).ToArray();
+            MathUtils.Shuffle(tilesId, 0, nbTiles, 1, new Random(0));
+            
             void RenderTile(int tile)
             {
                 Stopwatch sw = Stopwatch.StartNew();
-                Render(tile, nTiles, sampleBounds, scene);
+                
+                Render(tilesId[tile], nTiles, sampleBounds, scene);
                 sw.Stop();
                 OnTileRendered(tile, nbTiles, sw.Elapsed);
             }
@@ -52,7 +55,12 @@ namespace pbrt.Integrators
                     RenderTile)
                 ;
 
-            return Camera.Film.WriteImage(1);
+            return GetRgb();
+        }
+
+        private float[] GetRgb()
+        {
+            return Camera.Film.GetRgb();
         }
 
         public void Render(int numTile, Point2I nTiles, Bounds2I sampleBounds, IScene scene)

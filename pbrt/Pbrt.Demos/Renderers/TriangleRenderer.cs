@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using Pbrt.Demos.Scenes;
 using pbrt.Integrators;
 using pbrt.Samplers;
@@ -10,7 +9,7 @@ namespace Pbrt.Demos.renderers
     {
         public override string FileName => "Triangle.png";
 
-        public TriangleRenderer() : base("Triangle", Brushes.White)
+        public TriangleRenderer() : base("Triangle")
         {
             Camera = GetCam((0f, 3, -3f), (0, 0, 0));
             Sampler = new PixelSampler(1, 1, 0);

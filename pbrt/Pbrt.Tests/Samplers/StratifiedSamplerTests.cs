@@ -135,7 +135,7 @@ namespace Pbrt.Tests.Samplers
             
             for (int i = 0; i < m; i++)
             {
-                StratifiedSampler.Shuffle(values, 0, n, 1, rng);
+                MathUtils.Shuffle(values, 0, n, 1, rng);
                 for (int j = 0; j < n; j++)
                 {
                     sumValues[j] += values[j];

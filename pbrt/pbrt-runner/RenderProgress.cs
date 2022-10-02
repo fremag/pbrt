@@ -1,10 +1,9 @@
-using System;
 using System.Diagnostics;
-using System.Threading;
+using Pbrt.Demos;
 
-namespace Pbrt.Demos
+namespace pbrt_runner
 {
-    internal class RenderProgress : IDisposable
+    public class RenderProgress : IDisposable
     {
         private readonly int num;
         private readonly int max;

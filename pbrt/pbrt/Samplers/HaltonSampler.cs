@@ -320,7 +320,7 @@ namespace pbrt.Samplers
                     perms[idx + j] = j;
                 }
 
-                StratifiedSampler.Shuffle(perms, idx, Primes[i], 1, rng);
+                MathUtils.Shuffle(perms, idx, Primes[i], 1, rng);
                 idx += Primes[i];
             }
 

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using NFluent;
 using NSubstitute;
 using NUnit.Framework;
@@ -57,18 +58,11 @@ namespace Pbrt.Tests.Integrators
             Check.That(samplerIntegrator.NbThreads).IsEqualTo(1);
             IScene scene = new Scene();
             int n = 0;
-            samplerIntegrator.TileRendered += (i, j, t) => n++;
-            var img = samplerIntegrator.Render(scene);
+            samplerIntegrator.TileRendered += (_, _, _) => n++;
+            var rgbs = samplerIntegrator.Render(scene);
             Check.That(samplerIntegrator.rays).CountIs(144);
             Check.That(n).IsEqualTo(9);
-            
-            for (int i = 0; i < img.Width; i++)
-            {
-                for (int j = 0; j < img.Height; j++)
-                {
-                    Check.That(img.GetPixel(i, j)).IsEqualTo(Color.FromArgb(255, 255, 255, 255));
-                }
-            }
+            Check.That(rgbs.All(v => v == 255f));
         }
         
         [Test]
@@ -79,16 +73,10 @@ namespace Pbrt.Tests.Integrators
         {
             samplerIntegrator.spectrumValue = value;
             IScene scene = new Scene();
-            var img = samplerIntegrator.Render(scene);
+            var rgbs = samplerIntegrator.Render(scene);
             Check.That(samplerIntegrator.rays).CountIs(144);
              
-            for (int i = 0; i < img.Width; i++)
-            {
-                for (int j = 0; j < img.Height; j++)
-                {
-                    Check.That(img.GetPixel(i, j)).IsEqualTo(Color.FromArgb(255, 0, 0, 0));
-                }
-            }
+            Check.That(rgbs.All(v => v == 0f));
         }
 
         [Test]

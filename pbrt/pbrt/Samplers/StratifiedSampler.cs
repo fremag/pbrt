@@ -25,14 +25,14 @@ namespace pbrt.Samplers
             {
                 var sample1D = Samples1D[i];
                 StratifiedSample1D(sample1D, 0, XPixelSamples * YPixelSamples, Rng, JitterSamples);
-                Shuffle(sample1D, 0, XPixelSamples * YPixelSamples, 1, Rng);
+                MathUtils.Shuffle(sample1D, 0, XPixelSamples * YPixelSamples, 1, Rng);
             }
             
             for (var i = 0; i < Samples2D.Count; ++i) 
             {
                 var sample2D = Samples2D[i];
                 StratifiedSample2D(sample2D, XPixelSamples, YPixelSamples, Rng, JitterSamples);
-                Shuffle(sample2D, 0, XPixelSamples * YPixelSamples, 1, Rng);
+                MathUtils.Shuffle(sample2D, 0, XPixelSamples * YPixelSamples, 1, Rng);
             }            
             
             // Generate arrays of stratified samples for the pixel 
@@ -43,7 +43,7 @@ namespace pbrt.Samplers
                     int count = Samples1DArraySizes[i];
                     var sampleArray1D = SampleArray1D[i];
                     StratifiedSample1D(sampleArray1D, j * count, count, Rng, JitterSamples);
-                    Shuffle(sampleArray1D, j * count, count, 1, Rng);
+                    MathUtils.Shuffle(sampleArray1D, j * count, count, 1, Rng);
                 }
             }
 
@@ -108,21 +108,6 @@ namespace pbrt.Samplers
                     samp[k].X = MathF.Min((x + jx) * dx, OneMinusEpsilon);
                     samp[k].Y = MathF.Min((y + jy) * dy, OneMinusEpsilon);
                     ++k;
-                }
-            }
-        }
-        
-        public static void Shuffle<T>(T[] samp, int start, int count, int nDimensions, Random rng) 
-        {
-            for (int i = start; i < count; ++i) 
-            {
-                int other = i + rng.Next(count - i);
-                for (int j = 0; j < nDimensions; ++j)
-                {
-                    var item1 = samp[nDimensions * i + j];
-                    var item2 = samp[nDimensions * other + j];
-                    samp[nDimensions * i + j] = item2;
-                    samp[nDimensions * other + j] = item1;
                 }
             }
         }

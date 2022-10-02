@@ -353,5 +353,20 @@ namespace pbrt.Core
 
             return sign * y;
         }
+        
+        public static void Shuffle<T>(T[] samp, int start, int count, int nDimensions, Random rng) 
+        {
+            for (int i = start; i < count; ++i) 
+            {
+                int other = i + rng.Next(count - i);
+                for (int j = 0; j < nDimensions; ++j)
+                {
+                    var item1 = samp[nDimensions * i + j];
+                    var item2 = samp[nDimensions * other + j];
+                    samp[nDimensions * i + j] = item2;
+                    samp[nDimensions * other + j] = item1;
+                }
+            }
+        }
     }
 }

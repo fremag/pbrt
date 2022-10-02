@@ -1,5 +1,3 @@
-using System;
-using System.Drawing;
 using Pbrt.Demos.Scenes;
 using pbrt.Integrators;
 using pbrt.Lights;
@@ -13,7 +11,7 @@ namespace Pbrt.Demos.renderers
     {
         public override string FileName => $"AreaLight_NbSample={SamplesPerPixel}.png";
         private int SamplesPerPixel { get; } 
-        public AreaLightRenderer(int samplesPerPixel=16) : base($"Area light {nameof(SamplesPerPixel)}={samplesPerPixel}", Brushes.White)
+        public AreaLightRenderer(int samplesPerPixel=16,int nbThreads=1) : base($"Area light {nameof(SamplesPerPixel)}={samplesPerPixel}")
         {
             SamplesPerPixel = samplesPerPixel;
             Camera = GetCam((-0f, 3, -2), (0, 0, 1));
@@ -26,8 +24,7 @@ namespace Pbrt.Demos.renderers
 
             var integrator = new DirectLightingIntegrator(Sampler, Camera, LightStrategy.UniformSampleAll, 5)
             {
-               NbThreads = Environment.ProcessorCount
-               //NbThreads = 1
+               NbThreads = nbThreads
             };
             
             integrator.Preprocess(Scene, Sampler);

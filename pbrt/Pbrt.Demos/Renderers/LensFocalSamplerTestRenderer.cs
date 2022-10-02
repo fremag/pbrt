@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using Pbrt.Demos.Scenes;
 using pbrt.Integrators;
 using pbrt.Samplers;
@@ -10,7 +9,7 @@ namespace Pbrt.Demos.renderers
     {
         public override string FileName => $"{nameof(LensFocalSamplerTestRenderer)}.png";
         
-        public LensFocalSamplerTestRenderer() : base(nameof(LensFocalSamplerTestRenderer), Brushes.White)
+        public LensFocalSamplerTestRenderer() : base(nameof(LensFocalSamplerTestRenderer))
         {
             int samplesPerPixel = 32;
             var lensRadius = 0.05f;

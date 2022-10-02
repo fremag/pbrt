@@ -1,4 +1,3 @@
-using System.Drawing;
 using pbrt.Cameras;
 using pbrt.Core;
 using Pbrt.Demos.Scenes;
@@ -13,12 +12,11 @@ namespace Pbrt.Demos
     {
         public AbstractCamera Camera { get; protected set; }
         public AbstractSampler Sampler { get; protected set;}
-        public Integrator Integrator { get; protected set;}
+        public SamplerIntegrator Integrator { get; protected set;}
         public DemoScene Scene { get; protected set;}
 
         public abstract string FileName { get; }
         public string Text { get; protected set; }
-        public Brush Brush { get; }
 
         protected AbstractRenderer()
         {
@@ -30,10 +28,9 @@ namespace Pbrt.Demos
             Scene.Init();
         }
         
-        protected AbstractRenderer(string text, Brush brush)
+        protected AbstractRenderer(string text)
         {
             Text = text;
-            Brush = brush;
         }
 
         protected AbstractCamera GetOrthoCam(Point3F position, int width = 640, int height = 480) => GetOrthoCam(position, Point3F.Zero, width , height);

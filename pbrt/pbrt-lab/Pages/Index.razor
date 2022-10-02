@@ -1,0 +1,97 @@
+﻿@page "/"
+@using Pbrt.Demos
+@using Pbrt.Demos.renderers
+@using pbrt.Core
+@using System.Drawing
+@using System.Drawing.Imaging
+@using Color = System.Drawing.Color
+<PageTitle>Pbrt</PageTitle>
+
+  <i class="fa-solid fa-thumbs-up fa-5x"></i>
+
+<button class="btn btn-primary" @onclick="Run">Run</button>
+<button class="btn btn-primary" @onclick="Refresh">Refresh</button>
+
+<p>Text: @Text</p>
+<img src="@Img" alt="No img"/>
+
+@code {
+    public int Progress { get; set; }
+    private Timer timer;
+    
+    protected string Img { get; set; }
+    protected string Text { get; set; }
+    AbstractRenderer renderer;
+    private object objLock = new object();
+    public Task<float[]> RenderTask { get; set; }
+
+    protected override void OnInitialized()
+    {
+        timer = new Timer(Refresh, null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(1));
+    }
+
+    private void Run()
+    {
+        // renderer = new AreaLightRenderer(64);
+        renderer = new CloverRenderer();
+        renderer.Integrator.NbThreads = Environment.ProcessorCount - 1;
+        renderer.Integrator.TileSize = 8;
+        renderer.Init();
+        Text = renderer.Text;
+        StateHasChanged();
+        renderer.Integrator.TileRendered += OnTileRendered;
+        Progress = 0;
+        RenderTask = Task.Run(() => renderer.Integrator.Render(renderer.Scene));
+    }
+
+    private void Refresh(object state)
+    {
+        if (renderer == null)
+        {
+            return;
+        }
+        var rgbs = renderer.Camera.Film.GetRgb();
+        Img = ToBase64Image(rgbs, renderer.Camera.Film.FullResolution);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnTileRendered(int n, int nbTiles, TimeSpan swTotal)
+    {
+        lock (objLock)
+        {
+            Progress++;
+            string msg = $"{renderer.GetType().Name,-40}: {swTotal:hh\\:mm\\:ss} [{Progress,5} / {nbTiles,5}] {(100f * Progress) / nbTiles,-5:##0.00} %";
+            Text = msg;
+        }
+    }
+    
+    private static string ToBase64Image(float[] rgbs, Point2I fullResolution)
+    {
+        // Write RGB image
+        Bitmap bmp = new Bitmap(fullResolution.X, fullResolution.Y, PixelFormat.Format24bppRgb);
+        int pos = 0;
+        for (int y = 0; y < fullResolution.Y; y++)
+        {
+            for (int x = 0; x < fullResolution.X; x++)
+            {
+                var red = (int)rgbs[pos];
+                var green = (int)rgbs[pos + 1];
+                var blue = (int)rgbs[pos + 2];
+                var r = Math.Min(255, red);
+                var g = Math.Min(255, green);
+                var b = Math.Min(255, blue);
+                    
+                var fromArgb = Color.FromArgb(r, g, b);
+                bmp.SetPixel(x, y, fromArgb);
+                pos += 3;
+            }
+        }
+        using var memoryStream = new MemoryStream();
+
+        bmp.Save(memoryStream, ImageFormat.Png);
+        var base64 = Convert.ToBase64String(memoryStream.ToArray());
+        return $"data:image/png;base64,{base64}";
+    }
+}
+
+    

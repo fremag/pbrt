@@ -1,10 +1,11 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
+﻿using System.Drawing;
+using System.Drawing.Imaging;
 using NLog;
+using pbrt.Core;
+using Pbrt.Demos;
 using Pbrt.Demos.renderers;
 
-namespace Pbrt.Demos
+namespace pbrt_runner
 {
     public class Program
     {
@@ -15,7 +16,7 @@ namespace Pbrt.Demos
         {
             AbstractRenderer[] renderers = 
             {
-                // new HelloWorldRenderer(),
+                new HelloWorldRenderer(Environment.ProcessorCount),
                 // new CheckerPlaneRenderer(),
                 // new MirrorRenderer(),
                 // new GlassRenderer(),
@@ -25,9 +26,9 @@ namespace Pbrt.Demos
                 // new TriangleRenderer(),
                 // new CloverRenderer(),
                 // new LensFocalSamplerTestRenderer(),
-                // new AreaLightRenderer(1),
+                //new AreaLightRenderer(1),
                 // new AreaLightRenderer(4),
-                new AreaLightRenderer(16),
+                // new AreaLightRenderer(16),
                 // new AreaLightRenderer(64),
                 // new AreaLightRenderer(256),
             };
@@ -43,16 +44,44 @@ namespace Pbrt.Demos
         {
             renderer.Init();
             using var progress = new RenderProgress(renderer, num,  max);
-            var img = renderer.Integrator.Render(renderer.Scene);
+            var rgbs = renderer.Integrator.Render(renderer.Scene);
+            var img = WriteImage(rgbs, renderer.Camera.Film.FullResolution);
             if (renderer.Text != null)
             {
                 using (Graphics g = Graphics.FromImage(img))
                 {
                     var textFont = new Font("Microsoft Sans Serif", 9F);
-                    g.DrawString(renderer.Text, textFont, renderer.Brush, 10, 10);
+                    g.DrawString(renderer.Text, textFont, Brushes.White, 10, 10);
                 }
             }
+            
             img.Save(Path.Combine(ProjectDir, renderer.FileName));
         }
+
+        private static Image WriteImage(float[] rgbs, Point2I fullResolution)
+        {
+            // Write RGB image
+            Bitmap bmp = new Bitmap(fullResolution.X, fullResolution.Y, PixelFormat.Format24bppRgb);
+            int pos = 0;
+            for (int y = 0; y < fullResolution.Y; y++)
+            {
+                for (int x = 0; x < fullResolution.X; x++)
+                {
+                    var red = (int)rgbs[pos];
+                    var green = (int)rgbs[pos + 1];
+                    var blue = (int)rgbs[pos + 2];
+                    var r = Math.Min(255, red);
+                    var g = Math.Min(255, green);
+                    var b = Math.Min(255, blue);
+                    
+                    var fromArgb = Color.FromArgb(r, g, b);
+                    bmp.SetPixel(x, y, fromArgb);
+                    pos += 3;
+                }
+            }
+
+            return bmp;
+        }
+        
     }
 }

@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net7.0</TargetFramework>
+        <RootNamespace>pbrt_runner</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <DockerDefaultTargetOS>Windows</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Content Include="NLog.config">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="NLog" Version="5.0.0-rc2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Pbrt.Demos\Pbrt.Demos.csproj" />
+      <ProjectReference Include="..\pbrt\pbrt.csproj" />
+    </ItemGroup>
+
+</Project>
