@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using NFluent;
 using NSubstitute;
 using NUnit.Framework;
@@ -59,7 +60,7 @@ namespace Pbrt.Tests.Integrators
             IScene scene = new Scene();
             int n = 0;
             samplerIntegrator.TileRendered += (_, _, _) => n++;
-            var rgbs = samplerIntegrator.Render(scene);
+            var rgbs = samplerIntegrator.Render(scene, CancellationToken.None);
             Check.That(samplerIntegrator.rays).CountIs(144);
             Check.That(n).IsEqualTo(9);
             Check.That(rgbs.All(v => v == 255f));
@@ -73,7 +74,7 @@ namespace Pbrt.Tests.Integrators
         {
             samplerIntegrator.spectrumValue = value;
             IScene scene = new Scene();
-            var rgbs = samplerIntegrator.Render(scene);
+            var rgbs = samplerIntegrator.Render(scene, CancellationToken.None);
             Check.That(samplerIntegrator.rays).CountIs(144);
              
             Check.That(rgbs.All(v => v == 0f));

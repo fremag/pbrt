@@ -10,7 +10,13 @@ namespace Pbrt.Demos.renderers
     public class AreaLightRenderer : AbstractRenderer
     {
         public override string FileName => $"AreaLight_NbSample={SamplesPerPixel}.png";
-        private int SamplesPerPixel { get; } 
+        private int SamplesPerPixel { get; }
+
+        public AreaLightRenderer() : this(16, 1)
+        {
+            
+        }
+        
         public AreaLightRenderer(int samplesPerPixel=16,int nbThreads=1) : base($"Area light {nameof(SamplesPerPixel)}={samplesPerPixel}")
         {
             SamplesPerPixel = samplesPerPixel;

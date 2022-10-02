@@ -7,6 +7,12 @@ namespace Pbrt.Demos.renderers
     public class HelloWorldRenderer : AbstractRenderer
     {
         public override string FileName => "HelloWorld.png";
+
+        public HelloWorldRenderer() : this(1)
+        {
+            
+        }
+        
         public HelloWorldRenderer(int nbThreads=1) : base("Hello world !")
         {
             Camera = GetOrthoCam((0, 0, -6));

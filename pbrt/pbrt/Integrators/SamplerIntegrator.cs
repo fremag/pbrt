@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using NLog;
 using pbrt.Cameras;
@@ -21,7 +22,8 @@ namespace pbrt.Integrators
         public int NbThreads { get; set; }
         public int TileSize { get; set; }
         const int DefaultTileSize = 16;
-
+        private CancellationToken CancellationToken { get; set; }
+        
         protected SamplerIntegrator(AbstractSampler sampler, AbstractCamera camera, int nbThreads=1, int tileSize = DefaultTileSize)
         {
             Sampler = sampler;
@@ -30,8 +32,9 @@ namespace pbrt.Integrators
             TileSize = tileSize;
         }
 
-        public override float[] Render(IScene scene)
+        public override float[] Render(IScene scene, CancellationToken cancellationToken)
         {
+            CancellationToken = cancellationToken;
             Preprocess(scene);
 
             Bounds2I sampleBounds = Camera.Film.GetSampleBounds();
@@ -43,8 +46,12 @@ namespace pbrt.Integrators
             
             void RenderTile(int tile)
             {
-                Stopwatch sw = Stopwatch.StartNew();
+                if (CancellationToken.IsCancellationRequested)
+                {
+                    return;
+                }
                 
+                var sw = Stopwatch.StartNew();
                 Render(tilesId[tile], nTiles, sampleBounds, scene);
                 sw.Stop();
                 OnTileRendered(tile, nbTiles, sw.Elapsed);
@@ -65,6 +72,10 @@ namespace pbrt.Integrators
 
         public void Render(int numTile, Point2I nTiles, Bounds2I sampleBounds, IScene scene)
         {
+            if (CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
             var tileX = numTile % nTiles.X;
             var tileY = numTile / nTiles.X;
 
@@ -120,7 +131,12 @@ namespace pbrt.Integrators
 
                     // Add camera ray’s contribution to image 
                     filmTile.AddSample(cameraSample.PFilm, l, rayWeight);
-                } while (tileSampler.StartNextSample());
+                } while (tileSampler.StartNextSample() && ! CancellationToken.IsCancellationRequested);
+
+                if (CancellationToken.IsCancellationRequested)
+                {
+                    break;
+                }
             }
 
             // Merge image tile into Film

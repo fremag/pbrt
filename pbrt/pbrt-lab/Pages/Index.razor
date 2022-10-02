@@ -7,32 +7,63 @@
 @using Color = System.Drawing.Color
 <PageTitle>Pbrt</PageTitle>
 
+<select @onchange="OnSelectRenderer">
+    @foreach (var rendererName in Renderers.Keys )
+    {
+        <option value=@(rendererName)>@rendererName</option>
+    }
+</select>
 
 <button class="btn btn-primary" @onclick="Run">Run</button>
 <button class="btn btn-primary" @onclick="Refresh">Refresh</button>
+<button class="btn btn-primary" @onclick="Stop">Stop</button>
+
+<div class="progress">
+    <div class="progress-bar" role="progressbar" style="width: @((int)ProgressPct)%;" aria-valuenow="@ProgressPct" aria-valuemin="0" aria-valuemax="100">@((int)ProgressPct)%</div>
+</div>
 
 <p>Text: @Text</p>
 <img src="@Img" alt="No img"/>
 
 @code {
     public int Progress { get; set; }
+    public float ProgressPct { get; set; }
     private Timer timer;
     
     protected string Img { get; set; }
     protected string Text { get; set; }
+    public string RendererTypeName { get; set; }
     AbstractRenderer renderer;
     private object objLock = new object();
     public Task<float[]> RenderTask { get; set; }
+    public Dictionary<string, Type> Renderers { get; set; }
 
     protected override void OnInitialized()
     {
         timer = new Timer(Refresh, null, TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(1));
+
+        var types = typeof(HelloWorldRenderer).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(AbstractRenderer))).ToArray();
+        Renderers = types.ToDictionary(type => type.Name);
+        RendererTypeName = types.First().Name;
     }
 
+    CancellationTokenSource tokenSource;
+    
     private void Run()
     {
-        // renderer = new AreaLightRenderer(64);
-        renderer = new CloverRenderer();
+        if (RendererTypeName == null)
+        {
+            return;
+        }
+        
+        Stop();
+        
+        if (!Renderers.TryGetValue(RendererTypeName, out var rendererType))
+        {
+            return;
+        }
+        
+        renderer = Activator.CreateInstance(rendererType) as AbstractRenderer;
         renderer.Integrator.NbThreads = Environment.ProcessorCount - 1;
         renderer.Integrator.TileSize = 8;
         renderer.Init();
@@ -40,9 +71,23 @@
         StateHasChanged();
         renderer.Integrator.TileRendered += OnTileRendered;
         Progress = 0;
-        RenderTask = Task.Run(() => renderer.Integrator.Render(renderer.Scene));
+        tokenSource = new();
+        var cancellationToken = tokenSource.Token;
+        RenderTask = Task.Run(() => renderer.Integrator.Render(renderer.Scene, cancellationToken), cancellationToken);
     }
 
+    private void Stop()
+    {
+        Progress = 0;
+        if( renderer?.Integrator != null)
+        {
+            renderer.Integrator.TileRendered -= OnTileRendered;
+        }
+        
+        tokenSource?.Cancel();
+        StateHasChanged();
+    }
+    
     private void Refresh(object state)
     {
         if (renderer == null)
@@ -59,6 +104,7 @@
         lock (objLock)
         {
             Progress++;
+            ProgressPct = (100f * Progress) / nbTiles;
             string msg = $"{renderer.GetType().Name,-40}: {swTotal:hh\\:mm\\:ss} [{Progress,5} / {nbTiles,5}] {(100f * Progress) / nbTiles,-5:##0.00} %";
             Text = msg;
         }
@@ -90,6 +136,12 @@
         bmp.Save(memoryStream, ImageFormat.Png);
         var base64 = Convert.ToBase64String(memoryStream.ToArray());
         return $"data:image/png;base64,{base64}";
+    }
+
+    private void OnSelectRenderer(ChangeEventArgs changeEventArgs)
+    {
+        Stop();
+        RendererTypeName = changeEventArgs.Value as string;
     }
 }
 
