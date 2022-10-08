@@ -113,8 +113,8 @@ namespace Pbrt.Tests.Core
             Check.That(spawnTo.D.Y).IsCloseTo(-0.1f, 1e-6);
             Check.That(spawnTo.D.Z).IsEqualTo(0);
             Check.That(spawnTo.Medium).IsEqualTo(inside);
-            Check.That(spawnTo.Time).IsEqualTo(1.23f );
-            Check.That(spawnTo.TMax).IsEqualTo(1f-Interaction.ShadowEpsilon);
+            Check.That(spawnTo.Time).IsEqualTo(1.23f);
+            Check.That(spawnTo.TMax).IsEqualTo(1f - Interaction.ShadowEpsilon);
 
             p = new Point3F(0, 1.1f, 1);
             spawnTo = interaction.SpawnRayTo(p);
@@ -123,8 +123,8 @@ namespace Pbrt.Tests.Core
             Check.That(spawnTo.D.Y).IsCloseTo(-0f, 1e-6);
             Check.That(spawnTo.D.Z).IsEqualTo(0);
             Check.That(spawnTo.Medium).IsEqualTo(inside);
-            Check.That(spawnTo.Time).IsEqualTo(1.23f );
-            Check.That(spawnTo.TMax).IsEqualTo(1f-Interaction.ShadowEpsilon);
+            Check.That(spawnTo.Time).IsEqualTo(1.23f);
+            Check.That(spawnTo.TMax).IsEqualTo(1f - Interaction.ShadowEpsilon);
         }
 
         [Test]
@@ -137,8 +137,8 @@ namespace Pbrt.Tests.Core
             Check.That(spawnTo.D.Y).IsCloseTo(-0f, 1e-6);
             Check.That(spawnTo.D.Z).IsEqualTo(0);
             Check.That(spawnTo.Medium).IsEqualTo(inside);
-            Check.That(spawnTo.Time).IsEqualTo(1.23f );
-            Check.That(spawnTo.TMax).IsEqualTo(1f-Interaction.ShadowEpsilon);
+            Check.That(spawnTo.Time).IsEqualTo(1.23f);
+            Check.That(spawnTo.TMax).IsEqualTo(1f - Interaction.ShadowEpsilon);
         }
     }
 }

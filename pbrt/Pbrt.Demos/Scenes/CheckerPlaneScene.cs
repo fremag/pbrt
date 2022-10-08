@@ -6,7 +6,7 @@ namespace Pbrt.Demos.Scenes
         {
             Sphere(-0.5f, 0f, 0f, 0.5f, PlasticMaterialRed);
             Sphere(0.5f, 0.5f, 0f, 0.5f, MatteMaterialBlue());
-            Floor();            
+            Floor();
 
             PointLight(10, 10, -10, 1000f);
         }

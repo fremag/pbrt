@@ -13,6 +13,7 @@ namespace Pbrt.Tests.Accelerators
         {
             public override Bounds3F WorldBound() => null;
             public override bool IntersectP(Ray r) => false;
+
             public override bool Intersect(Ray r, out SurfaceInteraction isect)
             {
                 isect = null;
@@ -28,7 +29,7 @@ namespace Pbrt.Tests.Accelerators
             Check.That(agg.IntersectP(null)).IsFalse();
             Check.That(agg.Intersect(null, out _)).IsFalse();
         }
-        
+
         [Test]
         public void GetAreaLightTest()
         {

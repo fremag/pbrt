@@ -1,9 +1,11 @@
-using pbrt.Films;
-using pbrt.Samplers;
-
 namespace Pbrt.Demos.Configs;
 
-public enum Sampler {Pixel, Halton}
+public enum Sampler
+{
+    Pixel,
+    Halton
+}
+
 public class SamplerConfig
 {
     private Sampler sampler;
@@ -27,30 +29,4 @@ public class SamplerConfig
     }
 
     public AbstractSamplerConfig Config { get; set; }
-}
-
-public abstract class AbstractSamplerConfig
-{
-    public int SamplesPerPixel { get; set; } = 1;
-    public abstract AbstractSampler BuildSampler(Film film);
-}
-
-public class PixelSamplerConfig : AbstractSamplerConfig
-{
-    public int SampledDimensions { get; set; } = 1;
-    public int Seed { get; set; } = 0;
-    
-    public override AbstractSampler BuildSampler(Film film)
-    {
-        return new PixelSampler(SamplesPerPixel, SampledDimensions, Seed);
-    }
-
-}
-
-public class HaltonSamplerConfig : AbstractSamplerConfig
-{
-    public override AbstractSampler BuildSampler(Film film)
-    {
-        return new HaltonSampler(SamplesPerPixel, film.GetSampleBounds());
-    }
 }

@@ -11,7 +11,7 @@ namespace pbrt.Integrators
     {
         public int MaxDepth { get; }
 
-        public WhittedIntegrator(int maxDepth, AbstractSampler sampler, AbstractCamera camera, int nbThreads=1) : base(sampler, camera, nbThreads)
+        public WhittedIntegrator(int maxDepth, AbstractSampler sampler, AbstractCamera camera, int nbThreads = 1, int tileSize = 16) : base(sampler, camera, nbThreads, tileSize)
         {
             MaxDepth = maxDepth;
         }

@@ -10,18 +10,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="NLog.config">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+        <Content Include="NLog.config">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="NLog" Version="5.0.0-rc2" />
+        <PackageReference Include="NLog" Version="5.0.0-rc2"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Pbrt.Demos\Pbrt.Demos.csproj" />
-      <ProjectReference Include="..\pbrt\pbrt.csproj" />
+        <ProjectReference Include="..\Pbrt.Demos\Pbrt.Demos.csproj"/>
+        <ProjectReference Include="..\pbrt\pbrt.csproj"/>
     </ItemGroup>
 
 </Project>

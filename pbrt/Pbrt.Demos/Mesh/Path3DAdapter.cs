@@ -3,6 +3,7 @@ namespace Pbrt.Demos.Mesh
     public class Path3DAdapter : AbstractPath3D
     {
         private Path3D Func { get; }
+
         public Path3DAdapter(Path3D func)
         {
             Func = func;

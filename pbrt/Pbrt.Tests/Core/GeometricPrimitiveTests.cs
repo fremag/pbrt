@@ -16,7 +16,7 @@ namespace Pbrt.Tests.Core
         private readonly IMaterial material = Substitute.For<IMaterial>();
 
         private readonly MediumInterface mediumInterface = new MediumInterface(null);
-        private readonly AreaLight light = new DiffuseAreaLight(Transform.Translate(0, 1, 0), null, null, 1, null); 
+        private readonly AreaLight light = new DiffuseAreaLight(Transform.Translate(0, 1, 0), null, null, 1, null);
         private GeometricPrimitive geoPrim;
 
         [SetUp]
@@ -24,8 +24,8 @@ namespace Pbrt.Tests.Core
         {
             geoPrim = new GeometricPrimitive(shape, material, light, mediumInterface);
             Check.That(geoPrim.GetAreaLight()).IsSameReferenceAs(light);
-        } 
-        
+        }
+
         [Test]
         public void BasicTest()
         {
@@ -40,7 +40,7 @@ namespace Pbrt.Tests.Core
             shape.WorldBound().Returns(worldBounds);
             Check.That(geoPrim.WorldBound()).IsEqualTo(worldBounds);
         }
- 
+
         [Test]
         public void IntersectPTest()
         {
@@ -56,17 +56,17 @@ namespace Pbrt.Tests.Core
         public void IntersectTest()
         {
             var medium = HomogeneousMedium.Default();
-            var ray = new Ray(Point3F.Zero, new Vector3F(1,1,1), 1000f, 1f, medium);
+            var ray = new Ray(Point3F.Zero, new Vector3F(1, 1, 1), 1000f, 1f, medium);
             var tHit = 1.23f;
             var surfaceInteraction = new SurfaceInteraction();
-            
+
             shape.Intersect(ray, out Arg.Any<float>(), out Arg.Any<SurfaceInteraction>()).Returns(false);
             var inter = geoPrim.Intersect(ray, out var surf);
             Check.That(inter).IsFalse();
             Check.That(surf).IsNull();
-            
+
             shape.ClearSubstitute();
-            shape.Intersect(ray, out Arg.Any<float>(), out Arg.Any<SurfaceInteraction>()).Returns( datas =>
+            shape.Intersect(ray, out Arg.Any<float>(), out Arg.Any<SurfaceInteraction>()).Returns(datas =>
             {
                 datas[1] = tHit;
                 datas[2] = surfaceInteraction;
@@ -79,9 +79,9 @@ namespace Pbrt.Tests.Core
             Check.That(ray.TMax).IsEqualTo(tHit);
             Check.That(surf.MediumInterface.Inside).IsSameReferenceAs(medium);
             Check.That(surf.MediumInterface.Outside).IsSameReferenceAs(medium);
-            
-            mediumInterface.Inside = HomogeneousMedium.Default(); 
-            mediumInterface.Outside = HomogeneousMedium.Default(); 
+
+            mediumInterface.Inside = HomogeneousMedium.Default();
+            mediumInterface.Outside = HomogeneousMedium.Default();
 
             inter = geoPrim.Intersect(ray, out surf);
             Check.That(inter).IsTrue();
@@ -97,7 +97,7 @@ namespace Pbrt.Tests.Core
             MemoryArena memoryArena = new MemoryArena();
             var transportMode = new TransportMode();
             geoPrim.ComputeScatteringFunctions(surfaceInteraction, memoryArena, transportMode, true);
-            
+
             material.Received(1).ComputeScatteringFunctions(surfaceInteraction, memoryArena, transportMode, true);
         }
     }

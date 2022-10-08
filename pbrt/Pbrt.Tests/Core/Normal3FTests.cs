@@ -2,10 +2,11 @@ using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable SuspiciousTypeConversion.Global
-#pragma warning disable CS1718 
+#pragma warning disable CS1718
 
 namespace Pbrt.Tests.Core
 {
@@ -33,7 +34,7 @@ namespace Pbrt.Tests.Core
         [Test]
         public void ConstructorVectorTests()
         {
-            var v = new Vector3F(1,2,3);
+            var v = new Vector3F(1, 2, 3);
             var n = new Normal3F(v);
             Check.That(n.X).IsEqualTo(1);
             Check.That(n.Y).IsEqualTo(2);
@@ -113,7 +114,7 @@ namespace Pbrt.Tests.Core
         [Test]
         public void LengthTest()
         {
-            Check.That(n1.Length).IsEqualTo(MathF.Sqrt(1 + 2*2 + 3*3));
+            Check.That(n1.Length).IsEqualTo(MathF.Sqrt(1 + 2 * 2 + 3 * 3));
             Check.That(n1.LengthSquared).IsEqualTo(1 + 4 + 9);
         }
 
@@ -140,7 +141,7 @@ namespace Pbrt.Tests.Core
             Check.That(n1.Dot(n)).IsEqualTo(1 * 4 + 2 * 5 + 3 * 6);
             Check.That(n.Dot(n1)).IsEqualTo(1 * 4 + 2 * 5 + 3 * 6);
         }
-        
+
         [Test]
         public void AbsDotTest()
         {
@@ -169,7 +170,7 @@ namespace Pbrt.Tests.Core
             Check.That(n1 == n1).IsTrue();
             Check.That(n2 != n1).IsTrue();
             Check.That(n2 == n1).IsFalse();
-            
+
             Check.That(n1.Equals(n)).IsTrue();
             Check.That(n1.Equals((string)null)).IsFalse();
             string s = null;
@@ -188,14 +189,14 @@ namespace Pbrt.Tests.Core
             var n = new Normal3F(n1);
             Check.That(n1.GetHashCode() == n.GetHashCode()).IsTrue();
         }
-        
+
         [Test]
         public void FaceForwardVectorTest()
         {
             var v = new Vector3F(1, 2, 3);
             var n = n1.FaceForward(v);
             Check.That(n).IsEqualTo(n1);
-            
+
             n = n1.FaceForward(-v);
             Check.That(n).IsEqualTo(-n1);
         }
@@ -206,17 +207,17 @@ namespace Pbrt.Tests.Core
             var nn = new Normal3F(1, 2, 3);
             var n = n1.FaceForward(nn);
             Check.That(n).IsEqualTo(n1);
-            
+
             n = n1.FaceForward(-nn);
             Check.That(n).IsEqualTo(-n1);
         }
- 
+
         [Test]
-        public void  ToStringTest()
+        public void ToStringTest()
         {
             Check.That(new Normal3F(1.23f, 2.34f, 3.45f).ToString()).IsEqualTo("Nx[1.23] Ny[2.34] Nz[3.45]");
         }
-        
+
 
         [Test]
         public void DeConstructorTest()
@@ -231,7 +232,7 @@ namespace Pbrt.Tests.Core
             Check.That(x).IsEqualTo(1);
             Check.That(y).IsEqualTo(2);
             Check.That(z).IsEqualTo(3);
-            
+
             Check.That(normal).Check((1f, 2f, 3f));
             Check.That(normal).Check((1, 2, 3));
         }

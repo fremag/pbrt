@@ -20,19 +20,19 @@ namespace Pbrt.Tests.Core
             Check.That(ray.TMax).IsEqualTo(1000);
             Check.That(ray.Time).IsEqualTo(0);
             Check.That(ray.Medium).IsSameReferenceAs(med);
-            
+
             Check.That(ray.HasNaNs).IsFalse();
             Check.That(ray.At(1)).IsEqualTo(new Point3F(2.23f, 2.34f, 2.45f));
         }
 
         [Test]
-        [TestCase(0,0,0,0,0,0, false)]
-        [TestCase(0,0,0,0,0,float.NaN, true)]
-        [TestCase(0,0,0,0,float.NaN,0, true)]
-        [TestCase(0,0,0,float.NaN,0,0, true)]
-        [TestCase(0,0,float.NaN,0,0,0, true)]
-        [TestCase(0,float.NaN, 0,0,0,0,true)]
-        [TestCase(float.NaN, 0,0,0,0,0,true)]
+        [TestCase(0, 0, 0, 0, 0, 0, false)]
+        [TestCase(0, 0, 0, 0, 0, float.NaN, true)]
+        [TestCase(0, 0, 0, 0, float.NaN, 0, true)]
+        [TestCase(0, 0, 0, float.NaN, 0, 0, true)]
+        [TestCase(0, 0, float.NaN, 0, 0, 0, true)]
+        [TestCase(0, float.NaN, 0, 0, 0, 0, true)]
+        [TestCase(float.NaN, 0, 0, 0, 0, 0, true)]
         public void HasNaNsTest(float ox, float oy, float oz, float dx, float dy, float dz, bool hasNaNs)
         {
             var o = new Point3F(ox, oy, oz);

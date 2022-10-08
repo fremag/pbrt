@@ -18,7 +18,7 @@ namespace Pbrt.Tests.Core
     {
         private readonly Light light = Substitute.For<Light>();
         private Scene scene;
-        private readonly ConstantTexture<Spectrum> kd= new ConstantTexture<Spectrum>(new Spectrum(0f));
+        private readonly ConstantTexture<Spectrum> kd = new ConstantTexture<Spectrum>(new Spectrum(0f));
         private readonly Texture<float> sigma = new ConstantTexture<float>(0f);
         private MatteMaterial material;
         private IPrimitive aggregate;
@@ -29,8 +29,8 @@ namespace Pbrt.Tests.Core
         {
             material = new MatteMaterial(kd, sigma, null);
             shape = Create();
-            aggregate = new GeometricPrimitive(shape, material,  null, new MediumInterface(HomogeneousMedium.Default(), HomogeneousMedium.Default()));
-            scene = new Scene(aggregate, new [] { light });
+            aggregate = new GeometricPrimitive(shape, material, null, new MediumInterface(HomogeneousMedium.Default(), HomogeneousMedium.Default()));
+            scene = new Scene(aggregate, new[] { light });
             scene.Init();
         }
 
@@ -60,12 +60,12 @@ namespace Pbrt.Tests.Core
             };
             var result = scene.IntersectP(ray);
             Check.That(result).IsTrue();
-            
+
             ray.O = new Point3F(0, 5, 0);
             result = scene.IntersectP(ray);
             Check.That(result).IsFalse();
         }
-        
+
         [Test]
         public void IntersectTrTest()
         {
@@ -98,7 +98,7 @@ namespace Pbrt.Tests.Core
         public void IntersectTr_HitNoMaterial_Test()
         {
             aggregate = new GeometricPrimitive(shape, null, null, new MediumInterface(HomogeneousMedium.Default(), HomogeneousMedium.Default()));
-            scene = new Scene(aggregate, new [] { light });
+            scene = new Scene(aggregate, new[] { light });
 
             Ray ray = new Ray(new Point3F(-5, 0, 0), new Vector3F(1, 0, 0), 1000)
             {
@@ -115,7 +115,7 @@ namespace Pbrt.Tests.Core
         public static IShape Create()
         {
             var transform = Transform.Translate(0, 0, 0);
-            return new Sphere(transform, transform.Inverse(), false, 1, -1, 1, MathF.PI * 2) ;
+            return new Sphere(transform, transform.Inverse(), false, 1, -1, 1, MathF.PI * 2);
         }
     }
 }

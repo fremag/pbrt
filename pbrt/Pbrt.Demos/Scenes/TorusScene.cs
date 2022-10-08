@@ -6,11 +6,10 @@ using pbrt.Shapes;
 
 namespace Pbrt.Demos.Scenes
 {
-    public class TorusScene  : DemoScene
+    public class TorusScene : DemoScene
     {
         public TorusScene()
         {
-
             Floor();
             AddPrimitives(BuildTorus());
             PointLight(00, 15, -10, 500f);
@@ -23,7 +22,7 @@ namespace Pbrt.Demos.Scenes
             int m = 30;
             float r1 = 2;
             float r2 = 1;
- 
+
             var vertexIndices = new List<int>();
             var points = new List<Point3F>();
 
@@ -33,35 +32,34 @@ namespace Pbrt.Demos.Scenes
                 {
                     var theta = 2 * (MathF.PI / n) * i;
                     var phi = 2 * (MathF.PI / m) * j;
-                    var x = (r1 + r2 * MathF.Cos(theta))*MathF.Cos(phi);
-                    var y =  (r1 + r2 * MathF.Cos(theta))*MathF.Sin(phi);
-                    var z =  r2 * MathF.Sin(theta);
-                    
+                    var x = (r1 + r2 * MathF.Cos(theta)) * MathF.Cos(phi);
+                    var y = (r1 + r2 * MathF.Cos(theta)) * MathF.Sin(phi);
+                    var z = r2 * MathF.Sin(theta);
+
                     points.Add(new Point3F(x, y, z));
                 }
             }
 
-            int Idx(int i, int j) => ((i % n)*n)+ (j%m); 
+            int Idx(int i, int j) => ((i % n) * n) + (j % m);
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < m; j++)
                 {
-                    var idx = Idx(i,j);
-                    var idx1 = Idx(i+1, j);
-                    var idx2 = Idx(i, j+1);
+                    var idx = Idx(i, j);
+                    var idx1 = Idx(i + 1, j);
+                    var idx2 = Idx(i, j + 1);
 
                     vertexIndices.Add(idx);
                     vertexIndices.Add(idx1);
                     vertexIndices.Add(idx2);
 
-                    idx = Idx(i+1,j+1);
-                    idx1 = Idx(i+1, j);
-                    idx2 = Idx(i, j+1);
+                    idx = Idx(i + 1, j + 1);
+                    idx1 = Idx(i + 1, j);
+                    idx2 = Idx(i, j + 1);
 
                     vertexIndices.Add(idx);
                     vertexIndices.Add(idx1);
                     vertexIndices.Add(idx2);
-                    
                 }
             }
 

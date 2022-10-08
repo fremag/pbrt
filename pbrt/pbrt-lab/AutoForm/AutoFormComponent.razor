@@ -1,59 +1,69 @@
 @using System.Reflection
 @inherits AutoFormComponentBase
 <div class="card">
-  <div class="card-body">
-      <h5 class="card-title"><button class="btn btn-primary btn-sm" @onclick="Collapse">@ButtonCollapse</button>@Name</h5>
-      <p class="card-body" style="display: @Display">
-          @if (Value != null)
-          {
-              @foreach (var property in Value.GetType().GetProperties().Where(p => p.CanWrite))
-              {
-                  <div class="row">
-                      @if (property.PropertyType.IsClass)
-                      {
-                          @CreateForm(property)
-                      }
-                      else
-                      {
-                          @CreatePropertyComponent(property)
-                      }
-                  </div>
-              }
-              @if (MainForm)
-              {
-                  <button class="btn btn-primary" @onclick="Apply">Apply</button>
-              }
-          }
-      </p>
-  </div>
+    <div class="card-body">
+        <div class="card-title">
+            <button class="btn btn-primary btn-sm" @onclick="Collapse">@ButtonCollapse</button>@Name
+            @if (MainForm)
+            {
+                <button class="btn btn-primary btn-sm" @onclick="Apply">Apply</button>
+            }
+        </div>
+        <p class="card-body" style="display: @Display">
+            @if (Value != null)
+            {
+                @foreach (var property in Value.GetType().GetProperties().Where(p => p.CanWrite))
+                {
+                    <div class="row">
+                        @if (property.PropertyType.IsClass)
+                        {
+                            @CreateForm(property)
+                        }
+                        else
+                        {
+                            @CreatePropertyComponent(property)
+                        }
+                    </div>
+                }
+            }
+        </p>
+    </div>
 </div>
 
 
 @code {
+
     [Parameter]
     public string Name { get; set; }
-    
+
     [Parameter]
     public object Value { get; set; }
 
     [Parameter]
     public bool MainForm { get; set; } = true;
 
-    public string ButtonCollapse => Collapsed ? "-" : "+"; 
-    public string Display => Collapsed ? "block" : "none"; 
+    public string ButtonCollapse => Collapsed ? "-" : "+";
+    public string Display => Collapsed ? "block" : "none";
     public bool Collapsed { get; set; } = false;
 
     List<AutoFormComponentBase> components = new();
+
     private RenderFragment CreatePropertyComponent(PropertyInfo propertyInfo) => builder =>
     {
         var propertyValue = propertyInfo.GetValue(Value)?.ToString();
         builder.OpenComponent<AutoFormPropertyComponent>(0);
         builder.AddAttribute(1, nameof(AutoFormPropertyComponent.PropertyInfo), propertyInfo);
         builder.AddAttribute(2, nameof(Value), propertyValue);
-        builder.AddComponentReferenceCapture(3, o =>  components.Add((AutoFormPropertyComponent)o));
-        
+        builder.AddComponentReferenceCapture(3, ComponentReferenceCapture);
+
         builder.CloseComponent();
     };
+
+    private void ComponentReferenceCapture(object obj)
+    {
+        var autoFormPropertyComponent = (AutoFormComponentBase)obj;
+        components.Add(autoFormPropertyComponent);
+    }
 
     private RenderFragment CreateForm(PropertyInfo propertyInfo) => builder =>
     {
@@ -62,8 +72,8 @@
         builder.AddAttribute(1, nameof(Value), propertyValue);
         builder.AddAttribute(2, nameof(Name), propertyInfo.Name);
         builder.AddAttribute(3, nameof(MainForm), false);
-        builder.AddComponentReferenceCapture(3, o =>  components.Add((AutoFormComponent)o));
-        
+        builder.AddComponentReferenceCapture(3, ComponentReferenceCapture);
+
         builder.CloseComponent();
     };
 
@@ -80,4 +90,5 @@
         Collapsed = !Collapsed;
         StateHasChanged();
     }
+
 }

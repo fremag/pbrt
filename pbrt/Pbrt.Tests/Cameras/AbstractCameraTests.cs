@@ -19,16 +19,18 @@ namespace Pbrt.Tests.Cameras
 
             public override float GenerateRay(CameraSample sample, out Ray ray)
             {
-                ray = new Ray {O = new Point3F(sample.PFilm.X, sample.PFilm.Y, 0)};
+                ray = new Ray { O = new Point3F(sample.PFilm.X, sample.PFilm.Y, 0) };
                 if (Math.Abs(sample.PFilm.X - 1) < float.Epsilon && sample.PFilm.Y == 0)
                 {
                     return 0;
                 }
+
                 if (Math.Abs(sample.PFilm.X - 2) < float.Epsilon && sample.PFilm.Y == 0)
                 {
                     return 1;
                 }
-                ray = new Ray {O = new Point3F(sample.PFilm.X, sample.PFilm.Y, 0)};
+
+                ray = new Ray { O = new Point3F(sample.PFilm.X, sample.PFilm.Y, 0) };
                 return 0;
             }
         }

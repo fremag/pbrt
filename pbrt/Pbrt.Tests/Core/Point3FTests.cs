@@ -2,10 +2,11 @@ using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable SuspiciousTypeConversion.Global
-#pragma warning disable CS1718 
+#pragma warning disable CS1718
 
 namespace Pbrt.Tests.Core
 {
@@ -14,7 +15,7 @@ namespace Pbrt.Tests.Core
     {
         Point3F p1 = new Point3F(1.1f, 2.2f, 3.3f);
         Point3F p2 = new Point3F(4.4f, 5.5f, 6.6f);
-        
+
         [Test]
         public void EmptyConstructorTest()
         {
@@ -23,7 +24,7 @@ namespace Pbrt.Tests.Core
             Check.That(p.Y).IsEqualTo(0);
             Check.That(p.Z).IsEqualTo(0);
         }
-        
+
         [Test]
         public void ConstructorTest()
         {
@@ -56,7 +57,7 @@ namespace Pbrt.Tests.Core
         {
             var p = new Point3F(1, 2, 3);
             Check.That(p.HasNaNs).IsFalse();
-             p = new Point3F(float.NaN, 2, 3);
+            p = new Point3F(float.NaN, 2, 3);
             Check.That(p.HasNaNs).IsTrue();
             p = new Point3F(1, float.NaN, 3);
             Check.That(p.HasNaNs).IsTrue();
@@ -95,6 +96,7 @@ namespace Pbrt.Tests.Core
             Check.That(p.Y).IsEqualTo(7.7f);
             Check.That(p.Z).IsEqualTo(9.9f);
         }
+
         [Test]
         public void AddVectorTest()
         {
@@ -113,6 +115,7 @@ namespace Pbrt.Tests.Core
             Check.That(p.Y).IsCloseTo(-3.3f, 1e-5);
             Check.That(p.Z).IsCloseTo(-3.3f, 1e-5);
         }
+
         [Test]
         public void SubVectorTest()
         {
@@ -122,16 +125,16 @@ namespace Pbrt.Tests.Core
             Check.That(p.Y).IsCloseTo(-3.3f, 1e-5);
             Check.That(p.Z).IsCloseTo(-3.3f, 1e-5);
         }
-        
+
         [Test]
         public void MulTest()
         {
-            var p = p1*3;
+            var p = p1 * 3;
             Check.That(p.X).IsCloseTo(3.3f, 1e-5);
             Check.That(p.Y).IsCloseTo(6.6f, 1e-5);
             Check.That(p.Z).IsCloseTo(9.9f, 1e-5);
 
-            p = 2*p1;
+            p = 2 * p1;
             Check.That(p.X).IsCloseTo(2.2f, 1e-5);
             Check.That(p.Y).IsCloseTo(4.4f, 1e-5);
             Check.That(p.Z).IsCloseTo(6.6f, 1e-5);
@@ -160,7 +163,7 @@ namespace Pbrt.Tests.Core
             Check.That(p1.Equals(5)).IsFalse();
             Check.That(p1.Equals(null)).IsFalse();
         }
-        
+
         [Test]
         public void InEqualsTest()
         {
@@ -191,20 +194,20 @@ namespace Pbrt.Tests.Core
         public void DistanceTest()
         {
             Check.That(p1.Distance(p1)).IsZero();
-            Check.That(p1.Distance(p1+new Point3F(1,1,-1))).IsCloseTo(MathF.Sqrt(3), 1e-5);
+            Check.That(p1.Distance(p1 + new Point3F(1, 1, -1))).IsCloseTo(MathF.Sqrt(3), 1e-5);
         }
 
         [Test]
         public void DistanceSquaredTest()
         {
             Check.That(p1.DistanceSquared(p1)).IsZero();
-            Check.That(p1.DistanceSquared(p1+new Point3F(-1,-1,1))).IsCloseTo(3, 1e-5);
+            Check.That(p1.DistanceSquared(p1 + new Point3F(-1, -1, 1))).IsCloseTo(3, 1e-5);
         }
 
         [Test]
         public void MinTest()
         {
-            var p = Point3F.Min(new Point3F(1,2,3),new Point3F(-1, 4, 2));
+            var p = Point3F.Min(new Point3F(1, 2, 3), new Point3F(-1, 4, 2));
             Check.That(p.X).IsEqualTo(-1);
             Check.That(p.Y).IsEqualTo(2);
             Check.That(p.Z).IsEqualTo(2);
@@ -213,11 +216,12 @@ namespace Pbrt.Tests.Core
         [Test]
         public void MaxTest()
         {
-            var p = Point3F.Max(new Point3F(1,2,3),new Point3F(-1, 4, 2));
+            var p = Point3F.Max(new Point3F(1, 2, 3), new Point3F(-1, 4, 2));
             Check.That(p.X).IsEqualTo(1);
             Check.That(p.Y).IsEqualTo(4);
             Check.That(p.Z).IsEqualTo(3);
         }
+
         [Test]
         public void AbsTest()
         {
@@ -226,6 +230,7 @@ namespace Pbrt.Tests.Core
             Check.That(p.Y).IsEqualTo(4);
             Check.That(p.Z).IsEqualTo(2);
         }
+
         [Test]
         public void FloorTest()
         {
@@ -234,6 +239,7 @@ namespace Pbrt.Tests.Core
             Check.That(p.Y).IsEqualTo(2);
             Check.That(p.Z).IsEqualTo(3);
         }
+
         [Test]
         public void CeilTest()
         {
@@ -276,7 +282,7 @@ namespace Pbrt.Tests.Core
             Check.That(x).IsEqualTo(1);
             Check.That(y).IsEqualTo(2);
             Check.That(z).IsEqualTo(3);
-            
+
             Check.That(point).Check((1f, 2f, 3f));
             Check.That(point).Check((1, 2, 3));
         }

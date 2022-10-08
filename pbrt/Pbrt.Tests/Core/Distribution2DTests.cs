@@ -19,15 +19,15 @@ namespace Pbrt.Tests.Core
         {
             Check.That(distribution2D.PMarginal.Func).ContainsExactly(1.25f, 1.25f);
             Check.That(distribution2D.PConditionalV[0].Func).ContainsExactly(4, 0, 0, 1);
-            Check.That(distribution2D.PConditionalV[1].Func).ContainsExactly(0, 3 ,1, 1);
+            Check.That(distribution2D.PConditionalV[1].Func).ContainsExactly(0, 3, 1, 1);
         }
 
         [Test]
         public void SampleContinuousTest()
         {
-            Random r = new Random(1337*42);
+            Random r = new Random(1337 * 42);
             int n = 10_000;
-            var count = new int[][] { new[] {0, 0, 0, 0}, new [] {0, 0, 0, 0}};
+            var count = new int[][] { new[] { 0, 0, 0, 0 }, new[] { 0, 0, 0, 0 } };
 
             for (int i = 0; i < n; i++)
             {
@@ -38,15 +38,15 @@ namespace Pbrt.Tests.Core
                 count[nY][nX]++;
             }
 
-            Check.That(count[0][0]/(float)n).IsCloseTo(4/10f, 1e-2);
-            Check.That(count[0][1]/(float)n).IsCloseTo(0/10f, 1e-2);
-            Check.That(count[0][2]/(float)n).IsCloseTo(0/10f, 1e-2);
-            Check.That(count[0][3]/(float)n).IsCloseTo(1/10f, 1e-2);
-            
-            Check.That(count[1][0]/(float)n).IsCloseTo(0/10f, 1e-2);
-            Check.That(count[1][1]/(float)n).IsCloseTo(3/10f, 1e-2);
-            Check.That(count[1][2]/(float)n).IsCloseTo(1/10f, 1e-2);
-            Check.That(count[1][3]/(float)n).IsCloseTo(1/10f, 1e-2);
+            Check.That(count[0][0] / (float)n).IsCloseTo(4 / 10f, 1e-2);
+            Check.That(count[0][1] / (float)n).IsCloseTo(0 / 10f, 1e-2);
+            Check.That(count[0][2] / (float)n).IsCloseTo(0 / 10f, 1e-2);
+            Check.That(count[0][3] / (float)n).IsCloseTo(1 / 10f, 1e-2);
+
+            Check.That(count[1][0] / (float)n).IsCloseTo(0 / 10f, 1e-2);
+            Check.That(count[1][1] / (float)n).IsCloseTo(3 / 10f, 1e-2);
+            Check.That(count[1][2] / (float)n).IsCloseTo(1 / 10f, 1e-2);
+            Check.That(count[1][3] / (float)n).IsCloseTo(1 / 10f, 1e-2);
         }
 
         [Test]
@@ -57,7 +57,7 @@ namespace Pbrt.Tests.Core
         [TestCase(0.99f, 0.499f, 0.8f)]
         public void SampleContinuous_PdfTest(float u, float v, float expectedPdf)
         {
-            distribution2D.SampleContinuous( new Point2F(u, v), out var pdf);
+            distribution2D.SampleContinuous(new Point2F(u, v), out var pdf);
             Check.That(pdf).IsCloseTo(expectedPdf, 1);
         }
 

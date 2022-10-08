@@ -43,7 +43,7 @@ namespace Pbrt.Tests.Accelerators
         {
             BVHBuildNode node0 = new BVHBuildNode();
             node0.InitLeaf(123, 456, bounds);
-            
+
             BVHBuildNode node1 = new BVHBuildNode();
             var boundsBis = new Bounds3F(new Point3F(-1, -1, -1), new Point3F(3, 2, 1));
             node1.InitLeaf(234, 567, boundsBis);

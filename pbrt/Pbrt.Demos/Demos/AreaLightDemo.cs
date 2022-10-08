@@ -5,27 +5,30 @@ using pbrt.Lights;
 using pbrt.Shapes;
 using pbrt.Spectrums;
 
-namespace Pbrt.Demos.renderers
+namespace Pbrt.Demos.Demos
 {
-    public class AreaLightRenderer : AbstractRenderer
+    public class AreaLightDemo : AbstractDemo
     {
         public override string FileName => $"AreaLight_NbSample={SamplesPerPixel}.png";
         private int SamplesPerPixel { get; }
         public int NbThreads { get; set; }
 
-        public AreaLightRenderer() : this(16, 1)
+        public AreaLightDemo() : this(16, 1)
         {
         }
 
-        public AreaLightRenderer(int samplesPerPixel = 16, int nbThreads = 1) : base($"Area light {nameof(SamplesPerPixel)}={samplesPerPixel}")
+        public AreaLightDemo(int samplesPerPixel = 16, int nbThreads = 1) : base($"Area light {nameof(SamplesPerPixel)}={samplesPerPixel}")
         {
             SamplesPerPixel = samplesPerPixel;
             NbThreads = nbThreads;
 
-            CameraConfig = new CameraConfig()
+            CameraConfig = new CameraConfig
             {
-                Position = (-0f, 3, -2),
-                LookAt = (0, 0, 1)
+                Config = new PerspectiveCameraConfig
+                {
+                    Position = (-0f, 3, -2),
+                    LookAt = (0, 0, 1)
+                }
             };
 
             SamplerConfig = new SamplerConfig
@@ -33,7 +36,7 @@ namespace Pbrt.Demos.renderers
                 Sampler = Configs.Sampler.Halton,
                 Config = new HaltonSamplerConfig { SamplesPerPixel = SamplesPerPixel }
             };
-            
+
             IntegratorConfig = new IntegratorConfig
             {
                 Integrator = IntegratorType.DirectLighting,

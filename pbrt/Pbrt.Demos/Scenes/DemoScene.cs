@@ -17,22 +17,22 @@ namespace Pbrt.Demos.Scenes
         public static Vector3F VX => new Vector3F(1, 0, 0);
         public static Vector3F VY => new Vector3F(0, 1, 0);
         public static Vector3F VZ => new Vector3F(0, 0, 1);
-        
+
         public IMaterial MatteMaterialRed(float sigma = 50, float bump = 0) => MakeMatteMaterial(sigma, 1, 0, 0, bump);
         public IMaterial MatteMaterialGreen(float sigma = 50, float bump = 0) => MakeMatteMaterial(sigma, 0, 1, 0, bump);
         public IMaterial MatteMaterialBlue(float sigma = 50, float bump = 0) => MakeMatteMaterial(sigma, 0, 0, 1, bump);
-        
+
         public static MediumInterface DefaultMediumInterface => new MediumInterface(HomogeneousMedium.Default());
 
         public Texture<float> MakeTexture(float f) => new ConstantTexture<float>(f);
         public Texture<Spectrum> MakeSpectrumTexture(float f) => new ConstantTexture<Spectrum>(new Spectrum(f));
         public Texture<Spectrum> MakeSpectrumTexture(float r, float g, float b) => new ConstantTexture<Spectrum>(new Spectrum(SampledSpectrum.FromRgb(new[] { r, g, b })));
-        public Texture<Spectrum> MakeGraySpectrumTexture(float level) => new ConstantTexture<Spectrum>(new Spectrum(SampledSpectrum.FromRgb(new [] { level, level, level })));
-        
+        public Texture<Spectrum> MakeGraySpectrumTexture(float level) => new ConstantTexture<Spectrum>(new Spectrum(SampledSpectrum.FromRgb(new[] { level, level, level })));
+
         public readonly List<IPrimitive> AllPrimitives = new List<IPrimitive>();
         public readonly List<Light> AllLights = new List<Light>();
-        
-        public IMaterial MakeMatteMaterial(float sigma, float r, float g, float b, float bump=0)
+
+        public IMaterial MakeMatteMaterial(float sigma, float r, float g, float b, float bump = 0)
         {
             Texture<Spectrum> kd = MakeSpectrumTexture(r, g, b);
             Texture<float> sigmaTexture = MakeTexture(sigma);
@@ -44,8 +44,8 @@ namespace Pbrt.Demos.Scenes
         public IMaterial PlasticMaterialRed => PlasticMaterial(50f, 1, 0, 0, 0.001f);
         public IMaterial PlasticMaterialGreen => PlasticMaterial(50f, 0, 1, 0, 0.001f);
         public IMaterial PlasticMaterialBlue => PlasticMaterial(50f, 0, 0, 1, 0.001f);
-        
-        public IMaterial PlasticMaterial(float ks, float r, float g, float b, float roughness, float bumpMap=0)
+
+        public IMaterial PlasticMaterial(float ks, float r, float g, float b, float roughness, float bumpMap = 0)
         {
             Texture<float> bumpMapTexture = bumpMap == 0 ? null : MakeTexture(bumpMap);
             var plasticMaterial = new PlasticMaterial(MakeSpectrumTexture(r, g, b), MakeSpectrumTexture(ks), MakeTexture(roughness), bumpMapTexture, false);
@@ -57,8 +57,8 @@ namespace Pbrt.Demos.Scenes
         public Transform RotateX(float deg) => Transform.RotateX(deg);
         public Transform RotateY(float deg) => Transform.RotateY(deg);
         public Transform RotateZ(float deg) => Transform.RotateZ(deg);
-        
-        public GeometricPrimitive Sphere(float x, float y, float z, float radius, IMaterial material, AreaLight areaLight = null, MediumInterface mediumInterface=null)
+
+        public GeometricPrimitive Sphere(float x, float y, float z, float radius, IMaterial material, AreaLight areaLight = null, MediumInterface mediumInterface = null)
         {
             Transform objectToWorld = Translate(x, y, z);
             var sphere = new Sphere(objectToWorld, radius);
@@ -73,18 +73,19 @@ namespace Pbrt.Demos.Scenes
             {
                 throw new InvalidOperationException("no primitives in scene !");
             }
+
             if (!AllLights.Any())
             {
                 throw new InvalidOperationException("no lights in scene !");
             }
-            
+
             var bvhAccel = new BvhAccel(AllPrimitives, 5, SplitMethod.Middle);
             base.Init(bvhAccel, AllLights.ToArray());
         }
-        
+
         public PointLight PointLight(float x, float y, float z, float spectrumValue)
         {
-            var pointLight =  new PointLight(Translate(x, y, z), DefaultMediumInterface, new Spectrum(spectrumValue));
+            var pointLight = new PointLight(Translate(x, y, z), DefaultMediumInterface, new Spectrum(spectrumValue));
             AllLights.Add(pointLight);
             return pointLight;
         }
@@ -100,13 +101,13 @@ namespace Pbrt.Demos.Scenes
             AddShape(plane, new MatteMaterial(kdChecker, MakeTexture(50f), null));
         }
 
-        public void Cylinder(Transform transform, IMaterial material, float zMax=1f, MediumInterface mediumInterface=null)
+        public void Cylinder(Transform transform, IMaterial material, float zMax = 1f, MediumInterface mediumInterface = null)
         {
             var cylinder = new Cylinder(transform, zMax: zMax);
             AddShape(cylinder, material, null, mediumInterface);
         }
 
-        public GeometricPrimitive AddShape(IShape shape, IMaterial material, AreaLight areaLight=null, MediumInterface mediumInterface=null)
+        public GeometricPrimitive AddShape(IShape shape, IMaterial material, AreaLight areaLight = null, MediumInterface mediumInterface = null)
         {
             var primitiveMediumInterface = mediumInterface ?? DefaultMediumInterface;
             var primitive = new GeometricPrimitive(shape, material, areaLight, primitiveMediumInterface);
@@ -114,7 +115,7 @@ namespace Pbrt.Demos.Scenes
             return primitive;
         }
 
-        public void Disk(Transform transform, IMaterial material, float radius = 0.5f, MediumInterface mediumInterface=null)
+        public void Disk(Transform transform, IMaterial material, float radius = 0.5f, MediumInterface mediumInterface = null)
         {
             var disk = new Disk(transform, radius);
             AddShape(disk, material, null, mediumInterface);
@@ -134,6 +135,5 @@ namespace Pbrt.Demos.Scenes
                 .ToArray();
             return triangles;
         }
-        
     }
 }

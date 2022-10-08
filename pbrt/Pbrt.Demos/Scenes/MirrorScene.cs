@@ -8,7 +8,7 @@ namespace Pbrt.Demos.Scenes
         public MirrorScene()
         {
             IMaterial mirrorMaterial = new MirrorMaterial(MakeSpectrumTexture(1f), null);
-            
+
             Sphere(-0.5f, 0f, 0f, 0.5f, PlasticMaterialRed);
             Sphere(0.5f, 0.5f, 0f, 0.5f, mirrorMaterial);
             Floor();

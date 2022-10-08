@@ -1,23 +1,24 @@
 @using System.Reflection
 @inherits AutoFormComponentBase
 
-<div class="col">@PropertyInfo.Name</div>
-<div class="col">
-    @if (PropertyInfo.PropertyType.IsEnum)
-    {
-        <select @bind="Value">
-            @foreach (var name in Enum.GetNames(PropertyInfo.PropertyType))
-            {
-                <option>@name</option>
-            }
-        </select>
-    }
-    else
-    {
-        <input @bind="Value"/>
-    }
+<div class="row">
+    <div class="col-6">@PropertyInfo.Name</div>
+    <div class="col-6">
+        @if (PropertyInfo.PropertyType.IsEnum)
+        {
+            <select @bind="Value">
+                @foreach (var name in Enum.GetNames(PropertyInfo.PropertyType))
+                {
+                    <option>@name</option>
+                }
+            </select>
+        }
+        else
+        {
+            <input @bind="Value"/>
+        }
+    </div>
 </div>
-
 @code {
     [Parameter]
     public PropertyInfo PropertyInfo { get; set; }

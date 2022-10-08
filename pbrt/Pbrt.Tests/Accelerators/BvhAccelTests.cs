@@ -31,7 +31,7 @@ namespace Pbrt.Tests.Accelerators
             Check.That(bvh.MaxPrimsInNode).IsEqualTo(2);
             Check.That(bvh.Primitives).IsEmpty();
         }
-        
+
         [Test]
         public void NotImplementedSplitMethodsTest()
         {
@@ -40,7 +40,7 @@ namespace Pbrt.Tests.Accelerators
             Check.ThatCode(() => new BvhAccel(primitives, 2, SplitMethod.EqualCounts)).Throws<NotImplementedException>();
             Check.ThatCode(() => new BvhAccel(primitives, 2, (SplitMethod)(-1))).Throws<ArgumentOutOfRangeException>();
         }
-        
+
         [Test]
         public void NoPrimitiveTest()
         {
@@ -49,7 +49,7 @@ namespace Pbrt.Tests.Accelerators
             Check.That(bvh.MaxPrimsInNode).IsEqualTo(2);
             Check.That(bvh.Primitives).IsNull();
         }
-        
+
         [Test]
         public void OneSphere_RecursiveBuildTest()
         {
@@ -58,7 +58,7 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
             Check.That(bvh.SplitMethod).IsEqualTo(SplitMethod.Middle);
             Check.That(bvh.MaxPrimsInNode).IsEqualTo(2);
@@ -81,12 +81,13 @@ namespace Pbrt.Tests.Accelerators
                 CreateSphere(0, -1, 0),
                 CreateSphere(5, 2, 1)
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
             var worldBounds = bvh.WorldBound();
-            Check.That(worldBounds.PMin).IsEqualTo(new Point3F(-1,-2,-1));
-            Check.That(worldBounds.PMax).IsEqualTo(new Point3F(6,3,2));
+            Check.That(worldBounds.PMin).IsEqualTo(new Point3F(-1, -2, -1));
+            Check.That(worldBounds.PMax).IsEqualTo(new Point3F(6, 3, 2));
         }
+
         [Test]
         public void TwoSpheres_RecursiveBuildTest()
         {
@@ -96,7 +97,7 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1, sphere2
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
             Check.That(bvh.SplitMethod).IsEqualTo(SplitMethod.Middle);
             Check.That(bvh.MaxPrimsInNode).IsEqualTo(2);
@@ -122,17 +123,17 @@ namespace Pbrt.Tests.Accelerators
                 {
                     for (int k = 0; k < n; k++)
                     {
-                        var sphere = CreateSphere(2*i, 2*j, 2*k);
+                        var sphere = CreateSphere(2 * i, 2 * j, 2 * k);
                         primitives.Add(sphere);
                     }
                 }
             }
-            
+
             var bvh = new BvhAccel(primitives.ToList(), 2, SplitMethod.Middle);
             Check.That(bvh.SplitMethod).IsEqualTo(SplitMethod.Middle);
             Check.That(bvh.MaxPrimsInNode).IsEqualTo(2);
             Check.That(bvh.Nodes).CountIs(249);
-            Check.That(primitives).CountIs(n*n*n);
+            Check.That(primitives).CountIs(n * n * n);
             var nbPrims = bvh.Nodes.Select(node => node.NPrimitives).Sum();
             Check.That(nbPrims).IsEqualTo(primitives.Count);
         }
@@ -146,7 +147,7 @@ namespace Pbrt.Tests.Accelerators
             Check.That(node.Bounds.PMax.Y).IsEqualTo(pMax.y);
             Check.That(node.Bounds.PMax.Z).IsEqualTo(pMax.z);
         }
-        
+
         [Test]
         public void OneSphere_IntersectionTest()
         {
@@ -155,7 +156,7 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
 
             Point3F o = new Point3F(-5, 0, 0);
@@ -166,7 +167,7 @@ namespace Pbrt.Tests.Accelerators
             Check.That(isec.P).IsEqualTo(new Point3F(-1, 0, 0));
             Check.That(isec.N).IsEqualTo(new Normal3F(-1, 0, 0));
         }
-        
+
         [Test]
         public void OneSphere_DirIsNeg_IntersectionTest()
         {
@@ -175,17 +176,17 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
 
             Point3F o = new Point3F(5, 0, 0);
             var dir = new Vector3F(-1, 0, 0);
             Ray ray = new Ray(o, dir, 1000, 1, HomogeneousMedium.Default());
-            
+
             var inter = bvh.Intersect(ray, out var isec);
-            
+
             Check.That(inter).IsTrue();
-            Check.That(isec.P).IsEqualTo(new Point3F( 1, 0, 0));
+            Check.That(isec.P).IsEqualTo(new Point3F(1, 0, 0));
             Check.That(isec.N).IsEqualTo(new Normal3F(1, 0, 0));
         }
 
@@ -210,9 +211,9 @@ namespace Pbrt.Tests.Accelerators
             Point3F o = new Point3F(-5, 2, 6);
             var dir = new Vector3F(1, 0, 0);
             Ray ray = new Ray(o, dir, 1000, 1, HomogeneousMedium.Default());
-            
+
             var inter = bvh.Intersect(ray, out var isec);
-            
+
             Check.That(inter).IsTrue();
             Check.That(isec.P).IsEqualTo((Point3F)(-1, 2, 6));
             Check.That(isec.N).IsEqualTo(new Normal3F(-1, 0, 0));
@@ -227,10 +228,10 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1, sphere2
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
             Ray ray = new Ray((10, 0, 0), (-1, 0, 0), 1000, 1, HomogeneousMedium.Default());
-            
+
             var inter = bvh.Intersect(ray, out var isec);
             Check.That(inter).IsTrue();
             Check.That(isec.P).Check((6, 0, 0));
@@ -253,7 +254,7 @@ namespace Pbrt.Tests.Accelerators
             Check.That(bvh.Nodes[0].Bounds.PMin).Check((-10, -10, -10));
             Check.That(bvh.Nodes[0].Bounds.PMax).Check((10, 10, 10));
         }
-        
+
         [Test]
         public void TwoSpheres_IntersectP_Test()
         {
@@ -263,14 +264,14 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1, sphere2
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
             Ray ray = new Ray((10, 0, 0), (-1, 0, 0), 1000, 1, HomogeneousMedium.Default());
-            
+
             var inter = bvh.IntersectP(ray);
             Check.That(inter).IsTrue();
         }
-        
+
         [Test]
         public void TwoSpheres_IntersectP_2_Test()
         {
@@ -280,14 +281,14 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1, sphere2
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
             Ray ray = new Ray((0, 0, -5), (0, 0, 1), 1000, 1, HomogeneousMedium.Default());
-            
+
             var inter = bvh.IntersectP(ray);
             Check.That(inter).IsTrue();
         }
-        
+
         [Test]
         public void TwoSpheres_IntersectP_3_Test()
         {
@@ -297,14 +298,14 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1, sphere2
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
             Ray ray = new Ray((0.9f, 0.9f, -5), (0, 0, 1), 1000, 1, HomogeneousMedium.Default());
-            
+
             var inter = bvh.IntersectP(ray);
             Check.That(inter).IsFalse();
         }
-        
+
         [Test]
         public void TwoSpheres_IntersectP_4_Test()
         {
@@ -315,14 +316,14 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1, sphere2, sphere3
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
             Ray ray = new Ray((4.5f, 0.9f, -5), (0, 0, 1), 1000, 1, HomogeneousMedium.Default());
-            
+
             var inter = bvh.IntersectP(ray);
             Check.That(inter).IsFalse();
         }
-        
+
         [Test]
         public void TwoSpheres_IntersectP_OutsideBounds_Test()
         {
@@ -332,10 +333,10 @@ namespace Pbrt.Tests.Accelerators
             {
                 sphere1, sphere2
             };
-            
+
             var bvh = new BvhAccel(primitives, 2, SplitMethod.Middle);
             Ray ray = new Ray((10, 10, 0), (-1, 0, 0), 1000, 1, HomogeneousMedium.Default());
-            
+
             var inter = bvh.IntersectP(ray);
             Check.That(inter).IsFalse();
         }

@@ -2,10 +2,11 @@ using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable SuspiciousTypeConversion.Global
-#pragma warning disable CS1718 
+#pragma warning disable CS1718
 
 namespace Pbrt.Tests.Core
 {
@@ -97,8 +98,8 @@ namespace Pbrt.Tests.Core
         [Test]
         public void LengthTest()
         {
-            Check.That(v1.Length).IsEqualTo(MathF.Sqrt(1 + 2*2));
-            Check.That(v1.LengthSquared).IsEqualTo(1 + 4 );
+            Check.That(v1.Length).IsEqualTo(MathF.Sqrt(1 + 2 * 2));
+            Check.That(v1.LengthSquared).IsEqualTo(1 + 4);
         }
 
         [Test]
@@ -120,7 +121,7 @@ namespace Pbrt.Tests.Core
         [Test]
         public void AbsDotVectorTest()
         {
-            Check.That(v2.Dot(-v1)).IsEqualTo(-1 * 4  -2 * 5);
+            Check.That(v2.Dot(-v1)).IsEqualTo(-1 * 4 - 2 * 5);
             Check.That(v2.AbsDot(-v1)).IsEqualTo(Math.Abs(v2.Dot(v1)));
         }
 
@@ -132,7 +133,7 @@ namespace Pbrt.Tests.Core
             Check.That(norm.X).IsEqualTo(1 / length);
             Check.That(norm.Y).IsEqualTo(2 / length);
         }
-        
+
         [Test]
         public void EqualsTest()
         {
@@ -162,7 +163,7 @@ namespace Pbrt.Tests.Core
         [Test]
         public void ToStringTest()
         {
-            Check.That(new Vector2F(1,2).ToString()).IsEqualTo("vx[1] vy[2]");
+            Check.That(new Vector2F(1, 2).ToString()).IsEqualTo("vx[1] vy[2]");
         }
     }
 }

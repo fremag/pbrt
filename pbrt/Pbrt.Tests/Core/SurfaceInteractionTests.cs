@@ -11,7 +11,7 @@ namespace Pbrt.Tests.Core
     [TestFixture]
     public class SurfaceInteractionTests
     {
-        AbstractShape shape = new Sphere(Transform.Translate(0,0,0), Transform.Translate(0,0,0), false, 2, -1, 1, 360);
+        AbstractShape shape = new Sphere(Transform.Translate(0, 0, 0), Transform.Translate(0, 0, 0), false, 2, -1, 1, 360);
         Point3F p = new Point3F(0, 1, 0);
         Vector3F pError = new Vector3F(float.Epsilon, float.Epsilon, float.Epsilon);
         Point2F uv = new Point2F(0, 0);
@@ -29,14 +29,14 @@ namespace Pbrt.Tests.Core
         {
             si = new SurfaceInteraction(p, pError, uv, wo, dpdu, dpdv, dndu, dndv, time, shape);
         }
-        
+
         [Test]
         public void BasicTest()
         {
             Check.That(si.Bsdf).IsNull();
             Check.That(si.Bssrdf).IsNull();
             Check.That(si.Primitive).IsNull();
-            Check.That(si.Shading.N).IsEqualTo(new Normal3F(0,1,0));
+            Check.That(si.Shading.N).IsEqualTo(new Normal3F(0, 1, 0));
             Check.That(si.Shading.DnDu).IsEqualTo(dndu);
             Check.That(si.Shading.DnDv).IsEqualTo(dndv);
             Check.That(si.Shading.DpDu).IsEqualTo(dpdu);
@@ -52,14 +52,14 @@ namespace Pbrt.Tests.Core
         [Test]
         public void SetShadingGeometryTest()
         {
-            Vector3F dpdus = new Vector3F(1,0,0);
-            Vector3F dpdvs = new Vector3F(0,0,1);
+            Vector3F dpdus = new Vector3F(1, 0, 0);
+            Vector3F dpdvs = new Vector3F(0, 0, 1);
             Normal3F dndus = new Normal3F(0, 0.9f, 0);
             Normal3F dndvs = new Normal3F(0, 1.1f, 0);
-            
+
             si.SetShadingGeometry(dpdus, dpdvs, dndus, dndvs, true);
 
-            Check.That(si.Shading.N).IsEqualTo(new Normal3F(0,-1,0));
+            Check.That(si.Shading.N).IsEqualTo(new Normal3F(0, -1, 0));
             Check.That(si.Shading.DpDu).IsEqualTo(dpdus);
             Check.That(si.Shading.DpDv).IsEqualTo(dpdvs);
             Check.That(si.Shading.DnDu).IsEqualTo(dndus);
@@ -67,11 +67,11 @@ namespace Pbrt.Tests.Core
 
             shape.ReverseOrientation = true;
             si.SetShadingGeometry(dpdus, dpdvs, dndus, dndvs, true);
-            Check.That(si.Shading.N).IsEqualTo(new Normal3F(0, 1,0));
+            Check.That(si.Shading.N).IsEqualTo(new Normal3F(0, 1, 0));
 
             shape.ReverseOrientation = true;
             si.SetShadingGeometry(dpdus, dpdvs, dndus, dndvs, false);
-            Check.That(si.Shading.N).IsEqualTo(new Normal3F(0, 1,0));
+            Check.That(si.Shading.N).IsEqualTo(new Normal3F(0, 1, 0));
         }
 
         [Test]
@@ -100,13 +100,13 @@ namespace Pbrt.Tests.Core
             Check.That(si.DpDx).IsEqualTo(Vector3F.Zero);
             Check.That(si.DpDy).IsEqualTo(Vector3F.Zero);
         }
-        
+
         [Test]
         public void NoDifferentials_ComputeDifferentialsTest()
         {
             Check.That(si.DpDx).IsNull();
             Check.That(si.DpDy).IsNull();
-            
+
             RayDifferential rayDiff = new RayDifferential(null, null)
             {
                 HasDifferentials = false
@@ -121,7 +121,7 @@ namespace Pbrt.Tests.Core
             Check.That(si.DpDx).IsEqualTo(Vector3F.Zero);
             Check.That(si.DpDy).IsEqualTo(Vector3F.Zero);
         }
-        
+
         [Test]
         public void ComputeDifferentials_1_Test()
         {
@@ -146,9 +146,9 @@ namespace Pbrt.Tests.Core
             Check.That(si.DuDx).IsEqualTo(0);
             Check.That(si.DuDy).IsEqualTo(0);
             Check.That(si.DpDx).IsEqualTo(new Vector3F(0, -2f, 0));
-            Check.That(si.DpDy).IsEqualTo(new Vector3F(-2f , -2f, 0));
+            Check.That(si.DpDy).IsEqualTo(new Vector3F(-2f, -2f, 0));
         }
-        
+
         [Test]
         public void ComputeDifferentials_2_Test()
         {
@@ -176,9 +176,9 @@ namespace Pbrt.Tests.Core
             Check.That(si.DuDx).IsEqualTo(0);
             Check.That(si.DuDy).IsEqualTo(-2f);
             Check.That(si.DpDx).IsEqualTo(new Vector3F(0, 0, 0));
-            Check.That(si.DpDy).IsEqualTo(new Vector3F(0 , -2f, 0));
+            Check.That(si.DpDy).IsEqualTo(new Vector3F(0, -2f, 0));
         }
-        
+
         [Test]
         public void ComputeDifferentials_3_Test()
         {
@@ -206,9 +206,9 @@ namespace Pbrt.Tests.Core
             Check.That(si.DuDx).IsEqualTo(-1f);
             Check.That(si.DuDy).IsEqualTo(0f);
             Check.That(si.DpDx).IsEqualTo(new Vector3F(0, -1f, 0));
-            Check.That(si.DpDy).IsEqualTo(new Vector3F(0 , 0, 0));
+            Check.That(si.DpDy).IsEqualTo(new Vector3F(0, 0, 0));
         }
-        
+
         [Test]
         public void ComputeScatteringFunctionsTest()
         {
@@ -216,7 +216,7 @@ namespace Pbrt.Tests.Core
             MemoryArena arena = new MemoryArena();
             si.Primitive = Substitute.For<IPrimitive>();
             si.ComputeScatteringFunctions(ray, arena, true, TransportMode.Radiance);
-            
+
             si.Primitive.Received(1).ComputeScatteringFunctions(si, arena, TransportMode.Radiance, true);
         }
 

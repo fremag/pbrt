@@ -6,7 +6,7 @@ namespace Pbrt.Demos.Mesh
     {
         public HeightField(int n, int m, Func1D func) : base(n, m)
         {
-            for(int i=0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 double u = i * 1.0 / n;
                 for (int j = 0; j < n; j++)

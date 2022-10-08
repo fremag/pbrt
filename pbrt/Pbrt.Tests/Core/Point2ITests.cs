@@ -2,10 +2,11 @@ using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable PossibleNullReferenceException
 // ReSharper disable SuspiciousTypeConversion.Global
-#pragma warning disable CS1718 
+#pragma warning disable CS1718
 
 namespace Pbrt.Tests.Core
 {
@@ -14,7 +15,7 @@ namespace Pbrt.Tests.Core
     {
         Point2I p1 = new Point2I(1, 2);
         Point2I p2 = new Point2I(4, 5);
-        
+
         [Test]
         public void EmptyConstructorTest()
         {
@@ -22,7 +23,7 @@ namespace Pbrt.Tests.Core
             Check.That(p.X).IsEqualTo(0);
             Check.That(p.Y).IsEqualTo(0);
         }
-        
+
         [Test]
         public void ConstructorTest()
         {
@@ -70,7 +71,7 @@ namespace Pbrt.Tests.Core
             Check.That(p.X).IsEqualTo(5);
             Check.That(p.Y).IsEqualTo(7);
         }
-        
+
         [Test]
         public void AddVectorTest()
         {
@@ -87,7 +88,7 @@ namespace Pbrt.Tests.Core
             Check.That(p.X).IsEqualTo(-3);
             Check.That(p.Y).IsEqualTo(-3);
         }
-        
+
         [Test]
         public void SubVectorTest()
         {
@@ -96,15 +97,15 @@ namespace Pbrt.Tests.Core
             Check.That(p.X).IsEqualTo(6);
             Check.That(p.Y).IsEqualTo(-2);
         }
-        
+
         [Test]
         public void MulTest()
         {
-            var p = p1*3;
+            var p = p1 * 3;
             Check.That(p.X).IsEqualTo(3);
             Check.That(p.Y).IsEqualTo(6);
 
-            p = 2*p1;
+            p = 2 * p1;
             Check.That(p.X).IsEqualTo(2);
             Check.That(p.Y).IsEqualTo(4);
         }
@@ -112,11 +113,11 @@ namespace Pbrt.Tests.Core
         [Test]
         public void MulFloatTest()
         {
-            var p = p1*3.5f;
+            var p = p1 * 3.5f;
             Check.That(p.X).IsEqualTo(3.5f);
             Check.That(p.Y).IsEqualTo(7.0f);
 
-            p = 2.5f*p1;
+            p = 2.5f * p1;
             Check.That(p.X).IsEqualTo(2.5f);
             Check.That(p.Y).IsEqualTo(5.0f);
         }
@@ -143,7 +144,7 @@ namespace Pbrt.Tests.Core
             Check.That(p1.Equals(5)).IsFalse();
             Check.That(p1.Equals(null)).IsFalse();
         }
-        
+
         [Test]
         public void NotEqualsTest()
         {
@@ -173,20 +174,20 @@ namespace Pbrt.Tests.Core
         public void DistanceTest()
         {
             Check.That(p1.Distance(p1)).IsZero();
-            Check.That(p1.Distance(p1+new Point2I(1,1))).IsCloseTo(MathF.Sqrt(2), 1e-5);
+            Check.That(p1.Distance(p1 + new Point2I(1, 1))).IsCloseTo(MathF.Sqrt(2), 1e-5);
         }
 
         [Test]
         public void DistanceSquaredTest()
         {
             Check.That(p1.DistanceSquared(p1)).IsZero();
-            Check.That(p1.DistanceSquared(p1+new Point2I(-1,-1))).IsCloseTo(2, 1e-5);
+            Check.That(p1.DistanceSquared(p1 + new Point2I(-1, -1))).IsCloseTo(2, 1e-5);
         }
 
         [Test]
         public void MinTest()
         {
-            var p = Point2I.Min(new Point2I(1,2),new Point2I(-1, 4));
+            var p = Point2I.Min(new Point2I(1, 2), new Point2I(-1, 4));
             Check.That(p.X).IsEqualTo(-1);
             Check.That(p.Y).IsEqualTo(2);
         }
@@ -194,11 +195,11 @@ namespace Pbrt.Tests.Core
         [Test]
         public void MaxTest()
         {
-            var p = Point2I.Max(new Point2I(1,2),new Point2I(-1, 4));
+            var p = Point2I.Max(new Point2I(1, 2), new Point2I(-1, 4));
             Check.That(p.X).IsEqualTo(1);
             Check.That(p.Y).IsEqualTo(4);
         }
-        
+
         [Test]
         public void AbsTest()
         {

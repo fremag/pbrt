@@ -2,11 +2,12 @@ using System;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
+
 // ReSharper disable CompareOfFloatsByEqualityOperator
 // ReSharper disable EqualExpressionComparison
 // ReSharper disable SuspiciousTypeConversion.Global
 // ReSharper disable HeapView.BoxingAllocation
-#pragma warning disable CS1718 
+#pragma warning disable CS1718
 
 namespace Pbrt.Tests.Core
 {
@@ -239,7 +240,7 @@ namespace Pbrt.Tests.Core
             Check.That(ef1 == ef4).IsFalse();
             Check.That(ef1 == null).IsFalse();
             Check.That(null == ef1).IsFalse();
-            
+
             Check.That(ef1 != ef2).IsFalse();
             Check.That(ef1 != ef1).IsFalse();
             Check.That(ef1 != ef3).IsFalse();
@@ -257,7 +258,7 @@ namespace Pbrt.Tests.Core
             Check.That(sqrt.High).IsCloseTo(2.002f, 1e-3f);
             Check.That(sqrt.Low).IsCloseTo(1.997f, 1e-3f);
         }
-        
+
         [Test]
         public void AbsTest()
         {
@@ -267,19 +268,19 @@ namespace Pbrt.Tests.Core
 
             ef = new EFloat(-0.001f, 0.01f);
             abs = ef.Abs();
-            
+
             Check.That(abs.V).IsEqualTo(0.001f);
             Check.That(abs.High).IsCloseTo(0.011f, 1e-3f);
             Check.That(abs.Low).IsCloseTo(0.00f, 1e-3f);
 
             ef = new EFloat(-1f, 0.01f);
             abs = ef.Abs();
-            
+
             Check.That(abs.V).IsEqualTo(1f);
             Check.That(abs.High).IsCloseTo(1.01f, 1e-3f);
             Check.That(abs.Low).IsCloseTo(0.99f, 1e-3f);
         }
-        
+
         [Test]
         public void Quadratic_DiscrimNegativeTest()
         {
@@ -300,7 +301,7 @@ namespace Pbrt.Tests.Core
             var c = new EFloat(3, 0.01f);
             var result = EFloat.Quadratic(a, b, c, out var e, out var f);
             Check.That(result).IsTrue();
-            
+
             Check.That(e.V).IsCloseTo(1, 1e-3);
             Check.That(e.High).IsCloseTo(1.005, 1e-3);
             Check.That(e.Low).IsCloseTo(0.995, 1e-3);
@@ -308,7 +309,7 @@ namespace Pbrt.Tests.Core
             Check.That(f.High).IsCloseTo(3.035, 1e-3);
             Check.That(f.Low).IsCloseTo(2.965, 1e-3);
         }
-        
+
         [Test]
         public void AnotherQuadraticTest()
         {
@@ -317,7 +318,7 @@ namespace Pbrt.Tests.Core
             var c = new EFloat(-3, 0.01f);
             var result = EFloat.Quadratic(a, b, c, out var e, out var f);
             Check.That(result).IsTrue();
-            
+
             Check.That(e.V).IsCloseTo(1, 1e-3);
             Check.That(e.High).IsCloseTo(1.005, 1e-3);
             Check.That(e.Low).IsCloseTo(0.995, 1e-3);

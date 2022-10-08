@@ -10,11 +10,11 @@ namespace Pbrt.Tests.Core
         [Test]
         public void BasicTest()
         {
-            Normal3F n = new Normal3F(0,0,0);
-            Normal3F dndu = new Normal3F(0,0,0);
-            Normal3F dndv = new Normal3F(0,0,0);
-            Vector3F dpdu = new Vector3F(0,0,0);
-            Vector3F dpdv = new Vector3F(0,0,0);
+            Normal3F n = new Normal3F(0, 0, 0);
+            Normal3F dndu = new Normal3F(0, 0, 0);
+            Normal3F dndv = new Normal3F(0, 0, 0);
+            Vector3F dpdu = new Vector3F(0, 0, 0);
+            Vector3F dpdv = new Vector3F(0, 0, 0);
             Shading shading = new Shading
             {
                 N = n,

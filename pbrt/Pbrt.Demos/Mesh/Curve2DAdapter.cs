@@ -3,6 +3,7 @@ namespace Pbrt.Demos.Mesh
     public class Curve2DAdapter : AbstractCurve2D
     {
         private Curve2D Func { get; }
+
         public Curve2DAdapter(Curve2D func)
         {
             Func = func;
