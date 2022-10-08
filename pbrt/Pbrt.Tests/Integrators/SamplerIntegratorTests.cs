@@ -73,7 +73,7 @@ namespace Pbrt.Tests.Integrators
         public void PrimaryCancelTest()
         {
             samplerIntegrator.TileSize = 1;
-            samplerIntegrator.NbThreads = 100;
+            samplerIntegrator.NbThreads = 10;
             IScene scene = new Scene();
             int n = 0;
             var primaryCancelTokenSource = new CancellationTokenSource();
@@ -101,7 +101,7 @@ namespace Pbrt.Tests.Integrators
         public void SecondaryCancelTest()
         {
             samplerIntegrator.TileSize = 1;
-            samplerIntegrator.NbThreads = 100;
+            samplerIntegrator.NbThreads = 10;
             IScene scene = new Scene();
             int n = 0;
             var primaryCancelTokenSource = new CancellationTokenSource();
