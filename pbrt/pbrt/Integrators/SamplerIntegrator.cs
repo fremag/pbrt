@@ -22,7 +22,8 @@ namespace pbrt.Integrators
         public int NbThreads { get; set; }
         public int TileSize { get; set; }
         const int DefaultTileSize = 16;
-        private CancellationToken CancellationToken { get; set; }
+        private CancellationToken PrimaryCancellationToken { get; set; }
+        private CancellationToken SecondaryCancellationToken { get; set; }
         
         protected SamplerIntegrator(AbstractSampler sampler, AbstractCamera camera, int nbThreads=1, int tileSize = DefaultTileSize)
         {
@@ -32,9 +33,10 @@ namespace pbrt.Integrators
             TileSize = tileSize;
         }
 
-        public override float[] Render(IScene scene, CancellationToken cancellationToken)
+        public override float[] Render(IScene scene, CancellationToken primaryCancellationToken, CancellationToken secondaryCancellationToken)
         {
-            CancellationToken = cancellationToken;
+            PrimaryCancellationToken = primaryCancellationToken;
+            SecondaryCancellationToken = secondaryCancellationToken;
             Preprocess(scene);
 
             Bounds2I sampleBounds = Camera.Film.GetSampleBounds();
@@ -46,7 +48,7 @@ namespace pbrt.Integrators
             
             void RenderTile(int tile)
             {
-                if (CancellationToken.IsCancellationRequested)
+                if (PrimaryCancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
@@ -127,9 +129,9 @@ namespace pbrt.Integrators
 
                     // Add camera ray’s contribution to image 
                     filmTile.AddSample(cameraSample.PFilm, l, rayWeight);
-                } while (tileSampler.StartNextSample() && ! CancellationToken.IsCancellationRequested);
+                } while (tileSampler.StartNextSample() && ! SecondaryCancellationToken.IsCancellationRequested);
 
-                if (CancellationToken.IsCancellationRequested)
+                if (SecondaryCancellationToken.IsCancellationRequested)
                 {
                     break;
                 }

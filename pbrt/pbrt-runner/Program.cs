@@ -44,7 +44,7 @@ namespace pbrt_runner
         {
             renderer.Init();
             using var progress = new RenderProgress(renderer, num,  max);
-            var rgbs = renderer.Integrator.Render(renderer.Scene, CancellationToken.None);
+            var rgbs = renderer.Integrator.Render(renderer.Scene, CancellationToken.None, CancellationToken.None);
             var img = WriteImage(rgbs, renderer.Camera.Film.FullResolution);
             if (renderer.Text != null)
             {

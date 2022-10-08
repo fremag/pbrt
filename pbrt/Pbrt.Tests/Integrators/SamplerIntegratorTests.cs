@@ -44,7 +44,7 @@ namespace Pbrt.Tests.Integrators
         [SetUp]
         public void SetUp()
         {
-            AbstractSampler sampler = new MockSampler();
+            AbstractSampler sampler = new PixelSampler(1, 1);
             Film film = new Film(10, 10);
             var ratio = (float)film.FullResolution.X / film.FullResolution.Y;
 
@@ -56,33 +56,6 @@ namespace Pbrt.Tests.Integrators
             samplerIntegrator = new DummySamplerIntegrator(sampler, camera, 1, 4);
         }
 
-        private class MockSampler : AbstractSampler
-        {
-            public static bool CloneLocked = false;
-            public static bool StartLocked = false;
-            public override float Get1D() => 0;
-
-            public override Point2F Get2D() => new Point2F(0,0);
-            public override void StartPixel(Point2I p)
-            {
-                while (StartLocked)
-                {
-                    Thread.Sleep(100);
-                }
-                
-                base.StartPixel(p);
-            }
-
-            public override AbstractSampler Clone(int seed)
-            {
-                while (CloneLocked)
-                {
-                    Thread.Sleep(100);
-                }
-                
-                return new MockSampler();
-            }
-        }
         [Test]
         public void BasicTest()
         {
@@ -90,36 +63,64 @@ namespace Pbrt.Tests.Integrators
             IScene scene = new Scene();
             int n = 0;
             samplerIntegrator.TileRendered += (_, _, _) => n++;
-            var rgbs = samplerIntegrator.Render(scene, CancellationToken.None);
+            var rgbs = samplerIntegrator.Render(scene, CancellationToken.None, CancellationToken.None);
             Check.That(samplerIntegrator.rays).CountIs(144);
             Check.That(n).IsEqualTo(9);
             Check.That(rgbs.All(v => v == 255f));
         }
 
         [Test]
-        public void CancelTest()
+        public void PrimaryCancelTest()
         {
             samplerIntegrator.TileSize = 1;
             samplerIntegrator.NbThreads = 100;
             IScene scene = new Scene();
             int n = 0;
-            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
-            CancellationToken cancelToken = cancelTokenSource.Token;
+            var primaryCancelTokenSource = new CancellationTokenSource();
+            var secondaryCancelTokenSource = new CancellationTokenSource();
+            var primaryCancelToken = primaryCancelTokenSource.Token;
+            var secondaryCancelToken = secondaryCancelTokenSource.Token;
+            
             samplerIntegrator.TileRendered += (_, _, _) =>
             {
                 n++;
                 if (n == 10)
                 {
-                    cancelTokenSource.Cancel();
+                    primaryCancelTokenSource.Cancel();
                 }
-
-                MockSampler.CloneLocked = n == 20;
-                MockSampler.StartLocked = n == 50;
 
                 Thread.Sleep(100);
             };
 
-            samplerIntegrator.Render(scene, cancelToken);
+            samplerIntegrator.Render(scene, primaryCancelToken, secondaryCancelToken);
+            Check.That(samplerIntegrator.rays).Not.CountIs(144);
+            Check.That(n).IsLessOrEqualThan(144);
+        }
+
+        [Test]
+        public void SecondaryCancelTest()
+        {
+            samplerIntegrator.TileSize = 1;
+            samplerIntegrator.NbThreads = 100;
+            IScene scene = new Scene();
+            int n = 0;
+            var primaryCancelTokenSource = new CancellationTokenSource();
+            var secondaryCancelTokenSource = new CancellationTokenSource();
+            var primaryCancelToken = primaryCancelTokenSource.Token;
+            var secondaryCancelToken = secondaryCancelTokenSource.Token;
+            
+            samplerIntegrator.TileRendered += (_, _, _) =>
+            {
+                n++;
+                if (n == 10)
+                {
+                    secondaryCancelTokenSource.Cancel();
+                }
+
+                Thread.Sleep(100);
+            };
+
+            samplerIntegrator.Render(scene, primaryCancelToken, secondaryCancelToken);
             Check.That(samplerIntegrator.rays).Not.CountIs(144);
             Check.That(n).IsLessOrEqualThan(144);
         }
@@ -132,7 +133,7 @@ namespace Pbrt.Tests.Integrators
         {
             samplerIntegrator.spectrumValue = value;
             IScene scene = new Scene();
-            var rgbs = samplerIntegrator.Render(scene, CancellationToken.None);
+            var rgbs = samplerIntegrator.Render(scene, CancellationToken.None, CancellationToken.None);
             Check.That(samplerIntegrator.rays).CountIs(144);
              
             Check.That(rgbs.All(v => v == 0f));

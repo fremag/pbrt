@@ -87,7 +87,7 @@
         Progress = 0;
         tokenSource = new();
         var cancellationToken = tokenSource.Token;
-        RenderTask = Task.Run(() => renderer.Integrator.Render(renderer.Scene, cancellationToken), cancellationToken);
+        RenderTask = Task.Run(() => renderer.Integrator.Render(renderer.Scene, cancellationToken, cancellationToken ), cancellationToken);
         IsRunning = true;
     }
 

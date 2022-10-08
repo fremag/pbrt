@@ -9,7 +9,7 @@ namespace pbrt.Integrators
     {
         public event Action<int, int, TimeSpan> TileRendered;
         
-        public abstract float[] Render(IScene scene, CancellationToken cancellationToken);
+        public abstract float[] Render(IScene scene, CancellationToken primaryCancellationToken, CancellationToken secondaryCancellationToken);
         public abstract void Preprocess(IScene scene, AbstractSampler sampler);
 
         protected void OnTileRendered(int numTile, int maxtime, TimeSpan time)
