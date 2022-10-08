@@ -72,10 +72,6 @@ namespace pbrt.Integrators
 
         public void Render(int numTile, Point2I nTiles, Bounds2I sampleBounds, IScene scene)
         {
-            if (CancellationToken.IsCancellationRequested)
-            {
-                return;
-            }
             var tileX = numTile % nTiles.X;
             var tileY = numTile / nTiles.X;
 

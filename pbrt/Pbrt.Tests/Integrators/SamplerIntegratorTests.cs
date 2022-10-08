@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Threading;
 using NFluent;
@@ -45,7 +44,7 @@ namespace Pbrt.Tests.Integrators
         [SetUp]
         public void SetUp()
         {
-            AbstractSampler sampler = new PixelSampler(1, 1);
+            AbstractSampler sampler = new MockSampler();
             Film film = new Film(10, 10);
             var ratio = (float)film.FullResolution.X / film.FullResolution.Y;
 
@@ -57,6 +56,33 @@ namespace Pbrt.Tests.Integrators
             samplerIntegrator = new DummySamplerIntegrator(sampler, camera, 1, 4);
         }
 
+        private class MockSampler : AbstractSampler
+        {
+            public static bool CloneLocked = false;
+            public static bool StartLocked = false;
+            public override float Get1D() => 0;
+
+            public override Point2F Get2D() => new Point2F(0,0);
+            public override void StartPixel(Point2I p)
+            {
+                while (StartLocked)
+                {
+                    Thread.Sleep(100);
+                }
+                
+                base.StartPixel(p);
+            }
+
+            public override AbstractSampler Clone(int seed)
+            {
+                while (CloneLocked)
+                {
+                    Thread.Sleep(100);
+                }
+                
+                return new MockSampler();
+            }
+        }
         [Test]
         public void BasicTest()
         {
@@ -68,6 +94,34 @@ namespace Pbrt.Tests.Integrators
             Check.That(samplerIntegrator.rays).CountIs(144);
             Check.That(n).IsEqualTo(9);
             Check.That(rgbs.All(v => v == 255f));
+        }
+
+        [Test]
+        public void CancelTest()
+        {
+            samplerIntegrator.TileSize = 1;
+            samplerIntegrator.NbThreads = 100;
+            IScene scene = new Scene();
+            int n = 0;
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            CancellationToken cancelToken = cancelTokenSource.Token;
+            samplerIntegrator.TileRendered += (_, _, _) =>
+            {
+                n++;
+                if (n == 10)
+                {
+                    cancelTokenSource.Cancel();
+                }
+
+                MockSampler.CloneLocked = n == 20;
+                MockSampler.StartLocked = n == 50;
+
+                Thread.Sleep(100);
+            };
+
+            samplerIntegrator.Render(scene, cancelToken);
+            Check.That(samplerIntegrator.rays).Not.CountIs(144);
+            Check.That(n).IsLessOrEqualThan(144);
         }
         
         [Test]
