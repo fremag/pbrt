@@ -1,5 +1,6 @@
 using pbrt.Cameras;
 using pbrt.Core;
+using Pbrt.Demos.Configs;
 using Pbrt.Demos.Scenes;
 using pbrt.Films;
 using pbrt.Integrators;
@@ -10,9 +11,13 @@ namespace Pbrt.Demos
 {
     public abstract class AbstractRenderer
     {
+        public CameraConfig CameraConfig { get; set; }
+        public SamplerConfig SamplerConfig { get; set; }
+        public IntegratorConfig IntegratorConfig { get; set; }
+        
         public AbstractCamera Camera { get; protected set; }
         public AbstractSampler Sampler { get; protected set;}
-        public SamplerIntegrator Integrator { get; protected set;}
+        public Integrator Integrator { get; protected set;}
         public DemoScene Scene { get; protected set;}
 
         public abstract string FileName { get; }
@@ -23,9 +28,26 @@ namespace Pbrt.Demos
             
         }
 
-        public void Init()
+        public virtual void Init()
         {
+            if (CameraConfig != null)
+            {
+                Camera = GetCam(CameraConfig.Position, CameraConfig.LookAt, CameraConfig.Width, CameraConfig.Height, CameraConfig.FoV, CameraConfig.LensRadius, CameraConfig.FocalDistance, CameraConfig.ShutterOpen, CameraConfig.ShutterClose);
+            }
+
+            if (SamplerConfig != null)
+            {
+                Sampler = SamplerConfig.Config.BuildSampler(Camera.Film);
+            }
+            
             Scene.Init();
+
+            if (IntegratorConfig != null)
+            {
+                Integrator = IntegratorConfig.Config.BuildIntegrator(Sampler, Camera);
+            }
+            
+            Integrator.Preprocess(Scene, Sampler);
         }
         
         protected AbstractRenderer(string text)

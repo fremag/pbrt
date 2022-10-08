@@ -36,6 +36,10 @@ namespace Pbrt.Tests.Integrators
                 rays.Add(ray);
                 return new Spectrum(spectrumValue);
             }
+
+            public override void Preprocess(IScene scene, AbstractSampler sampler)
+            {
+            }
         }
         
         [SetUp]

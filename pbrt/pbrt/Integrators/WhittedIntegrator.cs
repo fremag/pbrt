@@ -81,5 +81,10 @@ namespace pbrt.Integrators
             }            
             return l;
         }
+
+        public override void Preprocess(IScene scene, AbstractSampler sampler)
+        {
+            // nothing to do
+        }
     }
 }

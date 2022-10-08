@@ -1,7 +1,7 @@
+using Pbrt.Demos.Configs;
 using Pbrt.Demos.Scenes;
 using pbrt.Integrators;
 using pbrt.Lights;
-using pbrt.Samplers;
 using pbrt.Shapes;
 using pbrt.Spectrums;
 
@@ -11,30 +11,38 @@ namespace Pbrt.Demos.renderers
     {
         public override string FileName => $"AreaLight_NbSample={SamplesPerPixel}.png";
         private int SamplesPerPixel { get; }
+        public int NbThreads { get; set; }
 
         public AreaLightRenderer() : this(16, 1)
         {
-            
         }
-        
-        public AreaLightRenderer(int samplesPerPixel=16,int nbThreads=1) : base($"Area light {nameof(SamplesPerPixel)}={samplesPerPixel}")
+
+        public AreaLightRenderer(int samplesPerPixel = 16, int nbThreads = 1) : base($"Area light {nameof(SamplesPerPixel)}={samplesPerPixel}")
         {
             SamplesPerPixel = samplesPerPixel;
-            Camera = GetCam((-0f, 3, -2), (0, 0, 1));
-            //Sampler = new PixelSampler(samplesPerPixel, 1);
-            // int n = (int)MathF.Sqrt(samplesPerPixel);
-            // Sampler = new StratifiedSampler(n, n, true, 1);
-            Sampler = new HaltonSampler(samplesPerPixel, Camera.Film.GetSampleBounds());
-            Scene = new AreaLightScene(1);
-            Scene.Init();
+            NbThreads = nbThreads;
 
-            var integrator = new DirectLightingIntegrator(Sampler, Camera, LightStrategy.UniformSampleAll, 5)
+            CameraConfig = new CameraConfig()
             {
-               NbThreads = nbThreads
+                Position = (-0f, 3, -2),
+                LookAt = (0, 0, 1)
+            };
+
+            SamplerConfig = new SamplerConfig
+            {
+                Sampler = Configs.Sampler.Halton,
+                Config = new HaltonSamplerConfig { SamplesPerPixel = SamplesPerPixel }
             };
             
-            integrator.Preprocess(Scene, Sampler);
-            Integrator = integrator;
+            IntegratorConfig = new IntegratorConfig
+            {
+                Integrator = IntegratorType.DirectLighting,
+                Config = new DirectLightingConfig
+                {
+                    Strategy = LightStrategy.UniformSampleAll
+                }
+            };
+            Scene = new AreaLightScene(1);
         }
     }
 

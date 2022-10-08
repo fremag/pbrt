@@ -1,17 +1,57 @@
 @using System.Reflection
 @inherits AutoFormComponentBase
 
-<div class="col">@PropertyInfo.Name</div><div class="col"><InputText id="name" @bind-Value="@Value" /></div>
+<div class="col">@PropertyInfo.Name</div>
+<div class="col">
+    @if (PropertyInfo.PropertyType.IsEnum)
+    {
+        <select @bind="Value">
+            @foreach (var name in Enum.GetNames(PropertyInfo.PropertyType))
+            {
+                <option>@name</option>
+            }
+        </select>
+    }
+    else
+    {
+        <input @bind="Value"/>
+    }
+</div>
 
 @code {
     [Parameter]
     public PropertyInfo PropertyInfo { get; set; }
     
+    [Parameter]
     public string Value { get; set; }
-
+    
     public override void Apply(object obj)
     {
-        var value = float.Parse(Value);
-        PropertyInfo.SetValue(obj, value);
+        var currentValue = PropertyInfo.GetValue(obj);
+        object value = null;
+        bool hasChanged = false;
+        
+        if (PropertyInfo.PropertyType == typeof(float))
+        {
+            var f = float.Parse(Value);
+            hasChanged = currentValue == null || f != (float)currentValue;
+            value = f;
+        } 
+        else if (PropertyInfo.PropertyType == typeof(int))
+        {
+            var i = int.Parse(Value);
+            hasChanged = currentValue == null || i != (int)currentValue;
+            value = i;
+        }
+        else if (PropertyInfo.PropertyType.IsEnum)
+        {
+            value = Enum.Parse(PropertyInfo.PropertyType, Value);
+            hasChanged = currentValue == null || (int)value != (int)currentValue;
+        }
+
+        if (hasChanged)
+        {
+            PropertyInfo.SetValue(obj, value);
+        }
     }
 }

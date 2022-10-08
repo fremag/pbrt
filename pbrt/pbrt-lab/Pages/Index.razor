@@ -2,41 +2,64 @@
 @using Pbrt.Demos
 @using Pbrt.Demos.renderers
 @using pbrt.Core
+@using pbrt_lab.AutoForm
 @using System.Drawing
 @using System.Drawing.Imaging
+@using Pbrt.Demos.Configs
 @using Color = System.Drawing.Color
 <PageTitle>Pbrt</PageTitle>
 
-<select @onchange="OnSelectRenderer">
-    @foreach (var rendererName in Renderers.Keys )
-    {
-        <option value=@(rendererName)>@rendererName</option>
-    }
-</select>
-
-<button class="btn btn-primary" @onclick="Run">Run</button>
-<button class="btn btn-primary" @onclick="Refresh">Refresh</button>
-<button class="btn btn-primary" @onclick="Stop">Stop</button>
-
-<div class="progress">
-    <div class="progress-bar" role="progressbar" style="width: @((int)ProgressPct)%;" aria-valuenow="@ProgressPct" aria-valuemin="0" aria-valuemax="100">@((int)ProgressPct)%</div>
+<div class="row">
+    <div class="col">
+        <select @onchange="OnSelectRenderer">
+            <option value=""></option>
+            @foreach (var rendererName in Renderers.Keys)
+            {
+                <option value=@(rendererName)>@rendererName</option>
+            }
+        </select>
+    </div>
+    <div class="col">
+    <div class="btn-group">
+        <button class="btn btn-primary" @onclick="Run">Run</button>
+        <button class="btn btn-primary" @onclick="Refresh">Refresh</button>
+        <button class="btn btn-primary" @onclick="Stop">Stop</button>
+    </div>
+    </div>
+</div>
+<div class="row">
+    <div class="progress">
+        <div class="progress-bar" role="progressbar" style="width: @((int)ProgressPct)%;" aria-valuenow="@ProgressPct" aria-valuemin="0" aria-valuemax="100">@((int)ProgressPct)%</div>
+    </div>
+</div>
+<div class="row">
+    <p>Text: @Text</p>
+    <div class="col">
+        <AutoFormComponent Name="Camera" Value="CameraConfig"/>
+        <AutoFormComponent Name="Sampler" Value="SamplerConfig"/>
+        <AutoFormComponent Name="Integrator" Value="IntegratorConfig"/>
+    </div>
+    <div class="col">
+        <img src="@Img" alt="No img"/>
+    </div>
 </div>
 
-<p>Text: @Text</p>
-<img src="@Img" alt="No img"/>
-
 @code {
+    private CameraConfig CameraConfig { get; set; }
+    private SamplerConfig SamplerConfig { get; set; }
+    private IntegratorConfig IntegratorConfig { get; set; }
     public int Progress { get; set; }
     public float ProgressPct { get; set; }
     private Timer timer;
-    
+
     protected string Img { get; set; }
     protected string Text { get; set; }
     public string RendererTypeName { get; set; }
     AbstractRenderer renderer;
-    private object objLock = new object();
+    private readonly object objLock = new object();
     public Task<float[]> RenderTask { get; set; }
     public Dictionary<string, Type> Renderers { get; set; }
+    public bool IsRunning { get; set; } = false;
 
     protected override void OnInitialized()
     {
@@ -44,29 +67,20 @@
 
         var types = typeof(HelloWorldRenderer).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(AbstractRenderer))).ToArray();
         Renderers = types.ToDictionary(type => type.Name);
-        RendererTypeName = types.First().Name;
+        Init(types.First().Name);
     }
 
     CancellationTokenSource tokenSource;
-    
+
     private void Run()
     {
-        if (RendererTypeName == null)
-        {
-            return;
-        }
-        
         Stop();
-        
-        if (!Renderers.TryGetValue(RendererTypeName, out var rendererType))
+        if (renderer == null)
         {
             return;
         }
-        
-        renderer = Activator.CreateInstance(rendererType) as AbstractRenderer;
-        renderer.Integrator.NbThreads = Environment.ProcessorCount - 1;
-        renderer.Integrator.TileSize = 8;
         renderer.Init();
+
         Text = renderer.Text;
         StateHasChanged();
         renderer.Integrator.TileRendered += OnTileRendered;
@@ -74,23 +88,25 @@
         tokenSource = new();
         var cancellationToken = tokenSource.Token;
         RenderTask = Task.Run(() => renderer.Integrator.Render(renderer.Scene, cancellationToken), cancellationToken);
+        IsRunning = true;
     }
 
     private void Stop()
     {
+        IsRunning = false;
         Progress = 0;
-        if( renderer?.Integrator != null)
+        if (renderer?.Integrator != null)
         {
             renderer.Integrator.TileRendered -= OnTileRendered;
         }
-        
+
         tokenSource?.Cancel();
         StateHasChanged();
     }
-    
+
     private void Refresh(object state)
     {
-        if (renderer == null)
+        if (renderer == null || !IsRunning)
         {
             return;
         }
@@ -109,10 +125,10 @@
             Text = msg;
         }
     }
-    
+
     private static string ToBase64Image(float[] rgbs, Point2I fullResolution)
     {
-        // Write RGB image
+    // Write RGB image
         Bitmap bmp = new Bitmap(fullResolution.X, fullResolution.Y, PixelFormat.Format24bppRgb);
         int pos = 0;
         for (int y = 0; y < fullResolution.Y; y++)
@@ -125,7 +141,7 @@
                 var r = Math.Min(255, red);
                 var g = Math.Min(255, green);
                 var b = Math.Min(255, blue);
-                    
+
                 var fromArgb = Color.FromArgb(r, g, b);
                 bmp.SetPixel(x, y, fromArgb);
                 pos += 3;
@@ -141,8 +157,31 @@
     private void OnSelectRenderer(ChangeEventArgs changeEventArgs)
     {
         Stop();
-        RendererTypeName = changeEventArgs.Value as string;
+        Init(changeEventArgs.Value as string);
+    }
+
+    private void Init(string typeName)
+    {
+        RendererTypeName = typeName;
+        if (RendererTypeName == null)
+        {
+            return;
+        }
+
+        if (!Renderers.TryGetValue(RendererTypeName, out var rendererType))
+        {
+            return;
+        }
+
+        renderer = Activator.CreateInstance(rendererType) as AbstractRenderer;
+        if (renderer == null)
+        {
+            return;
+        }
+        CameraConfig = renderer.CameraConfig;
+        SamplerConfig = renderer.SamplerConfig;
+        IntegratorConfig = renderer.IntegratorConfig;
+        
+        StateHasChanged();
     }
 }
-
-    

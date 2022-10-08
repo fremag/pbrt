@@ -21,8 +21,8 @@ namespace pbrt.Integrators
     [ExcludeFromCodeCoverage]
     public class DirectLightingIntegrator : SamplerIntegrator
     {
-        public LightStrategy Strategy { get; }
-        public int MaxDepth { get; }
+        public LightStrategy Strategy { get; set; }
+        public int MaxDepth { get; set; }
         public List<int> NLightSamples { get; }
 
         public DirectLightingIntegrator(AbstractSampler sampler, AbstractCamera camera, LightStrategy strategy, int maxDepth, int nbThreads = 1, int tileSize = 16) : base(sampler, camera, nbThreads, tileSize)
@@ -32,7 +32,7 @@ namespace pbrt.Integrators
             NLightSamples = new List<int>();
         }
 
-        public void Preprocess(IScene scene, AbstractSampler sampler)
+        public override void Preprocess(IScene scene, AbstractSampler sampler)
         {
             if (Strategy == LightStrategy.UniformSampleAll)
             {
