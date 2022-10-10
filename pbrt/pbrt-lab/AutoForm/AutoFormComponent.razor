@@ -4,15 +4,11 @@
     <div class="card-body">
         <div class="card-title">
             <button class="btn btn-primary btn-sm" @onclick="Collapse">@ButtonCollapse</button>@Name
-            @if (MainForm)
-            {
-                <button class="btn btn-primary btn-sm" @onclick="Apply">Apply</button>
-            }
         </div>
         <p class="card-body" style="display: @Display">
-            @if (Value != null)
+            @if (Obj != null)
             {
-                @foreach (var property in Value.GetType().GetProperties().Where(p => p.CanWrite))
+                @foreach (var property in Obj.GetType().GetProperties().Where(p => p.CanWrite))
                 {
                     <div class="row">
                         @if (property.PropertyType.IsClass)
@@ -21,7 +17,9 @@
                         }
                         else
                         {
-                            @CreatePropertyComponent(property)
+                            var value = property.GetValue(Obj);
+                            var valueStr = value?.ToString();
+                            <AutoFormPropertyComponent Obj="Obj" PropertyInfo="property" OnChange="StateHasChanged" Value="@valueStr"/>
                         }
                     </div>
                 }
@@ -37,53 +35,39 @@
     public string Name { get; set; }
 
     [Parameter]
-    public object Value { get; set; }
+    public object Obj { get; set; }
 
     [Parameter]
     public bool MainForm { get; set; } = true;
 
-    public string ButtonCollapse => Collapsed ? "-" : "+";
-    public string Display => Collapsed ? "block" : "none";
-    public bool Collapsed { get; set; } = false;
+    public string ButtonCollapse => Collapsed ? "+" : "-";
+    public string Display => Collapsed ? "none" : "block";
+    public bool Collapsed { get; set; } = true;
 
     List<AutoFormComponentBase> components = new();
 
     private RenderFragment CreatePropertyComponent(PropertyInfo propertyInfo) => builder =>
     {
-        var propertyValue = propertyInfo.GetValue(Value)?.ToString();
+        var propertyValue = propertyInfo.GetValue(Obj)?.ToString();
         builder.OpenComponent<AutoFormPropertyComponent>(0);
         builder.AddAttribute(1, nameof(AutoFormPropertyComponent.PropertyInfo), propertyInfo);
-        builder.AddAttribute(2, nameof(Value), propertyValue);
-        builder.AddComponentReferenceCapture(3, ComponentReferenceCapture);
+        builder.AddAttribute(2, nameof(AutoFormPropertyComponent.Value), propertyValue);
+        builder.AddAttribute(3, nameof(AutoFormPropertyComponent.Obj), Obj);
+        builder.AddAttribute(4, nameof(AutoFormPropertyComponent.OnChange), () => StateHasChanged());
 
         builder.CloseComponent();
     };
-
-    private void ComponentReferenceCapture(object obj)
-    {
-        var autoFormPropertyComponent = (AutoFormComponentBase)obj;
-        components.Add(autoFormPropertyComponent);
-    }
 
     private RenderFragment CreateForm(PropertyInfo propertyInfo) => builder =>
     {
-        var propertyValue = propertyInfo.GetValue(Value);
+        var propertyValue = propertyInfo.GetValue(Obj);
         builder.OpenComponent<AutoFormComponent>(0);
-        builder.AddAttribute(1, nameof(Value), propertyValue);
+        builder.AddAttribute(1, nameof(Obj), propertyValue);
         builder.AddAttribute(2, nameof(Name), propertyInfo.Name);
         builder.AddAttribute(3, nameof(MainForm), false);
-        builder.AddComponentReferenceCapture(3, ComponentReferenceCapture);
 
         builder.CloseComponent();
     };
-
-    public override void Apply(object value)
-    {
-        foreach (var comp in components)
-        {
-            comp.Apply(Value);
-        }
-    }
 
     private void Collapse()
     {

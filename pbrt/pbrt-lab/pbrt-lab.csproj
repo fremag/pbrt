@@ -8,12 +8,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Pbrt.Demos\Pbrt.Demos.csproj"/>
-        <ProjectReference Include="..\pbrt\pbrt.csproj"/>
+        <ProjectReference Include="..\Pbrt.Demos\Pbrt.Demos.csproj" />
+        <ProjectReference Include="..\pbrt\pbrt.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NUnit" Version="3.12.0"/>
+        <PackageReference Include="NUnit" Version="3.12.0" />
     </ItemGroup>
 
 </Project>

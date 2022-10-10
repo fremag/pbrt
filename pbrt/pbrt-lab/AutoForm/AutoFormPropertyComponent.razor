@@ -1,5 +1,4 @@
 @using System.Reflection
-@inherits AutoFormComponentBase
 
 <div class="row">
     <div class="col-6">@PropertyInfo.Name</div>
@@ -20,27 +19,54 @@
     </div>
 </div>
 @code {
+    private string objValue;
+
     [Parameter]
     public PropertyInfo PropertyInfo { get; set; }
-    
+
     [Parameter]
-    public string Value { get; set; }
-    
-    public override void Apply(object obj)
+    public string Value
     {
-        var currentValue = PropertyInfo.GetValue(obj);
+        get => objValue;
+        set
+        {
+            objValue = value;
+            InvokeAsync(Apply);
+        } 
+    }
+
+    [Parameter]
+    public object Obj { get; set; }
+
+    [Parameter]
+    public EventCallback OnChange { get; set; }
+    
+    public async Task Apply()
+    {
+        if (Obj == null)
+        {
+            return;
+        }
+        var currentValue = PropertyInfo.GetValue(Obj);
         object value = null;
         bool hasChanged = false;
         
         if (PropertyInfo.PropertyType == typeof(float))
         {
-            var f = float.Parse(Value);
-            hasChanged = currentValue == null || f != (float)currentValue;
+            if (!float.TryParse(Value, out var f))
+            {
+                return;
+            }
+            hasChanged = currentValue == null || Math.Abs(f - (float)currentValue) > 1e-20;
             value = f;
         } 
         else if (PropertyInfo.PropertyType == typeof(int))
         {
-            var i = int.Parse(Value);
+            if (!int.TryParse(Value, out var i))
+            {
+                return;
+            } 
+            
             hasChanged = currentValue == null || i != (int)currentValue;
             value = i;
         }
@@ -52,7 +78,9 @@
 
         if (hasChanged)
         {
-            PropertyInfo.SetValue(obj, value);
+            PropertyInfo.SetValue(Obj, value);
+            StateHasChanged();
+            await OnChange.InvokeAsync();
         }
     }
 }
