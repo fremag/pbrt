@@ -7,7 +7,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\pbrt\pbrt.csproj" />
-        <ProjectReference Include="..\ply\ply.csproj" />
     </ItemGroup>
 
     <ItemGroup>
