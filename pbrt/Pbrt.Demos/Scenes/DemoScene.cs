@@ -127,7 +127,6 @@ namespace Pbrt.Demos.Scenes
             AllPrimitives.AddRange(primitives);
         }
 
-
         public IEnumerable<IPrimitive> BuildTriangles(TriangleMesh mesh, IMaterial material)
         {
             var triangles = mesh
@@ -135,6 +134,12 @@ namespace Pbrt.Demos.Scenes
                 .Select(shape => new GeometricPrimitive(shape, material, null, DefaultMediumInterface))
                 .ToArray();
             return triangles;
+        }
+
+        protected void AddPrimitives(TriangleMesh primitives, IMaterial material)
+        {
+            var triangles = BuildTriangles(primitives, material);
+            AddPrimitives(triangles);
         }
     }
 }

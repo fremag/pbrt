@@ -3,34 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Pbrt.Demos.Ply;
 
-public class PlyFile
+public class PlyFile : IDisposable
 {
-    private readonly List<string> requestedElements = new ();
-    private readonly Dictionary<string, DataCursor> userDataTable = new ();
+    private Stream Stream { get; }
     private List<string> Comments { get; } = new();
     private List<PlyElement> Elements { get; } = new();
     private List<string> ObjInfo { get; } = new();
     private bool IsBinary { get; set; }
     private bool IsBigEndian { get; set; }
+    private List<string> RequestedElements { get; } = new ();
+    private Dictionary<string, DataCursor> UserDataTable { get; } = new ();
 
     public PlyFile(Stream stream)
     {
-        var reader = new UnbufferedStreamReader(stream);
-        ParseHeader(reader);
+        Stream = stream;
+        ParseHeader(stream);
     }
 
-    public void Read(Stream stream)
+    public PlyFile(string path) : this(new FileStream(path, FileMode.Open, FileAccess.Read))
+    {
+    }
+
+    public void Read()
     {
         if (IsBinary)
         {
-            ReadBinaryInternal(stream);
+            ReadBinaryInternal(Stream);
         }
         else
         {
-            ReadTextInternal(stream);
+            ReadTextInternal(Stream);
         }
     }
 
@@ -43,9 +49,9 @@ public class PlyFile
 
         if (Elements.FindIndex(x => x.Name == elementKey) >= 0)
         {
-            if (!requestedElements.Contains(elementKey))
+            if (!RequestedElements.Contains(elementKey))
             {
-                requestedElements.Add(elementKey);
+                RequestedElements.Add(elementKey);
             }
         }
         else
@@ -53,10 +59,7 @@ public class PlyFile
             return 0;
         }
 
-        var cursor = new DataCursor
-        {
-            Vector = data
-        };
+        var cursor = new DataCursor(data);
 
         var instanceCounts = new List<int>();
         var propertyKeyList = propertyKeys.ToList();
@@ -68,12 +71,12 @@ public class PlyFile
             {
                 instanceCounts.Add(instanceCount);
                 var userKey = Helper.MakeKey(elementKey, key);
-                if (userDataTable.ContainsKey(userKey))
+                if (UserDataTable.ContainsKey(userKey))
                 {
                     throw new Exception("property has already been requested: " + key);
                 }
 
-                userDataTable[userKey] = cursor;
+                UserDataTable[userKey] = cursor;
             }
             else
             {
@@ -117,28 +120,22 @@ public class PlyFile
             return;
         }
 
-        if (Elements.FindIndex(x => x.Name == elementKey) >= 0)
-        {
-            if (!requestedElements.Contains(elementKey))
-            {
-                requestedElements.Add(elementKey);
-            }
-        }
-        else
+        if (Elements.FindIndex(x => x.Name == elementKey) < 0)
         {
             return;
         }
 
-        var cursor = new DataCursor();
+        if (!RequestedElements.Contains(elementKey))
+        {
+            RequestedElements.Add(elementKey);
+        }
 
         var userKey = Helper.MakeKey(elementKey, propertyKey);
-        if (userDataTable.ContainsKey(userKey))
+        if (UserDataTable.ContainsKey(userKey))
         {
             throw new Exception("property has already been requested: " + propertyKey);
         }
-        userDataTable[userKey] = cursor;
-        cursor.Vector = data;
-        cursor.IsMultiVector = true;
+        UserDataTable[userKey] = new DataCursor(data, true);
     }
 
     private void ReadHeaderText(TextReader line, List<string> comments)
@@ -177,45 +174,45 @@ public class PlyFile
     {
         foreach (var element in Elements)
         {
-            var idx = requestedElements.FindIndex(x => x == element.Name);
-            if (idx != -1)
+            var idx = RequestedElements.FindIndex(x => x == element.Name);
+            if (idx == -1)
             {
-                for (long count = 0; count < element.Size; ++count)
+                continue;
+            }
+
+            for (long count = 0; count < element.Size; ++count)
+            {
+                foreach (var property in element.Properties)
                 {
-                    foreach (var property in element.Properties)
+                    if (UserDataTable.TryGetValue(Helper.MakeKey(element.Name, property.Name), out var cursor))
                     {
-                        DataCursor cursor;
-                        if (userDataTable.TryGetValue(Helper.MakeKey(element.Name, property.Name), out cursor))
+                        if (property.IsList)
                         {
-                            if (property.IsList)
+                            var listSize = Convert.ToUInt32(readData(property.ListType));
+
+                            IList sourceList = cursor.Vector;
+                            if (cursor.IsMultiVector)
                             {
-                                var listSize = Convert.ToUInt32(readData(property.ListType));
-
-
-                                IList sourceList = cursor.Vector;
-                                if (cursor.IsMultiVector)
-                                {
-                                    var listType = typeof(List<>);
-                                    var listGenericType = listType.MakeGenericType(property.PropertyType);
-                                    var list = (IList)Activator.CreateInstance(listGenericType);
-                                    sourceList.Add(list);
-                                    sourceList = list;
-                                }
-
-                                for (var i = 0; i < listSize; ++i)
-                                {
-                                    sourceList.Add(readData(property.PropertyType));
-                                }
+                                var listType = typeof(List<>);
+                                var listGenericType = listType.MakeGenericType(property.PropertyType);
+                                var list = (IList)Activator.CreateInstance(listGenericType);
+                                sourceList.Add(list);
+                                sourceList = list;
                             }
-                            else
+
+                            for (var i = 0; i < listSize; ++i)
                             {
-                                cursor.Vector.Add(readData(property.PropertyType));
+                                sourceList.Add(readData(property.PropertyType));
                             }
                         }
                         else
                         {
-                            skipData(property.PropertyType);
+                            cursor.Vector.Add(readData(property.PropertyType));
                         }
+                    }
+                    else
+                    {
+                        skipData(property.PropertyType);
                     }
                 }
             }
@@ -243,24 +240,37 @@ public class PlyFile
         }
         sr.DiscardBufferedData();
     }
-       
-    private void ParseHeader(TextReader stream)
+
+    private string ReadLine(Stream stream)
+    {
+        var bytes = new List<byte>();
+        int current;
+        while ((current = stream.ReadByte()) != -1 && current != '\n')
+        {
+            byte b = (byte)current;
+            bytes.Add(b);
+        }
+        return Encoding.UTF8.GetString(bytes.ToArray(), 0, bytes.Count);
+    }
+    
+    private void ParseHeader(Stream stream)
     {
         bool endOfHeader = false;
         while(! endOfHeader)
         {
-            var line = stream.ReadLine();
+            var line = ReadLine(stream);
             if (line == null)
             {
                 break;
             }
+            
             if(string.IsNullOrEmpty(line))
             {
                 continue;
             }
             
-            using var ls = new StringReader(line);
-            var token = ls.ReadWord();
+            using var stringReader = new StringReader(line);
+            var token = stringReader.ReadWord();
             if (string.IsNullOrEmpty(token))
             {
                 continue;
@@ -273,30 +283,38 @@ public class PlyFile
             
             switch(token)
             {
-                case "comment": 
-                    ReadHeaderText(ls, Comments);
+                case "end_header":
+                    endOfHeader = true;
                     break;
+                
                 case "format":
-                    ReadHeaderFormat(ls);
+                    ReadHeaderFormat(stringReader);
                     break;
+                
                 case "element":
-                    ReadHeaderElement(ls);
+                    ReadHeaderElement(stringReader);
                     break;
                 
                 case "property" :
-                    ReadHeaderProperty(ls);
-                    break;
-                case "obj_info":
-                    ReadHeaderText(ls, ObjInfo);
+                    ReadHeaderProperty(stringReader);
                     break;
                 
-                case "end_header":
-                    endOfHeader = true;
+                case "comment": 
+                    ReadHeaderText(stringReader, Comments);
+                    break;
+                
+                case "obj_info":
+                    ReadHeaderText(stringReader, ObjInfo);
                     break;
                 
                 default:
                     throw new Exception("invalid header");
             }
         }
+    }
+
+    public void Dispose()
+    {
+        Stream?.Dispose();
     }
 }
