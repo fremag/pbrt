@@ -16,13 +16,15 @@ namespace pbrt_runner
         {
             AbstractDemo[] demos =
             {
-                new HelloWorldDemo(),
+//                new HelloWorldDemo(),
                 // new CheckerPlaneDemo(),
                 // new MirrorDemo(),
                 // new GlassDemo(),
                 // new CylinderDemo(),
                 // new DiskDemo(),
                 // new TorusDemo(),
+                // new DragonDemo(),
+                new Dragon2Demo(),
                 // new TriangleDemo(),
                 // new CloverDemo(),
                 // new LensFocalSamplerTestDemo(),
@@ -44,8 +46,8 @@ namespace pbrt_runner
         private static void Render(AbstractDemo demo, int num, int max)
         {
             using var progress = new RenderProgress(demo, num, max);
-            demo.Init(progress.OnTileRendered);
-            var rgbs = demo.Render(CancellationToken.None);
+            demo.Init();
+            var rgbs = demo.Render(CancellationToken.None, progress.OnTileRendered);
             var img = WriteImage(rgbs, demo.Camera.Film.FullResolution);
             if (demo.Text != null)
             {

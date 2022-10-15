@@ -82,13 +82,11 @@
         {
             return;
         }
-        demo.Init(OnTileRendered);
-        Text = demo.Text;
         StateHasChanged();
         Progress = 0;
         tokenSource = new();
         var cancellationToken = tokenSource.Token;
-        RenderTask = Task.Run(() => demo.Render(cancellationToken), cancellationToken);
+        RenderTask = Task.Run(() => demo.Render(cancellationToken, OnTileRendered), cancellationToken);
         IsRunning = true;
     }
 
@@ -179,11 +177,12 @@
         {
             return;
         }
+        demo.Init();
+        Text = demo.Text;
         CameraConfig = demo.CameraConfig;
         SamplerConfig = demo.SamplerConfig;
         IntegratorConfig = demo.IntegratorConfig;
 
         StateHasChanged();
     }
-
 }

@@ -22,15 +22,15 @@ namespace Pbrt.Demos.Scenes
         public IMaterial MatteMaterialGreen(float sigma = 50, float bump = 0) => MakeMatteMaterial(sigma, 0, 1, 0, bump);
         public IMaterial MatteMaterialBlue(float sigma = 50, float bump = 0) => MakeMatteMaterial(sigma, 0, 0, 1, bump);
 
-        public static MediumInterface DefaultMediumInterface => new MediumInterface(HomogeneousMedium.Default());
+        public static MediumInterface DefaultMediumInterface { get; } = new MediumInterface(HomogeneousMedium.Default());
 
         public Texture<float> MakeTexture(float f) => new ConstantTexture<float>(f);
         public Texture<Spectrum> MakeSpectrumTexture(float f) => new ConstantTexture<Spectrum>(new Spectrum(f));
         public Texture<Spectrum> MakeSpectrumTexture(float r, float g, float b) => new ConstantTexture<Spectrum>(new Spectrum(SampledSpectrum.FromRgb(new[] { r, g, b })));
         public Texture<Spectrum> MakeGraySpectrumTexture(float level) => new ConstantTexture<Spectrum>(new Spectrum(SampledSpectrum.FromRgb(new[] { level, level, level })));
 
-        public readonly List<IPrimitive> AllPrimitives = new List<IPrimitive>();
-        public readonly List<Light> AllLights = new List<Light>();
+        public List<IPrimitive> AllPrimitives { get; private set; } = new List<IPrimitive>();
+        public List<Light> AllLights { get; private set; } = new List<Light>();
 
         public IMaterial MakeMatteMaterial(float sigma, float r, float g, float b, float bump = 0)
         {
@@ -53,7 +53,8 @@ namespace Pbrt.Demos.Scenes
         }
 
         public Transform Translate(float tX = 0, float tY = 0, float tZ = 0) => Transform.Translate(tX, tY, tZ);
-        public Transform Scale(float sX = 0, float sY = 0, float sZ = 0) => Transform.Scale(sX, sY, sZ);
+        public Transform Scale(float s = 1) => Transform.Scale(s, s, s);
+        public Transform Scale(float sX = 1, float sY = 1, float sZ = 1) => Transform.Scale(sX, sY, sZ);
         public Transform RotateX(float deg) => Transform.RotateX(deg);
         public Transform RotateY(float deg) => Transform.RotateY(deg);
         public Transform RotateZ(float deg) => Transform.RotateZ(deg);
@@ -90,13 +91,13 @@ namespace Pbrt.Demos.Scenes
             return pointLight;
         }
 
-        public void Floor()
+        public void Floor(float ds=1, float dt = 1)
         {
             var planeTransform = Transform.Scale(100f, 0.1f, 100f);
             var plane = new Sphere(planeTransform, 1f);
             Texture<Spectrum> kdWhite = MakeGraySpectrumTexture(1);
             Texture<Spectrum> kdGray = MakeGraySpectrumTexture(0.5f);
-            TextureMapping2D mapping = new PlanarMapping2D(VX, VZ, 1, 1);
+            TextureMapping2D mapping = new PlanarMapping2D(VX, VZ, ds, dt);
             var kdChecker = new Checkerboard2DTexture<Spectrum>(mapping, kdGray, kdWhite);
             AddShape(plane, new MatteMaterial(kdChecker, MakeTexture(50f), null));
         }
