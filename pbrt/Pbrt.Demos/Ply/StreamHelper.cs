@@ -37,7 +37,7 @@ public static class StreamHelper
         return word;
     }
 
-    public static object ReadData(this BinaryReader stream, Type t)
+    public static object ReadBinaryData(this BinaryReader stream, Type t)
     {
         var size = Marshal.SizeOf(t);
         byte[] buf = new byte[size];
@@ -45,7 +45,7 @@ public static class StreamHelper
         return FromByteArray(buf, t);
     }
 
-    public static object ReadDataBigEndian(this BinaryReader stream, Type t)
+    public static object ReadBinaryDataBigEndian(this BinaryReader stream, Type t)
     {
         var size = Marshal.SizeOf(t);
         byte[] buf = new byte[size];
@@ -70,7 +70,7 @@ public static class StreamHelper
         return FromByteArray(buf, t);
     }
         
-    public static void SkipData(this BinaryReader stream, Type t)
+    public static void SkipBinaryData(this BinaryReader stream, Type t)
     {
         var size = Marshal.SizeOf(t);
         for (int i = 0; i < size; i++)
@@ -79,7 +79,7 @@ public static class StreamHelper
         }
     }
         
-    public static object ReadData(this TextReader stream, Type t)
+    public static object ReadTextData(this TextReader stream, Type t)
     {
         var w = stream.ReadWord();
         if (w.Equals("nan", StringComparison.OrdinalIgnoreCase))
@@ -89,7 +89,7 @@ public static class StreamHelper
         return Convert.ChangeType(w, t);
     }
 
-    public static void SkipData(this TextReader stream, Type t)
+    public static void SkipTextData(this TextReader stream, Type t)
     {
         stream.ReadWord();
     }

@@ -224,11 +224,11 @@ public class PlyFile : IDisposable
         var bs = new BinaryReader(stream);
         if (IsBigEndian)
         {
-            Read(bs.ReadDataBigEndian, bs.SkipData);
+            Read(bs.ReadBinaryDataBigEndian, bs.SkipBinaryData);
         }
         else
         {
-            Read(bs.ReadData, bs.SkipData);
+            Read(bs.ReadBinaryData, bs.SkipBinaryData);
         }
     }
 
@@ -236,7 +236,7 @@ public class PlyFile : IDisposable
     {
         var sr = new StreamReader(stream);
         {
-            Read(sr.ReadData, sr.SkipData);
+            Read(sr.ReadTextData, sr.SkipTextData);
         }
         sr.DiscardBufferedData();
     }
