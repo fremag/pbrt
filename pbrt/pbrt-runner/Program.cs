@@ -16,21 +16,22 @@ namespace pbrt_runner
         {
             AbstractDemo[] demos =
             {
-                new HelloWorldDemo(),
-                new CheckerPlaneDemo(),
-                new MirrorDemo(),
-                new GlassDemo(),
-                new CylinderDemo(),
-                new DiskDemo(),
-                new TorusDemo(),
-                new TriangleDemo(),
-                new CloverDemo(),
-                new LensFocalSamplerTestDemo(),
-                new AreaLightDemo(1),
-                new AreaLightDemo(4),
-                new AreaLightDemo(16),
+                // new HelloWorldDemo(),
+                // new CheckerPlaneDemo(),
+                // new MirrorDemo(),
+                // new GlassDemo(),
+                // new CylinderDemo(),
+                // new DiskDemo(),
+                // new TorusDemo(),
+                // new TriangleDemo(),
+                // new CloverDemo(),
+                // new LensFocalSamplerTestDemo(),
+                // new AreaLightDemo(1),
+                // new AreaLightDemo(4),
+                // new AreaLightDemo(16),
                 // new AreaLightDemo(64),
                 // new AreaLightDemo(256),
+                new CubeDemo(),
             };
 
             for (int i = 0; i < demos.Length; i++)
