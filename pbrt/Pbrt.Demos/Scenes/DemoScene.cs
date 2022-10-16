@@ -25,6 +25,7 @@ namespace Pbrt.Demos.Scenes
         public static MediumInterface DefaultMediumInterface => new MediumInterface(HomogeneousMedium.Default());
 
         public Texture<float> MakeTexture(float f) => new ConstantTexture<float>(f);
+        public Texture<Spectrum> MakeSpectrumTexture(float[] rgb) => MakeSpectrumTexture(rgb[0], rgb[1], rgb[2]);
         public Texture<Spectrum> MakeSpectrumTexture(float f) => new ConstantTexture<Spectrum>(new Spectrum(f));
         public Texture<Spectrum> MakeSpectrumTexture(float r, float g, float b) => new ConstantTexture<Spectrum>(new Spectrum(SampledSpectrum.FromRgb(new[] { r, g, b })));
         public Texture<Spectrum> MakeGraySpectrumTexture(float level) => new ConstantTexture<Spectrum>(new Spectrum(SampledSpectrum.FromRgb(new[] { level, level, level })));
@@ -90,16 +91,74 @@ namespace Pbrt.Demos.Scenes
             return pointLight;
         }
 
+        public TriangleMesh Plane(float x0, float z0, float x1, float z1)
+        {
+            int[] indices = {0, 1, 2, 0, 3, 2};
+            Point3F[] points = {
+                new(x0, 0, z0), 
+                new(x0, 0, z1 ), 
+                new(x1, 0, z1), 
+                new(x1, 0, z0) 
+            };
+            
+            var plane = new TriangleMesh(Translate(), 2, indices, 4, points, null, null, null, null, null, null);
+            return plane;
+        }
+        
         public void Floor()
         {
-            var planeTransform = Transform.Scale(100f, 0.1f, 100f);
-            var plane = new Sphere(planeTransform, 1f);
             Texture<Spectrum> kdWhite = MakeGraySpectrumTexture(1);
             Texture<Spectrum> kdGray = MakeGraySpectrumTexture(0.5f);
-            TextureMapping2D mapping = new PlanarMapping2D(VX, VZ, 1, 1);
-            var kdChecker = new Checkerboard2DTexture<Spectrum>(mapping, kdGray, kdWhite);
-            AddShape(plane, new MatteMaterial(kdChecker, MakeTexture(50f), null));
+            TextureMapping3D mapping = new TextureMapping3D(Translate(0));
+            var kdChecker = new Checkerboard3DTexture<Spectrum>(mapping, kdGray, kdWhite);
+            var matteMaterial = new MatteMaterial(kdChecker, MakeTexture(50f), null);
+
+            var plane = Plane(-1000, -1000, 1000, 1000);
+            AddPrimitives(BuildTriangles(plane, matteMaterial));
         }
+
+        public TriangleMesh Cube(Transform transform)
+        {
+            return Cube(-1, -1, -1, 1, 1, 1, transform);
+        }
+
+        public TriangleMesh Cube(float x0, float y0, float z0, float x1, float y1, float z1)
+        {
+            return Cube(x0, y0, z0, x1, y1, z1, Translate());
+        }
+        
+        public TriangleMesh Cube(float x0, float y0, float z0, float x1, float y1, float z1, Transform transform)
+        {
+            int[] indices = {
+                0, 2, 3, 
+                0, 1, 3,
+                0, 2, 6,
+                0, 4, 6,
+                0, 1, 5, 
+                0, 4, 5,
+                7, 2, 3,
+                7, 2, 6,
+                7, 4, 6,
+                7, 4, 5,
+                7, 1, 3,
+                7, 1, 5
+            };
+            
+            Point3F[] points = {
+                new(x0, y0, z0), 
+                new(x0, y0, z1), 
+                new(x0, y1, z0), 
+                new(x0, y1, z1),
+                
+                new(x1, y0, z0), 
+                new(x1, y0, z1), 
+                new(x1, y1, z0), 
+                new(x1, y1, z1), 
+            };
+            
+            var cube = new TriangleMesh(transform, 12, indices, 4, points, null, null, null, null, null, null);
+            return cube;
+        } 
 
         public void Cylinder(Transform transform, IMaterial material, float zMax = 1f, MediumInterface mediumInterface = null)
         {
@@ -135,5 +194,18 @@ namespace Pbrt.Demos.Scenes
                 .ToArray();
             return triangles;
         }
+
+        public void Axis()
+        {
+            var cube1 = Cube(-0.1f, 0f, -0.1f, 0.1f, 20f, 0.1f);
+            var cube2 = Cube(-0.1f, -0.1f, 0f, 0.1f, 0.1f, 20f);
+            var cube3 = Cube(0f, -0.1f, -0.1f, 20f, 0.1f, 0.1f);
+            
+            AddPrimitives(BuildTriangles(cube1, PlasticMaterialGreen));
+            AddPrimitives(BuildTriangles(cube2, PlasticMaterialRed));
+            AddPrimitives(BuildTriangles(cube3, PlasticMaterialBlue));
+        }
+
+        protected float[] Rgb(int r, int g, int b) => new float[] { r / 255f, g / 255f, b / 255f };
     }
 }

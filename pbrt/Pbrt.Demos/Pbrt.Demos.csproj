@@ -6,11 +6,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\pbrt\pbrt.csproj"/>
+        <ProjectReference Include="..\pbrt\pbrt.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <None Remove="NLog.config"/>
+        <None Remove="NLog.config" />
     </ItemGroup>
 
 </Project>
