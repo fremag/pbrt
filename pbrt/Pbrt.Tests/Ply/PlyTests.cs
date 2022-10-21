@@ -9,6 +9,7 @@ namespace Pbrt.Tests.Ply;
 public class PlyTests
 {
     [Test]
+    [Ignore("Manual test only)")]
     public void Test()
     {
         var path = @"E:\Projects\pbrt-scenes\pbrt-v3-scenes\sssdragon\geometry\meshes_0.ply";
