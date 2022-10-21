@@ -22,7 +22,7 @@ namespace Pbrt.Demos.Scenes
         public IMaterial MatteMaterialGreen(float sigma = 50, float bump = 0) => MakeMatteMaterial(sigma, 0, 1, 0, bump);
         public IMaterial MatteMaterialBlue(float sigma = 50, float bump = 0) => MakeMatteMaterial(sigma, 0, 0, 1, bump);
 
-        public static MediumInterface DefaultMediumInterface => new MediumInterface(HomogeneousMedium.Default());
+        public static MediumInterface DefaultMediumInterface { get; } = new MediumInterface(HomogeneousMedium.Default());
 
         public Texture<float> MakeTexture(float f) => new ConstantTexture<float>(f);
         public Texture<Spectrum> MakeSpectrumTexture(float[] rgb) => MakeSpectrumTexture(rgb[0], rgb[1], rgb[2]);
@@ -30,8 +30,8 @@ namespace Pbrt.Demos.Scenes
         public Texture<Spectrum> MakeSpectrumTexture(float r, float g, float b) => new ConstantTexture<Spectrum>(new Spectrum(SampledSpectrum.FromRgb(new[] { r, g, b })));
         public Texture<Spectrum> MakeGraySpectrumTexture(float level) => new ConstantTexture<Spectrum>(new Spectrum(SampledSpectrum.FromRgb(new[] { level, level, level })));
 
-        public readonly List<IPrimitive> AllPrimitives = new List<IPrimitive>();
-        public readonly List<Light> AllLights = new List<Light>();
+        public List<IPrimitive> AllPrimitives { get; private set; } = new List<IPrimitive>();
+        public List<Light> AllLights { get; private set; } = new List<Light>();
 
         public IMaterial MakeMatteMaterial(float sigma, float r, float g, float b, float bump = 0)
         {
@@ -54,7 +54,8 @@ namespace Pbrt.Demos.Scenes
         }
 
         public Transform Translate(float tX = 0, float tY = 0, float tZ = 0) => Transform.Translate(tX, tY, tZ);
-        public Transform Scale(float sX = 0, float sY = 0, float sZ = 0) => Transform.Scale(sX, sY, sZ);
+        public Transform Scale(float s = 1) => Transform.Scale(s, s, s);
+        public Transform Scale(float sX = 1, float sY = 1, float sZ = 1) => Transform.Scale(sX, sY, sZ);
         public Transform RotateX(float deg) => Transform.RotateX(deg);
         public Transform RotateY(float deg) => Transform.RotateY(deg);
         public Transform RotateZ(float deg) => Transform.RotateZ(deg);
@@ -185,7 +186,6 @@ namespace Pbrt.Demos.Scenes
             AllPrimitives.AddRange(primitives);
         }
 
-
         public IEnumerable<IPrimitive> BuildTriangles(TriangleMesh mesh, IMaterial material)
         {
             var triangles = mesh
@@ -193,6 +193,12 @@ namespace Pbrt.Demos.Scenes
                 .Select(shape => new GeometricPrimitive(shape, material, null, DefaultMediumInterface))
                 .ToArray();
             return triangles;
+        }
+
+        protected void AddPrimitives(TriangleMesh primitives, IMaterial material)
+        {
+            var triangles = BuildTriangles(primitives, material);
+            AddPrimitives(triangles);
         }
 
         public void Axis()

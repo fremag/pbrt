@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Pbrt.Demos\Pbrt.Demos.csproj" />
         <ProjectReference Include="..\pbrt\pbrt.csproj" />
     </ItemGroup>
 

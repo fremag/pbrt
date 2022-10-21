@@ -51,7 +51,12 @@ namespace Pbrt.Demos
             };
         }
 
-        public void Init(Action<int, int, TimeSpan> onTileRendered = null)
+        public void Init()
+        {
+            Scene.Init();
+        }
+
+        public float[] Render(CancellationToken cancellationToken, Action<int, int, TimeSpan> onTileRendered = null)
         {
             if (CameraConfig != null)
             {
@@ -63,8 +68,6 @@ namespace Pbrt.Demos
                 Sampler = SamplerConfig.Config.BuildSampler(Camera.Film);
             }
 
-            Scene.Init();
-
             if (IntegratorConfig != null)
             {
                 Integrator = IntegratorConfig.Config.BuildIntegrator(Sampler, Camera);
@@ -75,11 +78,14 @@ namespace Pbrt.Demos
             {
                 Integrator.TileRendered += onTileRendered;
             }
-        }
 
-        public float[] Render(CancellationToken cancellationToken)
-        {
-            return Integrator.Render(Scene, cancellationToken, cancellationToken);
+            var rgbs = Integrator.Render(Scene, cancellationToken, cancellationToken);
+            if (onTileRendered != null)
+            {
+                Integrator.TileRendered -= onTileRendered;
+            }
+
+            return rgbs;
         }
     }
 }
