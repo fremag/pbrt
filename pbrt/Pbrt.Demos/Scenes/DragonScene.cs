@@ -1,21 +1,19 @@
-using Pbrt.Demos.Ply;
-
 namespace Pbrt.Demos.Scenes;
 
 public class DragonScene : DemoScene
 {
     public DragonScene()
     {
-        var path = @"E:\Projects\pbrt-scenes\pbrt-v3-scenes\dragon\geometry\dragon_remeshed.ply";
-        MeshFactory meshFactory = new MeshFactory(path);
+        //  original : @"E:\Projects\pbrt-scenes\pbrt-v3-scenes\dragon\geometry\dragon_remeshed.ply";
+        var meshFactory = ReadModel("Pbrt.Demos.Models.dragon_remeshed_mini.ply");
         
         var transform1 =  (RotateY(45)*RotateZ(90)*RotateY(45));
         var scale = Scale(0.05f);
-        transform1 = Translate(tY: 2.2f, tX: -3f) * transform1 * scale;
+        transform1 = Translate(tY: 2.2f, tX: -3.5f) * transform1 * scale;
         var dragon1 = meshFactory.BuildTriangleMesh(transform1);
         
         var transform2 =  (RotateY(-15)*RotateZ(90)*RotateY(45));
-        transform2 = Translate(tY: 2.2f, tX: 5f) * transform2 * scale;
+        transform2 = Translate(tY: 2.2f, tX: 5.5f) * transform2 * scale;
         var dragon2 =  meshFactory.BuildTriangleMesh(transform2);;
 
         Floor();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using pbrt.Core;
 using pbrt.Shapes;
@@ -7,12 +8,21 @@ namespace Pbrt.Demos.Ply;
 
 public class MeshFactory
 {
-    public Point3F[] Points { get; }
-    public int[] Indexes { get; }
+    public Point3F[] Points { get; private set; }
+    public int[] Indexes { get; private set;}
 
-    public MeshFactory(string path)
+    public MeshFactory(string path) : this(File.OpenRead(path))
     {
-        using var plyFile = new PlyFile(path);
+    }
+
+    public MeshFactory(Stream stream)
+    {
+        using var plyFile = new PlyFile(stream);
+        Init(plyFile);
+    }
+
+    private void Init(PlyFile plyFile)
+    {
         var xyz = new List<float>();
         var index = new List<List<int>>();
         plyFile.RequestPropertyFromElement("vertex", new[] { "x", "y", "z" }, xyz);

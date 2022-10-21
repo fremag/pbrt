@@ -23,7 +23,7 @@ namespace pbrt_runner
                 // new CylinderDemo(),
                 // new DiskDemo(),
                 // new TorusDemo(),
-                // new DragonDemo(),
+                new DragonDemo(),
                 new Dragon2Demo(),
                 // new TriangleDemo(),
                 // new CloverDemo(),

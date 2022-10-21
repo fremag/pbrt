@@ -13,4 +13,9 @@
         <None Remove="NLog.config" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Include="Models\dragon_mini.ply" />
+      <EmbeddedResource Include="Models\dragon_remeshed_mini.ply" />
+    </ItemGroup>
+
 </Project>

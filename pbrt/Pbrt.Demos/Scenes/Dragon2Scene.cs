@@ -1,5 +1,4 @@
 using pbrt.Core;
-using Pbrt.Demos.Ply;
 
 namespace Pbrt.Demos.Scenes;
 
@@ -7,8 +6,7 @@ public class Dragon2Scene : DemoScene
 {
     public Dragon2Scene()
     {
-        var path = @"E:\Projects\pbrt-scenes\pbrt-v3-scenes\sssdragon\geometry\dragon_mini.ply";
-        var meshFactory = new MeshFactory(path);
+        var meshFactory = ReadModel("Pbrt.Demos.Models.dragon_mini.ply");
 
         Transform transform1 = RotateY(45);
         var scale = Scale(0.1f);

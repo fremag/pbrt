@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using pbrt.Accelerators;
 using pbrt.Core;
+using Pbrt.Demos.Ply;
 using pbrt.Lights;
 using pbrt.Materials;
 using pbrt.Media;
@@ -213,5 +216,14 @@ namespace Pbrt.Demos.Scenes
         }
 
         protected float[] Rgb(int r, int g, int b) => new float[] { r / 255f, g / 255f, b / 255f };
+
+        public MeshFactory ReadModel(string name)
+        {
+            var assembly = Assembly.GetAssembly(typeof(Dragon2Scene));
+            using Stream stream = assembly.GetManifestResourceStream(name);
+
+            var meshFactory = new MeshFactory(stream);
+            return meshFactory;
+        }
     }
 }

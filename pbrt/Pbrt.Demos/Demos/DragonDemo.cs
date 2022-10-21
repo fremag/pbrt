@@ -12,7 +12,7 @@ namespace Pbrt.Demos.Demos
             CameraConfig = new CameraConfig
             {
                 Config = new PerspectiveCameraConfig { 
-                    Position = (0f, 10, -12f), 
+                    Position = (0f, 10, -13f), 
                     Width = 1280,
                     Height = 1024}
             };
