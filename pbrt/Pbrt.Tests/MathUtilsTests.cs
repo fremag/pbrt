@@ -441,19 +441,47 @@ namespace Pbrt.Tests
         [Test]
         public void ErfTest()
         {
-            Check.That(MathUtils.Erf(1)).IsEqualTo(0.8427007f); ;
-            Check.That(MathUtils.Erf(-1)).IsEqualTo(-0.8427007f); ;
-            Check.That(MathUtils.Erf(0)).IsEqualTo(0f); ;
-            Check.That(MathUtils.Erf(5)).IsEqualTo(1); ;
+            Check.That(MathUtils.Erf(1)).IsEqualTo(0.8427007f);
+            Check.That(MathUtils.Erf(-1)).IsEqualTo(-0.8427007f);
+            Check.That(MathUtils.Erf(0)).IsEqualTo(0f);
+            Check.That(MathUtils.Erf(5)).IsEqualTo(1);
         }
 
         [Test]
         public void ErfInvTest()
         {
-            Check.That(MathUtils.ErfInv(1)).IsEqualTo(3.1232057f); ;
-            Check.That(MathUtils.ErfInv(-1)).IsEqualTo(-3.1232057f); ;
-            Check.That(MathUtils.ErfInv(0)).IsEqualTo(0f); ;
-            Check.That(MathUtils.ErfInv(5)).IsEqualTo(3.1232057f); ;
+            Check.That(MathUtils.ErfInv(1)).IsEqualTo(3.1232057f);
+            Check.That(MathUtils.ErfInv(-1)).IsEqualTo(-3.1232057f);
+            Check.That(MathUtils.ErfInv(0)).IsEqualTo(0f);
+            Check.That(MathUtils.ErfInv(5)).IsEqualTo(3.1232057f);
+        }
+
+        [Test]
+        public void IsPowerOfTwoTest()
+        {
+            Check.That(MathUtils.IsPowerOf2(123)).IsFalse();
+            Check.That(MathUtils.IsPowerOf2(0)).IsFalse();
+            Check.That(MathUtils.IsPowerOf2(2)).IsTrue();
+            Check.That(MathUtils.IsPowerOf2(4)).IsTrue();
+            Check.That(MathUtils.IsPowerOf2(3)).IsFalse();
+        }
+
+        [Test]
+        public void RoundUpPow2Test()
+        {
+            Check.That(MathUtils.RoundUpPow2(0)).IsEqualTo(0);
+            Check.That(MathUtils.RoundUpPow2(1)).IsEqualTo(1);
+            Check.That(MathUtils.RoundUpPow2(2)).IsEqualTo(2);
+            Check.That(MathUtils.RoundUpPow2(3)).IsEqualTo(4);
+            Check.That(MathUtils.RoundUpPow2(4)).IsEqualTo(4);
+            Check.That(MathUtils.RoundUpPow2(5)).IsEqualTo(8);
+            Check.That(MathUtils.RoundUpPow2(6)).IsEqualTo(8);
+            Check.That(MathUtils.RoundUpPow2(7)).IsEqualTo(8);
+            Check.That(MathUtils.RoundUpPow2(8)).IsEqualTo(8);
+            Check.That(MathUtils.RoundUpPow2(9)).IsEqualTo(16);
+            Check.That(MathUtils.RoundUpPow2(10)).IsEqualTo(16);
+            Check.That(MathUtils.RoundUpPow2(11)).IsEqualTo(16);
+            Check.That(MathUtils.RoundUpPow2(12)).IsEqualTo(16);
         }
     }
 }

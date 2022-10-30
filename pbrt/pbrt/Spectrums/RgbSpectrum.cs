@@ -45,5 +45,12 @@ namespace pbrt.Spectrums
             xyz[2] *= scale;
             return FromXYZ(xyz);    
         }
+
+        public void AddMul(float f, RgbSpectrum rgbSpectrum)
+        {
+            C[0] += f * rgbSpectrum.C[0];
+            C[1] += f * rgbSpectrum.C[1];
+            C[2] += f * rgbSpectrum.C[2];
+        }
     }
 }

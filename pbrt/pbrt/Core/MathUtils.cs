@@ -368,5 +368,21 @@ namespace pbrt.Core
                 }
             }
         }
+
+        public static bool IsPowerOf2(long x) => (x != 0) && ((x & (x - 1)) == 0);
+        
+        public static int RoundUpPow2(int v) {
+            v--;
+            v |= v >> 1;    v |= v >> 2;
+            v |= v >> 4;    v |= v >> 8;
+            v |= v >> 16;
+            return v+1;
+        }
+
+        public static int Mod(int a, int b)
+        {
+            var result = a - (a/b) * b;
+            return result < 0 ? result + b : result;
+        }
     }
 }
