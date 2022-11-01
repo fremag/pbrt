@@ -483,5 +483,23 @@ namespace Pbrt.Tests
             Check.That(MathUtils.RoundUpPow2(11)).IsEqualTo(16);
             Check.That(MathUtils.RoundUpPow2(12)).IsEqualTo(16);
         }
+
+        [Test]
+        public void Log2IntTest()
+        {
+            Check.That(MathUtils.Log2Int(0)).IsEqualTo(0);
+            Check.That(MathUtils.Log2Int(1)).IsEqualTo(1);
+            Check.That(MathUtils.Log2Int(2)).IsEqualTo(2);
+            Check.That(MathUtils.Log2Int(3)).IsEqualTo(2);
+            Check.That(MathUtils.Log2Int(4)).IsEqualTo(3);
+            Check.That(MathUtils.Log2Int(5)).IsEqualTo(3);
+            Check.That(MathUtils.Log2Int(6)).IsEqualTo(3);
+            Check.That(MathUtils.Log2Int(7)).IsEqualTo(3);
+            Check.That(MathUtils.Log2Int(8)).IsEqualTo(4);
+            Check.That(MathUtils.Log2Int(9)).IsEqualTo(4);
+            Check.That(MathUtils.Log2Int(10)).IsEqualTo(4);
+            Check.That(MathUtils.Log2Int(11)).IsEqualTo(4);
+            Check.That(MathUtils.Log2Int(12)).IsEqualTo(4);
+        }
     }
 }

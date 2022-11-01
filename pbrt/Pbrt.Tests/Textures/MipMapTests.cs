@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using NFluent;
 using NUnit.Framework;
 using pbrt.Core;
@@ -57,9 +58,9 @@ public class MipMapTests
         Check.That(mipMap.DoTri).IsEqualTo(false);
         Check.That(mipMap.MaxAniso).IsEqualTo(8);
         Check.That(mipMap.WrapMode).IsEqualTo(ImageWrap.Repeat);
-        Check.That(MipMap.WeightLUTSize).IsEqualTo(128);
-        Check.That(MipMap.WeightLut).CountIs(MipMap.WeightLUTSize);
-        Check.That(mipMap.Levels).IsZero();
+        Check.That(MipMap.WeightLutSize).IsEqualTo(128);
+        Check.That(MipMap.WeightLut).CountIs(MipMap.WeightLutSize);
+        Check.That(mipMap.Levels).IsEqualTo(6);
         
         var img = WriteImage(mipMap.ResampledImage, mipMap.Resolution);
         using var memoryStream = new MemoryStream();
@@ -118,5 +119,59 @@ public class MipMapTests
     {
         Check.That(MipMap.Lanczos(0)).IsEqualTo(1);
         Check.That(MipMap.Lanczos(1)).IsEqualTo(MathF.Sin(MathF.PI)/MathF.PI);
+    }
+
+    [Test]
+    public void NoResampleTest()
+    {
+        resolution = new Point2I(32, 64);
+        data = Enumerable.Range(0, resolution.X * resolution.Y).Select(i => new RgbSpectrum(0f)).ToArray();
+        var mipMap = new MipMap(resolution, data, wrapMode: ImageWrap.Repeat);
+        Check.That(mipMap.Data).IsSameReferenceAs(data);
+    }
+    
+    [Test]
+    public void Texel_RepeatTest()
+    {
+        resolution = new Point2I(16, 16);
+        data = Enumerable.Range(0, resolution.X * resolution.Y).Select(i => new RgbSpectrum(i)).ToArray();
+        var mipMap = new MipMap(resolution, data, wrapMode: ImageWrap.Repeat);
+        var texel000 = mipMap.Texel(0, 0, 0);
+        var texel010 = mipMap.Texel(0, 1, 0);
+        var texel001 = mipMap.Texel(0, 0, 1);
+        var texel011 = mipMap.Texel(0, 1, 1);
+        Check.That(texel000).IsEqualTo(new RgbSpectrum(0f));
+        Check.That(texel010).IsEqualTo(new RgbSpectrum(1f));
+        Check.That(texel001).IsEqualTo(new RgbSpectrum(16f));
+        Check.That(texel011).IsEqualTo(new RgbSpectrum(17f));
+
+        var texel100 = mipMap.Texel(1, 0, 0);
+        float v = (texel000.C[0] + texel010.C[0] + texel001.C[0] + texel011.C[0])/4f;
+        Check.That(texel100).IsEqualTo(new RgbSpectrum(v));
+        
+        var texel = mipMap.Texel(0, 32, 0);
+        Check.That(texel).IsEqualTo(new RgbSpectrum(0f));
+    }
+
+    [Test]
+    public void Texel_ClampTest()
+    {
+        resolution = new Point2I(16, 16);
+        data = Enumerable.Range(0, resolution.X * resolution.Y).Select(i => new RgbSpectrum(i)).ToArray();
+        var mipMap = new MipMap(resolution, data, wrapMode: ImageWrap.Clamp);
+        
+        var texel = mipMap.Texel(0, 32, 0);
+        Check.That(texel).IsEqualTo(new RgbSpectrum(15f));
+    }
+    
+    [Test]
+    public void Texel_BlackTest()
+    {
+        resolution = new Point2I(16, 16);
+        data = Enumerable.Range(0, resolution.X * resolution.Y).Select(i => new RgbSpectrum(i)).ToArray();
+        var mipMap = new MipMap(resolution, data, wrapMode: ImageWrap.Black);
+        
+        var texel = mipMap.Texel(0, 32, 0);
+        Check.That(texel).IsEqualTo(new RgbSpectrum(0f));
     }
 }

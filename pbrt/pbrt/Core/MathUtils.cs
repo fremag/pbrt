@@ -384,5 +384,15 @@ namespace pbrt.Core
             var result = a - (a/b) * b;
             return result < 0 ? result + b : result;
         }
+
+        public static int Log2Int(int n)
+        {
+            int bits = 0;
+            while (n > 0) {
+                bits++;
+                n >>= 1;
+            }
+            return bits;
+        }
     }
 }

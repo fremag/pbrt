@@ -8,6 +8,10 @@ namespace pbrt.Spectrums
         {
         }
 
+        public RgbSpectrum() : this(0f)
+        {
+        }
+        
         public RgbSpectrum(float v = 0f) : base(3, v)
         {
         }
