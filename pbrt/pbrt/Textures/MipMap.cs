@@ -23,7 +23,7 @@ public class MipMap
 {
     public Point2I Resolution { get; private set; }
     public RgbSpectrum[] Data { get; }
-    public bool DoTri { get; }
+    public bool DoTrilinear { get; }
     public float MaxAniso { get; }
     public ImageWrap WrapMode { get; }
 
@@ -36,11 +36,11 @@ public class MipMap
     public static float[] WeightLut { get; } = new float[WeightLutSize];
     public RgbSpectrum[] ResampledImage { get; private set; }
 
-    public MipMap(Point2I resolution, RgbSpectrum[] data, bool doTri = false, float maxAniso = 8f, ImageWrap wrapMode = ImageWrap.Repeat)
+    public MipMap(Point2I resolution, RgbSpectrum[] data, bool doTrilinear = false, float maxAniso = 8f, ImageWrap wrapMode = ImageWrap.Repeat)
     {
         Resolution = resolution;
         Data = data;
-        DoTri = doTri;
+        DoTrilinear = doTrilinear;
         MaxAniso = maxAniso;
         WrapMode = wrapMode;
 
@@ -230,4 +230,58 @@ public class MipMap
 
         return MathF.Sin(MathF.PI * x) / (MathF.PI * x);
     }
+    
+    public RgbSpectrum Lookup(Point2F st, float width) 
+    {
+        // Compute MIPMap level for trilinear filtering 
+        float level = Levels - 1 + MathF.Log2(MathF.Max(width, 1e-8f));
+        
+        // Perform trilinear interpolation at appropriate MIPMap level 
+        if (level < 0)
+        {
+            return Triangle(0, st);
+        }
+
+        if (level >= Levels - 1)
+        {
+            return Texel(Levels - 1, 0, 0);
+        }
+
+        int iLevel = (int)MathF.Floor(level);
+        float delta = level - iLevel;
+        var rgbSpectrum = new RgbSpectrum();
+        rgbSpectrum.AddMul(1-delta, Triangle(iLevel, st));
+        rgbSpectrum.AddMul(delta, Triangle(iLevel + 1, st));
+        return rgbSpectrum;
+    }
+    
+    public RgbSpectrum Triangle(int level, Point2F st) 
+    {
+        level = level.Clamp(0, Levels - 1);
+        float s = st[0] * Pyramid[level].USize() - 0.5f;
+        float t = st[1] * Pyramid[level].VSize() - 0.5f;
+        int s0 = (int)MathF.Floor(s);
+        int t0 = (int)MathF.Floor(t);
+        
+        float ds = s - s0, dt = t - t0;
+        var rgbSpectrum = new RgbSpectrum();
+        rgbSpectrum.AddMul((1 - ds) * (1 - dt), Texel(level, s0, t0));
+        rgbSpectrum.AddMul((1 - ds) * dt, Texel(level, s0, t0 + 1));
+        rgbSpectrum.AddMul(ds * (1 - dt), Texel(level, s0 + 1, t0));
+        rgbSpectrum.AddMul(ds * dt      , Texel(level, s0+1, t0+1));
+        return rgbSpectrum;
+    }
+    
+    public RgbSpectrum Lookup(Point2F st, Vector2F dst0, Vector2F dst1)
+    {
+        if (!DoTrilinear)
+        {
+            throw new NotImplementedException("Elliptically Weighted Average not implemented yet !");
+        }
+
+        var maxDst0 = MathF.Max(MathF.Abs(dst0[0]), MathF.Abs(dst0[1]));
+        var maxDst1 = MathF.Max(MathF.Abs(dst1[0]), MathF.Abs(dst1[1]));
+        float width = MathF.Max(maxDst0, maxDst1);
+        return Lookup(st, 2 * width);
+    }    
 }

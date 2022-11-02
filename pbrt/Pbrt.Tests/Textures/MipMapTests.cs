@@ -55,7 +55,7 @@ public class MipMapTests
         Check.That(mipMap.Height).IsEqualTo(32);
         Check.That(mipMap.Resolution).IsEqualTo(new Point2I(32, 32));
         Check.That(mipMap.Width).IsEqualTo(32);
-        Check.That(mipMap.DoTri).IsEqualTo(false);
+        Check.That(mipMap.DoTrilinear).IsEqualTo(false);
         Check.That(mipMap.MaxAniso).IsEqualTo(8);
         Check.That(mipMap.WrapMode).IsEqualTo(ImageWrap.Repeat);
         Check.That(MipMap.WeightLutSize).IsEqualTo(128);
@@ -173,5 +173,36 @@ public class MipMapTests
         
         var texel = mipMap.Texel(0, 32, 0);
         Check.That(texel).IsEqualTo(new RgbSpectrum(0f));
+    }
+
+    [Test]
+    public void TriangleTest()
+    {
+        var mipMap = new MipMap(resolution, data, wrapMode: ImageWrap.Repeat);
+        var rgbSpectrum = mipMap.Triangle(0, new Point2F(0, 0));
+        Check.That(rgbSpectrum.C[0]).IsCloseTo(0.788f, 1e-3);
+        Check.That(rgbSpectrum.C[1]).IsCloseTo(0.788f, 1e-3);
+        Check.That(rgbSpectrum.C[2]).IsCloseTo(0.788f, 1e-3);
+    }
+
+
+    [Test]
+    [TestCase(0, 0, 0, 0.788f)]
+    [TestCase(0, 0, 1, 0.809f)]
+    [TestCase(0, 0, 0.1f, 0.768f)]
+    [TestCase(0.5f, 0.75f, 0, 0.616f)]
+    [TestCase(0.5f, 0.75f, 1, 0.809f)]
+    [TestCase(0.5f, 0.75f, 0.1f, 0.711f)]
+    [TestCase(1, 1, 0, 0.788f)]
+    [TestCase(1, 1, 1, 0.809f)]
+    [TestCase(1, 1, 0.1f, 0.768f)]
+    public void LookupTest(float s, float t, float width, float expectedRgb)
+    {
+        var mipMap = new MipMap(resolution, data, wrapMode: ImageWrap.Repeat);
+        var rgbSpectrum = mipMap.Lookup(new Point2F(s, t), width);
+        Check.That(rgbSpectrum.C[0]).IsCloseTo(expectedRgb, 1e-3);
+        Check.That(rgbSpectrum.C[1]).IsCloseTo(expectedRgb, 1e-3);
+        Check.That(rgbSpectrum.C[2]).IsCloseTo(expectedRgb, 1e-3);
+        
     }
 }
