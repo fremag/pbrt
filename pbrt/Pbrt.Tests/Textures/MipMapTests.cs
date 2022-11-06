@@ -205,4 +205,19 @@ public class MipMapTests
         Check.That(rgbSpectrum.C[2]).IsCloseTo(expectedRgb, 1e-3);
         
     }
+
+    [Test]
+    public void LookupTest()
+    {
+        var mipMap = new MipMap(resolution, data, true, 0);
+        Vector2F dst0 = new Vector2F(0, 0);
+        Vector2F dst1 = new Vector2F(0, 0);
+        var rgbSpectrum = mipMap.Lookup(new Point2F(0, 0), dst0, dst1);
+        Check.That(rgbSpectrum.C[0]).IsCloseTo(0.788f, 1e-3);
+        Check.That(rgbSpectrum.C[1]).IsCloseTo(0.788f, 1e-3);
+        Check.That(rgbSpectrum.C[2]).IsCloseTo(0.788f, 1e-3);
+
+        mipMap = new MipMap(resolution, data, false, 0);
+        Check.ThatCode(() => mipMap.Lookup(new Point2F(0, 0), dst0, dst1)).Throws<NotImplementedException>();
+    }
 }
