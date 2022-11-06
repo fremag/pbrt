@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 using pbrt.Cameras;
 using Pbrt.Demos.Configs;
@@ -87,5 +89,5 @@ namespace Pbrt.Demos
 
             return rgbs;
         }
-    }
+   }
 }

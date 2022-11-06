@@ -16,6 +16,10 @@
     <ItemGroup>
       <EmbeddedResource Include="Models\dragon_mini.ply" />
       <EmbeddedResource Include="Models\dragon_remeshed_mini.ply" />
+      <None Remove="Textures\earth.jpg" />
+      <EmbeddedResource Include="Textures\earth.jpg" />
+      <None Remove="Textures\uv_mapper.jpg" />
+      <EmbeddedResource Include="Textures\uv_mapper.jpg" />
     </ItemGroup>
 
 </Project>

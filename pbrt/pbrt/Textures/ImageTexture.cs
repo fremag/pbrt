@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using pbrt.Core;
 using pbrt.Spectrums;
 
@@ -15,8 +16,6 @@ public class ImageTexture : Texture<Spectrum>
     public float Scale { get; }
     public bool Gamma { get; }
 
-    public bool UseMipMap { get; }
-    
     public MipMap MipMap { get; }
     
     public static Dictionary<TextureInfo, MipMap> MipMapCache { get; }= new();    
@@ -25,7 +24,7 @@ public class ImageTexture : Texture<Spectrum>
         MipMapCache.Clear();
     }    
 
-    public ImageTexture(TextureMapping2D mapping, string filename, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma, bool useMipMap=false)
+    public ImageTexture(TextureMapping2D mapping, Stream stream, string filename, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
     {
         Mapping = mapping;
         Filename = filename;
@@ -34,18 +33,17 @@ public class ImageTexture : Texture<Spectrum>
         ImageWrap = imageWrap;
         Scale = scale;
         Gamma = gamma;
-        UseMipMap = useMipMap;
         
-        MipMap = GetTexture(filename, doTrilinear, maxAniso, imageWrap, scale, gamma);        
+        MipMap = GetTexture(filename, stream, doTrilinear, maxAniso, imageWrap, scale, gamma);        
     }
 
-    private static MipMap GetTexture(string filename, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
+    private static MipMap GetTexture(string filename, Stream stream, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
     {
         TextureInfo textureInfo = new TextureInfo(filename, doTrilinear, maxAniso, imageWrap, scale, gamma);
         if (!MipMapCache.TryGetValue(textureInfo, out var mipMap))
         {
             // Read Image + Init MipMap
-            var image = Image.FromFile(filename);
+            var image = Image.FromStream(stream);
             var bmp = new Bitmap(image);
             RgbSpectrum[] data = new RgbSpectrum[bmp.Height*bmp.Width];
             for (int i = 0; i < image.Height; i++)
@@ -71,12 +69,6 @@ public class ImageTexture : Texture<Spectrum>
     public override Spectrum Evaluate(SurfaceInteraction si)
     {
         var st = Mapping.Map(si, out var dstDx, out var dstDy);
-        if (!UseMipMap)
-        {
-            dstDx = Vector2F.Zero;
-            dstDy = Vector2F.Zero;
-        }
-        
         var rgbSpectrum = MipMap.Lookup(st, dstDx, dstDy);
 
         ConvertOut(rgbSpectrum, out var ret);

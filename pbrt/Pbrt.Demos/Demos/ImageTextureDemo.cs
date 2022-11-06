@@ -1,14 +1,17 @@
 using pbrt.Core;
 using Pbrt.Demos.Configs;
 using Pbrt.Demos.Scenes;
+using pbrt.Integrators;
+using pbrt.Lights;
 using pbrt.Materials;
-using pbrt.Textures;
+using pbrt.Shapes;
+using pbrt.Spectrums;
 
 namespace Pbrt.Demos.Demos
 {
     public class ImageTextureDemo : AbstractDemo
     {
-        public override string FileName => "image_texture.png";
+        public override string FileName => "Image_texture.png";
 
         public ImageTextureDemo() : base("Image Textures")
         {
@@ -23,8 +26,21 @@ namespace Pbrt.Demos.Demos
                     Height = 400
                 }
             };
+            SamplerConfig = new SamplerConfig
+            {
+                Sampler = Configs.Sampler.Halton,
+                Config = new HaltonSamplerConfig { SamplesPerPixel = 16 }
+            };
+
+            IntegratorConfig = new IntegratorConfig
+            {
+                Integrator = IntegratorType.DirectLighting,
+                Config = new DirectLightingConfig
+                {
+                    Strategy = LightStrategy.UniformSampleAll
+                }
+            };
             Scene = new ImageTextureScene();
-            //IntegratorConfig.Config.NbThreads = 1;
         }
     }
 
@@ -34,21 +50,22 @@ namespace Pbrt.Demos.Demos
         {
             var transform =Translate(tY: 1f) *  RotateY(-90f) * RotateX(90f);
             
-            string earthTexturePath = @"E:\Projects\pbrt\pbrt\Pbrt.Demos\Textures\earth.jpg";
-            TextureMapping2D mapping = new UVMapping2D(1f, 1f, 0, 0);
-            var earthTexture = new ImageTexture(mapping, earthTexturePath, true, 1, ImageWrap.Repeat, 1, true);
+            string earthTexturePath = @"Pbrt.Demos.Textures.earth.jpg";
+            var earthTexture = GetTexture(earthTexturePath);
 
             IMaterial earthMaterial = new MatteMaterial(earthTexture, MakeTexture(1f), null);
-            Sphere(0, 0, 0, 0.5f, earthMaterial, transform: transform);
+            Sphere(0, 0, 0, 0.75f, earthMaterial, transform: transform);
 
             var plane = Plane(-3, -3, 3, 3);
-            string planeTexturePath = @"E:\Projects\pbrt\pbrt\Pbrt.Demos\Textures\uv_mapper.jpg";
-            var planeTexture = new ImageTexture(mapping, planeTexturePath, true, 1, ImageWrap.Repeat, 1, true);
+            string planeTexturePath = @"Pbrt.Demos.Textures.uv_mapper.jpg";
+            var planeTexture = GetTexture(planeTexturePath);
             IMaterial planeMaterial = new MatteMaterial(planeTexture, MakeTexture(1f), null);
             AddPrimitives(plane, planeMaterial);
             
-            PointLight(0, 10, -10, 300f);
-            PointLight(0, 10, 0, 200f);
+            var lightToWorld = Translate(tY: 20) * RotateX(90);
+            IShape shape = new Disk(lightToWorld, 2f);
+            var light = new DiffuseAreaLight(lightToWorld, DefaultMediumInterface, new Spectrum(100f), 1, shape);
+            AllLights.Add(light);
         }
-    }
+   }
 }

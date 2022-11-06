@@ -234,11 +234,24 @@ namespace Pbrt.Demos.Scenes
 
         public MeshFactory ReadModel(string name)
         {
-            var assembly = Assembly.GetAssembly(typeof(Dragon2Scene));
-            using Stream stream = assembly.GetManifestResourceStream(name);
+            using Stream stream = GetResource(name);
 
             var meshFactory = new MeshFactory(stream);
             return meshFactory;
+        }
+        
+        public static Stream GetResource(string path)
+        {
+            var assembly = Assembly.GetAssembly(typeof(AbstractDemo));
+            var stream = assembly.GetManifestResourceStream(path);
+            return stream;
+        }
+        
+        public  Texture<Spectrum> GetTexture(string path)
+        {
+            TextureMapping2D mapping = new TextureUVMapping2D();
+            var stream = GetResource(path);
+            return new ImageTexture(mapping, stream, path, true, 1, ImageWrap.Repeat, 1, true);
         }
     }
 }
