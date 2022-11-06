@@ -4,6 +4,7 @@ namespace pbrt.Core
 {
     public class Vector2F
     {
+        public static Vector2F Zero { get; } = new(0 ,0);
         public float X { get; set; }
         public float Y { get; set; }
         private const double Epsilon = 1e-9;

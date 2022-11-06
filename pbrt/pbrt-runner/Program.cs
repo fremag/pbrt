@@ -23,8 +23,8 @@ namespace pbrt_runner
                 // new CylinderDemo(),
                 // new DiskDemo(),
                 // new TorusDemo(),
-                new DragonDemo(),
-                new Dragon2Demo(),
+                // new DragonDemo(),
+                // new Dragon2Demo(),
                 // new TriangleDemo(),
                 // new CloverDemo(),
                 // new LensFocalSamplerTestDemo(),
@@ -33,7 +33,8 @@ namespace pbrt_runner
                 // new AreaLightDemo(16),
                 // new AreaLightDemo(64),
                 // new AreaLightDemo(256),
-                new CubeDemo(),
+                // new CubeDemo(),
+                new ImageTextureDemo()
             };
 
             for (int i = 0; i < demos.Length; i++)

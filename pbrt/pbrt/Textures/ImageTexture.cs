@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using System.Drawing;
 using pbrt.Core;
 using pbrt.Spectrums;
 
@@ -7,23 +7,25 @@ namespace pbrt.Textures;
 
 public class ImageTexture : Texture<Spectrum>
 {
-    public TextureMapping2D Mapping { get; private set; }
-    public string Filename { get; private set; }
-    public bool DoTrilinear { get; private set; }
-    public float MaxAniso { get; private set; }
-    public ImageWrap ImageWrap { get; private set; }
-    public float Scale { get; private set; }
-    public bool Gamma { get; private set; }
+    public TextureMapping2D Mapping { get; }
+    public string Filename { get; }
+    public bool DoTrilinear { get; }
+    public float MaxAniso { get; }
+    public ImageWrap ImageWrap { get; }
+    public float Scale { get; }
+    public bool Gamma { get; }
 
-    public MipMap MipMap { get; private set; }
+    public bool UseMipMap { get; }
     
-    static Dictionary<TexInfo, MipMap> MipMapCache;    
+    public MipMap MipMap { get; }
+    
+    public static Dictionary<TextureInfo, MipMap> MipMapCache { get; }= new();    
     public static void ClearCache() 
     {
         MipMapCache.Clear();
     }    
 
-    public ImageTexture(TextureMapping2D mapping, string filename, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
+    public ImageTexture(TextureMapping2D mapping, string filename, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma, bool useMipMap=false)
     {
         Mapping = mapping;
         Filename = filename;
@@ -32,17 +34,35 @@ public class ImageTexture : Texture<Spectrum>
         ImageWrap = imageWrap;
         Scale = scale;
         Gamma = gamma;
+        UseMipMap = useMipMap;
         
         MipMap = GetTexture(filename, doTrilinear, maxAniso, imageWrap, scale, gamma);        
     }
 
-    private MipMap GetTexture(string filename, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
+    private static MipMap GetTexture(string filename, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
     {
-        TexInfo texInfo = new TexInfo(filename, doTrilinear, maxAniso, imageWrap, scale, gamma);
-        if (!MipMapCache.TryGetValue(texInfo, out var mipMap))
+        TextureInfo textureInfo = new TextureInfo(filename, doTrilinear, maxAniso, imageWrap, scale, gamma);
+        if (!MipMapCache.TryGetValue(textureInfo, out var mipMap))
         {
             // Read Image + Init MipMap
-            
+            var image = Image.FromFile(filename);
+            var bmp = new Bitmap(image);
+            RgbSpectrum[] data = new RgbSpectrum[bmp.Height*bmp.Width];
+            for (int i = 0; i < image.Height; i++)
+            {
+                for (int j = 0; j < image.Width; j++)
+                {
+                    var idx = i * image.Width + j;
+                    var color = bmp.GetPixel(j, i);
+                    var colorR = color.R/255f;
+                    var colorG = color.G/255f;
+                    var colorB = color.B/255f;
+                    var floats = new []{colorR, colorG, colorB};
+                    data[idx] = RgbSpectrum.FromRGB(floats);
+                }
+            }
+            mipMap = new MipMap(new Point2I(bmp.Width, bmp.Height), data, doTrilinear, maxAniso, imageWrap);
+            MipMapCache[textureInfo] = mipMap; 
         }
 
         return mipMap;
@@ -50,8 +70,15 @@ public class ImageTexture : Texture<Spectrum>
 
     public override Spectrum Evaluate(SurfaceInteraction si)
     {
-        Point2F st = Mapping.Map(si, out var dstDx, out var dstDy);
+        var st = Mapping.Map(si, out var dstDx, out var dstDy);
+        if (!UseMipMap)
+        {
+            dstDx = Vector2F.Zero;
+            dstDy = Vector2F.Zero;
+        }
+        
         var rgbSpectrum = MipMap.Lookup(st, dstDx, dstDy);
+
         ConvertOut(rgbSpectrum, out var ret);
         return ret;        
     }
@@ -61,43 +88,5 @@ public class ImageTexture : Texture<Spectrum>
         var floats = rgbSpectrum.ToRgb();
         var sampledSpectrum = SampledSpectrum.FromRgb(floats);
         spectrum = new Spectrum(sampledSpectrum);
-    }
-}
-
-internal class TexInfo
-{
-    private string Filename { get; }
-    private bool DoTrilinear { get; }
-    private float MaxAniso { get; }
-    private ImageWrap ImageWrap { get; }
-    private float Scale { get; }
-    private bool Gamma { get; }
-
-    public TexInfo(string filename, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
-    {
-        Filename = filename;
-        DoTrilinear = doTrilinear;
-        MaxAniso = maxAniso;
-        ImageWrap = imageWrap;
-        Scale = scale;
-        Gamma = gamma;
-    }
-
-    public bool Equals(TexInfo other)
-    {
-        return Filename == other.Filename && DoTrilinear == other.DoTrilinear && MaxAniso.Equals(other.MaxAniso) && ImageWrap == other.ImageWrap && Scale.Equals(other.Scale) && Gamma == other.Gamma;
-    }
-
-    public override bool Equals(object obj)
-    {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((TexInfo)obj);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Filename, DoTrilinear, MaxAniso, (int)ImageWrap, Scale, Gamma);
     }
 }

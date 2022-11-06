@@ -63,9 +63,13 @@ namespace Pbrt.Demos.Scenes
         public Transform RotateY(float deg) => Transform.RotateY(deg);
         public Transform RotateZ(float deg) => Transform.RotateZ(deg);
 
-        public GeometricPrimitive Sphere(float x, float y, float z, float radius, IMaterial material, AreaLight areaLight = null, MediumInterface mediumInterface = null)
+        public GeometricPrimitive Sphere(float x, float y, float z, float radius, IMaterial material, AreaLight areaLight = null, MediumInterface mediumInterface = null, Transform transform = null)
         {
             Transform objectToWorld = Translate(x, y, z);
+            if (transform != null)
+            {
+                objectToWorld = transform * objectToWorld;
+            }
             var sphere = new Sphere(objectToWorld, radius);
 
             var primitiveMediumInterface = mediumInterface ?? DefaultMediumInterface;
@@ -97,15 +101,26 @@ namespace Pbrt.Demos.Scenes
 
         public TriangleMesh Plane(float x0, float z0, float x1, float z1)
         {
-            int[] indices = {0, 1, 2, 0, 3, 2};
+            int[] indices = {0, 1, 2, 3, 4, 5};
             Point3F[] points = {
                 new(x0, 0, z0), 
-                new(x0, 0, z1 ), 
+                new(x0, 0, z1), 
                 new(x1, 0, z1), 
-                new(x1, 0, z0) 
+                new(x0, 0, z0), 
+                new(x1, 0, z0), 
+                new(x1, 0, z1) 
+            };
+
+            Point2F[] uv = {
+                new(0, 1), 
+                new(0, 0), 
+                new(1, 0), 
+                new(0, 1),
+                new(1, 1),
+                new(1, 0),
             };
             
-            var plane = new TriangleMesh(Translate(), 2, indices, 4, points, null, null, null, null, null, null);
+            var plane = new TriangleMesh(Translate(), 2, indices, 6, points, null, null, uv, null, null, null);
             return plane;
         }
         
