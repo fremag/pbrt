@@ -16,7 +16,7 @@ namespace pbrt_runner
         {
             AbstractDemo[] demos =
             {
-//                new HelloWorldDemo(),
+                // new HelloWorldDemo(),
                 // new CheckerPlaneDemo(),
                 // new MirrorDemo(),
                 // new GlassDemo(),
@@ -34,7 +34,8 @@ namespace pbrt_runner
                 // new AreaLightDemo(64),
                 // new AreaLightDemo(256),
                 // new CubeDemo(),
-                new ImageTextureDemo()
+                // new ImageTextureDemo(),
+                new MetalDemo()
             };
 
             for (int i = 0; i < demos.Length; i++)

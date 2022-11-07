@@ -20,6 +20,18 @@
       <EmbeddedResource Include="Textures\earth.jpg" />
       <None Remove="Textures\uv_mapper.jpg" />
       <EmbeddedResource Include="Textures\uv_mapper.jpg" />
+      <None Remove="Metals\Ag.eta.spd" />
+      <EmbeddedResource Include="Metals\Ag.eta.spd" />
+      <None Remove="Metals\Ag.k.spd" />
+      <EmbeddedResource Include="Metals\Ag.k.spd" />
+      <None Remove="Metals\Al.eta.spd" />
+      <EmbeddedResource Include="Metals\Al.eta.spd" />
+      <None Remove="Metals\Al.k.spd" />
+      <EmbeddedResource Include="Metals\Al.k.spd" />
+      <None Remove="Metals\Au.eta.spd" />
+      <EmbeddedResource Include="Metals\Au.eta.spd" />
+      <None Remove="Metals\Au.k.spd" />
+      <EmbeddedResource Include="Metals\Au.k.spd" />
     </ItemGroup>
 
 </Project>
