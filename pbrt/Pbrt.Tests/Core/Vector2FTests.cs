@@ -165,5 +165,11 @@ namespace Pbrt.Tests.Core
         {
             Check.That(new Vector2F(1, 2).ToString()).IsEqualTo("vx[1] vy[2]");
         }
+
+        [Test]
+        public void ZeroTest()
+        {
+            Check.That(Vector2F.Zero).IsEqualTo(new Vector2F(0,0));
+        }
     }
 }
