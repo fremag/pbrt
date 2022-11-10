@@ -44,7 +44,9 @@ public class MetalMaterial : Material
 
         float uRough = URoughness != null ? URoughness.Evaluate(si) : Roughness.Evaluate(si);
         float vRough = VRoughness != null ? VRoughness.Evaluate(si) : Roughness.Evaluate(si);
-        if (RemapRoughness) {
+        
+        if (RemapRoughness) 
+        {
             uRough = TrowbridgeReitzDistribution.RoughnessToAlpha(uRough);
             vRough = TrowbridgeReitzDistribution.RoughnessToAlpha(vRough);
         }
