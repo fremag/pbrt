@@ -253,5 +253,36 @@ namespace Pbrt.Demos.Scenes
             var stream = GetResource(path);
             return new ImageTexture(mapping, stream, path, true, 1, ImageWrap.Repeat, 1, true);
         }
+        
+
+        public ConstantTexture<Spectrum> ReadSpectrum(string spectrumPath)
+        {
+            using var stream = GetResource(spectrumPath);
+            using var reader = new StreamReader(stream);
+            var lines = reader.ReadToEnd()
+                .Split(Environment.NewLine)
+                .Where(line => ! string.IsNullOrEmpty(line))
+                .Select(line => line.Split(' '))
+                .ToArray();
+            var waveLengths = lines.Select(items => float.Parse(items[0])).ToArray();
+            var values = lines.Select(items => float.Parse(items[1])).ToArray();
+            var spectrum = Spectrum.FromSampledSpectrum(waveLengths, values, waveLengths.Length);
+            return new ConstantTexture<Spectrum>(spectrum);
+        } 
+        
+        public IMaterial GetMetalMaterial(string name, float roughnessValue = 0.01f)
+        {
+            var eta = ReadSpectrum($@"Pbrt.Demos.Metals.{name}.eta.spd");
+            var k = ReadSpectrum($@"Pbrt.Demos.Metals.{name}.k.spd");
+            
+            Texture<float> roughness = new ConstantTexture<float>(roughnessValue);
+            Texture<float> uRoughness = null;
+            Texture<float> vRoughness = null;
+            Texture<float> bumpMap = null;
+            bool remapRoughness = true;
+            var material = new MetalMaterial(eta, k, roughness, uRoughness, vRoughness, bumpMap, remapRoughness);
+            return material;
+        }
+        
     }
 }

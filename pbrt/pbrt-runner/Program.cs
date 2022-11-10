@@ -35,7 +35,8 @@ namespace pbrt_runner
                 // new AreaLightDemo(256),
                 // new CubeDemo(),
                 // new ImageTextureDemo(),
-                new MetalDemo()
+                // new MetalDemo(),
+                new DragonGoldDemo(),
             };
 
             for (int i = 0; i < demos.Length; i++)
