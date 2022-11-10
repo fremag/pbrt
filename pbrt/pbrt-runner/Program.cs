@@ -7,10 +7,10 @@ using Pbrt.Demos.Demos;
 
 namespace pbrt_runner
 {
-    public class Program
+    public static class Program
     {
         private static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
-        private static string ProjectDir = @"E:\Projects\pbrt\Images";
+        private static readonly string ProjectDir = @"E:\Projects\pbrt\Images";
 
         static void Main(string[] args)
         {
@@ -36,7 +36,10 @@ namespace pbrt_runner
                 // new CubeDemo(),
                 // new ImageTextureDemo(),
                 // new MetalDemo(),
-                new DragonGoldDemo(),
+                // new DragonGoldDemo(),
+                new InfinityLightMorningDemo(),
+                new InfinityLightDayDemo(),
+                new InfinityLightSunsetDemo(),
             };
 
             for (int i = 0; i < demos.Length; i++)

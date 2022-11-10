@@ -19,6 +19,9 @@ namespace pbrt.Spectrums
         public Spectrum(float v) : base(NSpectralSamples, v)
         { }
 
+        public Spectrum(RgbSpectrum r, SpectrumType t) : base(r, t)
+        { } 
+
         public static Spectrum FromSampledSpectrum(float[] lambdas, float[] values, int n) => new Spectrum(FromSampled(lambdas, values, n));
 
         public static Spectrum Lerp(float t, Spectrum spec1, Spectrum spec2)

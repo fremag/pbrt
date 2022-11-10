@@ -37,7 +37,7 @@ public class ImageTexture : Texture<Spectrum>
         MipMap = GetTexture(filename, stream, doTrilinear, maxAniso, imageWrap, scale, gamma);        
     }
 
-    private static MipMap GetTexture(string filename, Stream stream, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
+    public static MipMap GetTexture(string filename, Stream stream, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
     {
         TextureInfo textureInfo = new TextureInfo(filename, doTrilinear, maxAniso, imageWrap, scale, gamma);
         if (!MipMapCache.TryGetValue(textureInfo, out var mipMap))

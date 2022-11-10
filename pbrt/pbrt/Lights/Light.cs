@@ -34,7 +34,6 @@ namespace pbrt.Lights
             // Warn if light has transformation with non-uniform scale
         }
 
-        
         public virtual void Preprocess(Scene scene)
         {
         }

@@ -32,6 +32,12 @@
       <EmbeddedResource Include="Metals\Au.eta.spd" />
       <None Remove="Metals\Au.k.spd" />
       <EmbeddedResource Include="Metals\Au.k.spd" />
+      <None Remove="Lights\skylight-day.png" />
+      <EmbeddedResource Include="Lights\skylight-day.png" />
+      <None Remove="Lights\skylight-morn.png" />
+      <EmbeddedResource Include="Lights\skylight-morn.png" />
+      <None Remove="Lights\skylight-sunset.png" />
+      <EmbeddedResource Include="Lights\skylight-sunset.png" />
     </ItemGroup>
 
 </Project>

@@ -56,5 +56,16 @@ namespace pbrt.Spectrums
             C[1] += f * rgbSpectrum.C[1];
             C[2] += f * rgbSpectrum.C[2];
         }
+        
+        public float Y() 
+        {
+            float yy = 0f;
+            for (int i = 0; i < SampledSpectrum.NSpectralSamples; ++i)
+            {
+                yy += XyzUtils.Y.C[i] * C[i];
+            }
+
+            return yy * (SampledSpectrum.SampledLambdaEnd - SampledSpectrum.SampledLambdaStart) / (XyzUtils.CIE_Y_integral * SampledSpectrum.NSpectralSamples);
+        }        
     }
 }
