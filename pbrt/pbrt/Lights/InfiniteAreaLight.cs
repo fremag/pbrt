@@ -8,10 +8,11 @@ namespace pbrt.Lights;
 
 public class InfiniteAreaLight : Light
 {
-    public  MipMap Lmap { get; private set;}
+    public MipMap Lmap { get; private set;}
     public Point3F WorldCenter { get; private set;}
     public float WorldRadius { get; private set;}
     public Distribution2D Distribution { get; private set; }
+    public SampledSpectrum L { get; set; }
 
     protected InfiniteAreaLight(Transform lightToWorld, int nSamples) : base(LightFlags.Infinite, lightToWorld, null, nSamples)
     {
@@ -33,7 +34,7 @@ public class InfiniteAreaLight : Light
     private void Init(MipMap mipMap, SampledSpectrum l)
     {
         Lmap = mipMap;
-
+        L = l;
         // Initialize sampling PDFs for infinite area light 
         // Compute scalar - valued image img from environment map 
         int width = mipMap.Resolution.X;
@@ -52,7 +53,6 @@ public class InfiniteAreaLight : Light
                 var floats = rgbSpectrum.ToRgb();
                 var sampledSpectrum = SampledSpectrum.FromRgb(floats, SpectrumType.Illuminant);
                 var spectrum = new Spectrum(sampledSpectrum);
-                spectrum.Mul(l);
                 
                 img[u + v * width] = spectrum.Y();
                 img[u + v * width] *= sinTheta;
@@ -68,6 +68,7 @@ public class InfiniteAreaLight : Light
         var rgbSpectrum = Lmap.Lookup(new Point2F(.5f, .5f), .5f);
         var f = MathF.PI * WorldRadius * WorldRadius;
         rgbSpectrum.Mul(f);
+        rgbSpectrum.Mul(L);
         return new Spectrum(rgbSpectrum, SpectrumType.Illuminant);
     }
 
@@ -75,7 +76,9 @@ public class InfiniteAreaLight : Light
     {
         var w = WorldToLight.Apply(ray.D).Normalized();
         Point2F st = new(MathUtils.SphericalPhi(w) * MathUtils.Inv2PI, MathUtils.SphericalTheta(w) * MathUtils.InvPI);
-        return new Spectrum(Lmap.Lookup(st, 0), SpectrumType.Illuminant);
+        var rgbSpectrum = Lmap.Lookup(st, 0);
+        //rgbSpectrum.Mul(L);
+        return new Spectrum(rgbSpectrum, SpectrumType.Illuminant);
     }    
 
     public override Spectrum Sample_Li(Interaction interaction, Point2F u, out Vector3F wi, out float pdf, out VisibilityTester vis)
@@ -108,7 +111,10 @@ public class InfiniteAreaLight : Light
 
         // Return radiance value for infinite light direction 
         vis = new VisibilityTester(interaction, new Interaction(interaction.P + wi * (2 * WorldRadius), interaction.Time, MediumInterface));
-        return new Spectrum(Lmap.Lookup(uv, 0), SpectrumType.Illuminant);    
+        var rgbSpectrum = Lmap.Lookup(uv, 0);
+        rgbSpectrum.Mul(L);
+
+        return new Spectrum(rgbSpectrum, SpectrumType.Illuminant);    
     }
 
     public override float Pdf_Li(Interaction interaction, Vector3F wi)

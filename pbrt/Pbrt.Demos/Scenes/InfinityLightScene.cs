@@ -11,7 +11,7 @@ public class InfinityLightScene : DemoScene
         Floor();
         var lightPath = $"Pbrt.Demos.Lights.{lightName}.png";
         var stream = GetResource(lightPath); 
-        InfiniteAreaLight light = new InfiniteAreaLight(lightPath, stream, new Spectrum(1000), RotateY(rotYDeg)* RotateX(-90));
+        InfiniteAreaLight light = new InfiniteAreaLight(lightPath, stream, new Spectrum(2), RotateY(rotYDeg)* RotateX(-90));
         AllLights.Add(light);
     }
 }

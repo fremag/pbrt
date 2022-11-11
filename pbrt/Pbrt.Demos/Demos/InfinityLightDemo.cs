@@ -26,7 +26,7 @@ public abstract class AbstractInfinityLightDemo : AbstractDemo
         SamplerConfig = new SamplerConfig
         {
             Sampler = Configs.Sampler.Halton,
-            Config = new HaltonSamplerConfig { SamplesPerPixel = 1 << 4 }
+            Config = new HaltonSamplerConfig { SamplesPerPixel = 1 << 5 }
         };
 
         IntegratorConfig = new IntegratorConfig
