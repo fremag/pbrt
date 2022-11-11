@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -44,7 +45,22 @@ namespace pbrt.Integrators
             Point2I nTiles = new Point2I((sampleExtent.X + TileSize - 1) / TileSize, (sampleExtent.Y + TileSize - 1) / TileSize);
             var nbTiles = nTiles.X * nTiles.Y;
             var tilesId = Enumerable.Range(0, nbTiles).ToArray();
-            MathUtils.Shuffle(tilesId, 0, nbTiles, 1, new Random(0));
+
+            var rand = new Random(0);
+                
+            double Dist(int i)
+            {
+                var centerX = nTiles.X / 2;
+                var centerY = nTiles.Y / 2;
+                var tileX = i % nTiles.X;
+                var tileY = i / nTiles.X;
+                var dX = tileX - centerX;
+                var dY = tileY - centerY;
+                var d2 = dX * dX + dY * dY;
+                return d2 * rand.NextSingle();
+            }
+
+            tilesId = tilesId.OrderBy(Dist).ToArray();
             
             void RenderTile(int tile)
             {
@@ -59,10 +75,20 @@ namespace pbrt.Integrators
                 OnTileRendered(tile, nbTiles, sw.Elapsed);
             }
 
-            Parallel.For(0, nbTiles,
-                    new ParallelOptions { MaxDegreeOfParallelism = NbThreads },
-                    RenderTile)
-                ;
+            var rangePartitioner = Partitioner.Create(0, tilesId.Length, 8);
+            var options = new ParallelOptions
+            {
+                MaxDegreeOfParallelism = NbThreads 
+            };
+            
+            Parallel.ForEach(rangePartitioner, options, (range, _) =>
+                {
+                    for (int i = range.Item1; i < range.Item2; i++)
+                    {
+                        RenderTile(i);
+                    }
+                }
+            );
 
             return GetRgb();
         }

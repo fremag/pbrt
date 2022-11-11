@@ -36,10 +36,10 @@ namespace pbrt_runner
                 // new CubeDemo(),
                 // new ImageTextureDemo(),
                 // new MetalDemo(),
-                // new DragonGoldDemo(),
-                new InfinityLightMorningDemo(),
-                new InfinityLightDayDemo(),
-                new InfinityLightSunsetDemo(),
+                new DragonGoldDemo(),
+                // new InfinityLightMorningDemo(),
+                // new InfinityLightDayDemo(),
+                // new InfinityLightSunsetDemo(),
             };
 
             for (int i = 0; i < demos.Length; i++)
