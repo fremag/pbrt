@@ -8,6 +8,17 @@ namespace Pbrt.Tests.Spectrums
     public class SpectrumTests
     {
         [Test]
+        public void BasicTest()
+        {
+            RgbSpectrum rgb = new RgbSpectrum(new []{1f,0,0});
+            var spectrum = new Spectrum(rgb, SpectrumType.Reflectance);
+            var rgbValues = spectrum.ToRgbSpectrum().ToRgb();
+            Check.That(rgbValues[0]).IsCloseTo(1f, 0.2f);
+            Check.That(rgbValues[1]).IsCloseTo(0f, 0.1f);
+            Check.That(rgbValues[2]).IsCloseTo(0f, 0.1f);
+        }
+        
+        [Test]
         public void AddTest()
         {
             var spec1 = new Spectrum(new[] { 1.23f, 2.34f });
@@ -125,6 +136,5 @@ namespace Pbrt.Tests.Spectrums
             Check.That(Spectrum.Lerp(1, spec1, spec2)).IsEqualTo(new Spectrum(new[] { 200, 500f }));
             Check.That(Spectrum.Lerp(0.5f, spec1, spec2)).IsEqualTo(new Spectrum(new[] { 150, 450f }));
         }
-        
     }
 }

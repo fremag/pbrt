@@ -11,6 +11,9 @@ namespace Pbrt.Tests
         [SetUp]
         public void Setup()
         {
+            Check.That(MathUtils.InvPI).IsCloseTo(1/MathF.PI, 1e-9f);
+            Check.That(MathUtils.Inv2PI).IsCloseTo(0.5f/MathF.PI, 1e-9f);
+            Check.That(MathUtils.Inv4PI).IsCloseTo(0.25f/MathF.PI, 1e-9f);
         }
 
         [Test]

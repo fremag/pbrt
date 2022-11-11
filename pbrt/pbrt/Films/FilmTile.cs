@@ -61,7 +61,7 @@ namespace pbrt.Films
                     
                     // Update pixel values with filtered sample contribution 
                     FilmTilePixel pixel = GetPixel(x, y);
-                    pixel.contribSum.AddMul(L, sampleWeight * filterWeight);
+                    pixel.contribSum.Add(sampleWeight * filterWeight, L);
                     pixel.filterWeightSum += filterWeight;
                 }
             }            

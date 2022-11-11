@@ -97,13 +97,5 @@ namespace pbrt.Spectrums
 
         public static Spectrum operator *(Spectrum spec1, float a) => a * spec1;
         public static Spectrum operator -(Spectrum spec) => -1 * spec;
-
-        public void AddMul(Spectrum spectrum, float weight)
-        {
-            for (var i = 0; i < NSpectrumSamples; ++i)
-            {
-                C[i] += weight * spectrum.C[i];
-            }
-        }
     }
 }

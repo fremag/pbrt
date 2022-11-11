@@ -12,7 +12,7 @@ public class InfiniteAreaLight : Light
     public Point3F WorldCenter { get; private set;}
     public float WorldRadius { get; private set;}
     public Distribution2D Distribution { get; private set; }
-    public SampledSpectrum L { get; set; }
+    public SampledSpectrum L { get; private set; }
 
     protected InfiniteAreaLight(Transform lightToWorld, int nSamples) : base(LightFlags.Infinite, lightToWorld, null, nSamples)
     {
@@ -27,7 +27,7 @@ public class InfiniteAreaLight : Light
 
     public InfiniteAreaLight(string filename, Stream stream, SampledSpectrum l, Transform lightToWorld, int nSamples = 1) : this(lightToWorld, nSamples)
     {
-        var mipMap = ImageTexture.GetTexture(filename, stream, true, 1, ImageWrap.Repeat, 1, true);
+        var mipMap = MipMap.GetMipMap(filename, stream, true, 1, ImageWrap.Repeat, 1, true);
         Init(mipMap, l);
     }
     

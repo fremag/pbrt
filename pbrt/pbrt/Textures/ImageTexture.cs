@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using pbrt.Core;
 using pbrt.Spectrums;
@@ -17,12 +16,6 @@ public class ImageTexture : Texture<Spectrum>
     public bool Gamma { get; }
 
     public MipMap MipMap { get; }
-    
-    public static Dictionary<TextureInfo, MipMap> MipMapCache { get; }= new();    
-    public static void ClearCache() 
-    {
-        MipMapCache.Clear();
-    }    
 
     public ImageTexture(TextureMapping2D mapping, Stream stream, string filename, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
     {
@@ -34,36 +27,7 @@ public class ImageTexture : Texture<Spectrum>
         Scale = scale;
         Gamma = gamma;
         
-        MipMap = GetTexture(filename, stream, doTrilinear, maxAniso, imageWrap, scale, gamma);        
-    }
-
-    public static MipMap GetTexture(string filename, Stream stream, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
-    {
-        TextureInfo textureInfo = new TextureInfo(filename, doTrilinear, maxAniso, imageWrap, scale, gamma);
-        if (!MipMapCache.TryGetValue(textureInfo, out var mipMap))
-        {
-            // Read Image + Init MipMap
-            var image = Image.FromStream(stream);
-            var bmp = new Bitmap(image);
-            RgbSpectrum[] data = new RgbSpectrum[bmp.Height*bmp.Width];
-            for (int i = 0; i < image.Height; i++)
-            {
-                for (int j = 0; j < image.Width; j++)
-                {
-                    var idx = i * image.Width + j;
-                    var color = bmp.GetPixel(j, i);
-                    var colorR = color.R/255f;
-                    var colorG = color.G/255f;
-                    var colorB = color.B/255f;
-                    var floats = new []{colorR, colorG, colorB};
-                    data[idx] = RgbSpectrum.FromRGB(floats);
-                }
-            }
-            mipMap = new MipMap(new Point2I(bmp.Width, bmp.Height), data, doTrilinear, maxAniso, imageWrap);
-            MipMapCache[textureInfo] = mipMap; 
-        }
-
-        return mipMap;
+        MipMap = MipMap.GetMipMap(filename, stream, doTrilinear, maxAniso, imageWrap, scale, gamma);        
     }
 
     public override Spectrum Evaluate(SurfaceInteraction si)

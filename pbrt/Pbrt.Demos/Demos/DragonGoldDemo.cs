@@ -29,7 +29,7 @@ namespace Pbrt.Demos.Demos
                 Integrator = IntegratorType.DirectLighting,
                 Config = new DirectLightingConfig
                 {
-                    Strategy = LightStrategy.UniformSampleAll
+                    Strategy = LightStrategy.UniformSampleAll, NbThreads = 1
                 }
             };
             

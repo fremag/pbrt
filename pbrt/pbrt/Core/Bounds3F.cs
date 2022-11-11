@@ -4,9 +4,19 @@ namespace pbrt.Core
 {
     public class Bounds3F
     {
-        public Point3F PMin { get; private set; }
-        public Point3F PMax { get; private set; }
+        private static float ErrGamma { get; } = 1 + 2 * MathUtils.Gamma(3);
+        public Point3F PMin {
+            get => pMinMax[0];
+            private init => pMinMax[0] = value;
+        }
+
+        public Point3F PMax
+        {
+            get => pMinMax[1];
+            private init => pMinMax[1] = value;
+        }
         
+        private readonly Point3F[] pMinMax = new Point3F[2]; 
         public Bounds3F()
         {
             float minNum = float.MinValue;
@@ -27,18 +37,8 @@ namespace pbrt.Core
             PMax = new Point3F(MathF.Max(p1.X, p2.X), MathF.Max(p1.Y, p2.Y), MathF.Max(p1.Z, p2.Z));
         }
 
-        public Point3F this[int i] {
-            get
-            {
-                return i switch
-                {
-                    0 => PMin,
-                    1 => PMax,
-                    _ => throw new IndexOutOfRangeException()
-                };
-            }
-        }
-        
+        public Point3F this[int i] => pMinMax[i];
+
         public Point3F Corner(int corner) => new Point3F(this[corner & 1].X, this[(corner & 2) == 0 ? 1 : 0].Y, this[(corner & 4) == 0 ? 1 : 0].Z);
 
         public Bounds3F Union(Point3F p) {
@@ -199,9 +199,8 @@ namespace pbrt.Core
             float tyMax = (bounds[1 - dirIsNeg[1]].Y - ray.O.Y) * invDir.Y;
 
             // Update _tMax_ and _tyMax_ to ensure robust bounds intersection
-            var errGamma = 1 + 2 * MathUtils.Gamma(3);
-            tMax *= errGamma;
-            tyMax *= errGamma;
+            tMax *= ErrGamma;
+            tyMax *= ErrGamma;
             if (tMin > tyMax || tyMin > tMax) return false;
             if (tyMin > tMin) tMin = tyMin;
             if (tyMax < tMax) tMax = tyMax;
@@ -211,7 +210,7 @@ namespace pbrt.Core
             float tzMax = (bounds[1 - dirIsNeg[2]].Z - ray.O.Z) * invDir.Z;
 
             // Update _tzMax_ to ensure robust bounds intersection
-            tzMax *= errGamma;
+            tzMax *= ErrGamma;
             if (tMin > tzMax || tzMin > tMax) return false;
             if (tzMin > tMin) tMin = tzMin;
             if (tzMax < tMax) tMax = tzMax;

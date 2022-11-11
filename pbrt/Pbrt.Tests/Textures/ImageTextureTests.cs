@@ -37,29 +37,6 @@ public class ImageTextureTests
     }
 
     [Test]
-    public void CacheTest()
-    {
-        byte[] imgBytes = Convert.FromBase64String(img_32x32);
-        using var stream = new MemoryStream(imgBytes, 0, imgBytes.Length);
-
-        TextureMapping2D mapping = new UVMapping2D(1, 1, 0, 0);
-        var imgTexture = new ImageTexture(mapping, stream, "img.png", true, 1, ImageWrap.Black, 1.23f, true);
-
-        var imgTexture2 = new ImageTexture(mapping, stream, "img.png", true, 1, ImageWrap.Black, 1.23f, true);
-        Check.That(imgTexture.MipMap).IsSameReferenceAs(imgTexture2.MipMap);
-
-        var imgTexture3 = new ImageTexture(mapping, stream, "img.png", true, 1, ImageWrap.Black, 1.23f, false);
-        Check.That(imgTexture.MipMap).Not.IsSameReferenceAs(imgTexture3.MipMap);
-
-        Check.That(ImageTexture.MipMapCache).CountIs(2);
-        Check.That(ImageTexture.MipMapCache.Values).Contains(imgTexture.MipMap);
-        Check.That(ImageTexture.MipMapCache.Values).Contains(imgTexture3.MipMap);
-        
-        ImageTexture.ClearCache();
-        Check.That(ImageTexture.MipMapCache).IsEmpty();
-    }
-
-    [Test]
     public void EvaluateTest()
     {
         var imgTexture = new ImageTexture(mapping, stream, "img.png", true, 1, ImageWrap.Black, 1.23f, true);
@@ -74,5 +51,11 @@ public class ImageTextureTests
         Check.That(rgb[0]).IsCloseTo(0.24210f, 1e-4);
         Check.That(rgb[1]).IsCloseTo(0.19143f, 1e-4);
         Check.That(rgb[2]).IsCloseTo(0.18230f, 1e-4);
+    }
+
+    [TearDown]
+    public void TearDown()
+    {
+        MipMap.ClearCache();
     }
 }

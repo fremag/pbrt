@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using pbrt.Core;
 using pbrt.Spectrums;
 
@@ -21,6 +23,13 @@ public class ResampleWeight
 
 public class MipMap
 {
+    
+    public static Dictionary<TextureInfo, MipMap> MipMapCache { get; }= new();    
+    public static void ClearCache() 
+    {
+        MipMapCache.Clear();
+    }    
+
     public Point2I Resolution { get; private set; }
     public RgbSpectrum[] Data { get; }
     public bool DoTrilinear { get; }
@@ -76,6 +85,36 @@ public class MipMap
         // Initialize EWA filter weights if needed                 
     }
 
+    public static MipMap GetMipMap(string filename, Stream stream, bool doTrilinear, float maxAniso, ImageWrap imageWrap, float scale, bool gamma)
+    {
+        TextureInfo textureInfo = new TextureInfo(filename, doTrilinear, maxAniso, imageWrap, scale, gamma);
+        if (!MipMapCache.TryGetValue(textureInfo, out var mipMap))
+        {
+            // Read Image + Init MipMap
+            var image = Image.FromStream(stream);
+            var bmp = new Bitmap(image);
+            RgbSpectrum[] data = new RgbSpectrum[bmp.Height*bmp.Width];
+            for (int i = 0; i < image.Height; i++)
+            {
+                for (int j = 0; j < image.Width; j++)
+                {
+                    var idx = i * image.Width + j;
+                    var color = bmp.GetPixel(j, i);
+                    var colorR = color.R/255f;
+                    var colorG = color.G/255f;
+                    var colorB = color.B/255f;
+                    var floats = new []{colorR, colorG, colorB};
+                    data[idx] = RgbSpectrum.FromRGB(floats);
+                }
+            }
+            mipMap = new MipMap(new Point2I(bmp.Width, bmp.Height), data, doTrilinear, maxAniso, imageWrap);
+            MipMapCache[textureInfo] = mipMap; 
+        }
+
+        return mipMap;
+    }
+
+    
     public RgbSpectrum Texel(int level, int s, int t)
     {
         var blockedArray = Pyramid[level];

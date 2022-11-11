@@ -220,4 +220,27 @@ public class MipMapTests
         mipMap = new MipMap(resolution, data, false, 0);
         Check.ThatCode(() => mipMap.Lookup(new Point2F(0, 0), dst0, dst1)).Throws<NotImplementedException>();
     }
+
+    [Test]
+    public void CacheTest()
+    {
+        byte[] imgBytes = Convert.FromBase64String(img_32x32);
+        using var stream = new MemoryStream(imgBytes, 0, imgBytes.Length);
+
+        TextureMapping2D mapping = new UVMapping2D(1, 1, 0, 0);
+        var imgTexture = new ImageTexture(mapping, stream, "img.png", true, 1, ImageWrap.Black, 1.23f, true);
+
+        var imgTexture2 = new ImageTexture(mapping, stream, "img.png", true, 1, ImageWrap.Black, 1.23f, true);
+        Check.That(imgTexture.MipMap).IsSameReferenceAs(imgTexture2.MipMap);
+
+        var imgTexture3 = new ImageTexture(mapping, stream, "img.png", true, 1, ImageWrap.Black, 1.23f, false);
+        Check.That(imgTexture.MipMap).Not.IsSameReferenceAs(imgTexture3.MipMap);
+
+        Check.That(MipMap.MipMapCache).CountIs(2);
+        Check.That(MipMap.MipMapCache.Values).Contains(imgTexture.MipMap);
+        Check.That(MipMap.MipMapCache.Values).Contains(imgTexture3.MipMap);
+        
+        MipMap.ClearCache();
+        Check.That(MipMap.MipMapCache).IsEmpty();
+    }
 }
