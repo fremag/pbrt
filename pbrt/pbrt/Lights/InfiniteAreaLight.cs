@@ -14,18 +14,7 @@ public class InfiniteAreaLight : Light
     public Distribution2D Distribution { get; private set; }
     public SampledSpectrum L { get; private set; }
 
-    protected InfiniteAreaLight(Transform lightToWorld, int nSamples) : base(LightFlags.Infinite, lightToWorld, null, nSamples)
-    {
-        
-    }
-    
-    public InfiniteAreaLight(MipMap mipMap, Transform lightToWorld, int nSamples)
-        : this(lightToWorld, nSamples)
-    {
-        Init(mipMap, new Spectrum(1));
-    }
-
-    public InfiniteAreaLight(string filename, Stream stream, SampledSpectrum l, Transform lightToWorld, int nSamples = 1) : this(lightToWorld, nSamples)
+    public InfiniteAreaLight(string filename, Stream stream, SampledSpectrum l, Transform lightToWorld, int nSamples = 1) : base(LightFlags.Infinite, lightToWorld, null, nSamples)
     {
         var mipMap = MipMap.GetMipMap(filename, stream, true, 1, ImageWrap.Repeat, 1, true);
         Init(mipMap, l);
@@ -117,12 +106,17 @@ public class InfiniteAreaLight : Light
         return new Spectrum(rgbSpectrum, SpectrumType.Illuminant);    
     }
 
-    public override float Pdf_Li(Interaction interaction, Vector3F wi)
+    public override float Pdf_Li(Interaction interaction, Vector3F w)
     {
-        Vector3F w = WorldToLight.Apply(wi);
-        float theta = MathUtils.SphericalTheta(wi), phi = MathUtils.SphericalPhi(wi);
+        Vector3F wi = WorldToLight.Apply(w);
+        float theta = MathUtils.SphericalTheta(wi);
+        float phi = MathUtils.SphericalPhi(wi);
         float sinTheta = MathF.Sin(theta);
-        if (sinTheta == 0) return 0;
+        if (sinTheta == 0)
+        {
+            return 0;
+        }
+
         return Distribution.Pdf(new Point2F(phi * MathUtils.Inv2PI, theta * MathUtils.InvPI)) / (2 * MathF.PI * MathF.PI * sinTheta);
     }
 
