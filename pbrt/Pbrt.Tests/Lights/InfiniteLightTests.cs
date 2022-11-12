@@ -45,8 +45,10 @@ public class InfiniteLightTests
     public void PowerTest()
     {
         var power = light.Power();
-        var expectedPower = SampledSpectrum.FromRgb(new[] { 34.3275375f, 34.3275375f, 34.3275375f }, SpectrumType.Illuminant);
-        Check.That(power.C).ContainsExactly(expectedPower.C);
+        var rgb = power.ToRgb();
+        Check.That(rgb[0]).IsCloseTo(31.6716805f, 1e-5f);
+        Check.That(rgb[1]).IsCloseTo(31.5899811f, 1e-5f);
+        Check.That(rgb[2]).IsCloseTo(31.3259811f, 1e-5f);
     }
 
     [Test]
@@ -89,7 +91,5 @@ public class InfiniteLightTests
         Check.That(rgb[0]).IsCloseTo(1.45448112f, 1e-5f);
         Check.That(rgb[1]).IsCloseTo(1.45072901f, 1e-5f);
         Check.That(rgb[2]).IsCloseTo(1.438604240f, 1e-5f);
-        
-
     }
 }
