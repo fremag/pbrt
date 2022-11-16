@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using NFluent;
 using NSubstitute;
 using NUnit.Framework;
@@ -91,5 +92,28 @@ public class InfiniteLightTests
         Check.That(rgb[0]).IsCloseTo(1.45448112f, 1e-5f);
         Check.That(rgb[1]).IsCloseTo(1.45072901f, 1e-5f);
         Check.That(rgb[2]).IsCloseTo(1.438604240f, 1e-5f);
+    }
+
+    [Test]
+    public void PdfZeroTest()
+    {
+        const int n = 4;
+        Point2I resolution = new (n, n);
+        RgbSpectrum[] data = Enumerable.Range(0, n*n).Select(_ => new RgbSpectrum(0)).ToArray();
+        data[n*(n-1)] = new RgbSpectrum(1);
+        var mipMap = new MipMap(resolution, data, wrapMode: ImageWrap.Repeat);
+        MipMap.MipMapCache[new TextureInfo("img_null", true, 1, ImageWrap.Repeat, 1, true)] =  mipMap;
+        var l = new Spectrum(0f);
+        Transform transform = Transform.Translate(0f, 0f, 0f);
+        light = new InfiniteAreaLight("img_null", null, l, transform, 1);
+
+        var u = new Point2F(1,1);
+        Interaction interaction = new Interaction(Point3F.Zero, 1.23f, null);
+        var li = light.Sample_Li(interaction, u, out var wi, out var pdf, out var visibilityTester);
+        Check.That(pdf).IsEqualTo(0);
+        var rgb = li.ToRgb();
+        Check.That(rgb[0]).IsCloseTo(0, 1e-5f);
+        Check.That(rgb[1]).IsCloseTo(0, 1e-5f);
+        Check.That(rgb[2]).IsCloseTo(0, 1e-5f);        
     }
 }

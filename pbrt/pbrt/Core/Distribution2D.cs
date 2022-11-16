@@ -31,8 +31,11 @@ namespace pbrt.Core
         
         public Point2F SampleContinuous(Point2F u, out float pdf) 
         {
-            float d1 = PMarginal.SampleContinuous(u[1], out var pdfs1, out var v);
-            float d0 = PConditionalV[v].SampleContinuous(u[0], out var pdfs0, out _);
+            var u1 = u[1];
+            float d1 = PMarginal.SampleContinuous(u1, out var pdfs1, out var v);
+            var pConditionalV = PConditionalV[v];
+            var u0 = u[0];
+            float d0 = pConditionalV.SampleContinuous(u0, out var pdfs0, out _);
             pdf = pdfs0 * pdfs1;
             return new Point2F(d0, d1);
         }
