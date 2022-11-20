@@ -9,7 +9,7 @@ namespace pbrt.Materials
     {
         public Texture<float> Sigma { get; }
         public Texture<float> BumpMap { get; }
-        Texture<Spectrum> Kd;
+        public Texture<Spectrum> Kd{ get; }
 
         public MatteMaterial(Texture<Spectrum> kd, Texture<float> sigma, Texture<float> bumpMap)
         {
@@ -26,11 +26,12 @@ namespace pbrt.Materials
                 Bump(BumpMap, si);
             }
 
-            // Evaluate textures for MatteMaterial material and allocate BRDF>>
+            // Evaluate textures for MatteMaterial material and allocate BRDF
             si.Bsdf = new BSDF(si);
             Spectrum r = Kd.Evaluate(si);
             r.Clamp();
-            float sig = Sigma.Evaluate(si).Clamp(0, 90);
+            var f = Sigma.Evaluate(si);
+            float sig = f.Clamp(0, 90);
             if (r.IsBlack())
             {
                 return;

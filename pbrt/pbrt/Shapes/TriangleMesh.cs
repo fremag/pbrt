@@ -21,8 +21,8 @@ namespace pbrt.Shapes
         public List<int> FaceIndices{ get; }
         
         public TriangleMesh(Transform objectToWorld, int nbTriangles, int[] vertexIndices,
-        int nbVertices, Point3F[] p, Vector3F[] s, Normal3F[] n,
-        Point2F[] uv, Texture<float> alphaMask, Texture<float> shadowAlphaMask, int[] fIndices)
+        int nbVertices, Point3F[] p, Vector3F[] s=null, Normal3F[] n=null,
+        Point2F[] uv=null, Texture<float> alphaMask=null, Texture<float> shadowAlphaMask=null, int[] fIndices=null)
         {
             ObjectToWorld = objectToWorld;
             WorldToObject = objectToWorld.Inverse();
