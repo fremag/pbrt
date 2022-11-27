@@ -3,7 +3,8 @@ namespace Pbrt.Demos.Configs;
 public enum IntegratorType
 {
     DirectLighting,
-    Whitted
+    Whitted,
+    Path
 };
 
 public class IntegratorConfig
@@ -23,6 +24,9 @@ public class IntegratorConfig
                     break;
                 case IntegratorType.DirectLighting:
                     Config = new DirectLightingConfig();
+                    break;
+                case IntegratorType.Path:
+                    Config = new PathIntegratorConfig();
                     break;
             }
         }

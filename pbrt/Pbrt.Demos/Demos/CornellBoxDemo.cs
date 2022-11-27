@@ -3,7 +3,6 @@ using System.Linq;
 using pbrt.Core;
 using Pbrt.Demos.Configs;
 using Pbrt.Demos.Scenes;
-using pbrt.Integrators;
 using pbrt.Lights;
 using pbrt.Materials;
 using pbrt.Shapes;
@@ -32,26 +31,28 @@ namespace Pbrt.Demos.Demos
 
             SamplerConfig = new SamplerConfig
             {
+                Sampler = Configs.Sampler.Halton,
                 Config = new HaltonSamplerConfig
                 {
-                    SamplesPerPixel = 1 << 4
+                    SamplesPerPixel = 1 << 14,
                 }
             };
 
             IntegratorConfig = new IntegratorConfig
             {
-                Config = new DirectLightingConfig
+                Integrator = IntegratorType.Path,
+                Config = new PathIntegratorConfig
                 {
-                    Strategy = LightStrategy.UniformSampleAll,
-                    NbThreads = Environment.ProcessorCount
+                    MaxDepth = 4,
+                    NbThreads = Environment.ProcessorCount-1
                 }
             };
             
-            Scene = new CornellBox2Scene();
+            Scene = new CornellBoxScene();
         }
     }
 
-    public class CornellBox2Scene : DemoScene
+    public class CornellBoxScene : DemoScene
     {
         readonly float[] lambdas = { 400, 404, 408, 412, 416, 420, 424, 428, 432, 436, 440, 444, 448, 452, 456, 460, 464, 468, 472, 476, 480, 484, 488, 492, 496, 500, 504, 508, 512, 516, 520, 524, 528, 532, 536, 540, 544, 548, 552, 556, 560, 564, 568, 572, 576, 580, 584, 588, 592, 596, 600, 604, 608, 612, 616, 620, 624, 628, 632, 636, 640, 644, 648, 652, 656, 660, 664, 668, 672, 676, 680, 684, 688, 692, 696, 700 };
         readonly float[] white = { 0.343f, 0.445f, 0.551f, 0.624f, 0.665f, 0.687f, 0.708f, 0.723f, 0.715f, 0.710f, 0.745f, 0.758f, 0.739f, 0.767f, 0.777f, 0.765f, 0.751f, 0.745f, 0.748f, 0.729f, 0.745f, 0.757f, 0.753f, 0.750f, 0.746f, 0.747f, 0.735f, 0.732f, 0.739f, 0.734f, 0.725f, 0.721f, 0.733f, 0.725f, 0.732f, 0.743f, 0.744f, 0.748f, 0.728f, 0.716f, 0.733f, 0.726f, 0.713f, 0.740f, 0.754f, 0.764f, 0.752f, 0.736f, 0.734f, 0.741f, 0.740f, 0.732f, 0.745f, 0.755f, 0.751f, 0.744f, 0.731f, 0.733f, 0.744f, 0.731f, 0.712f, 0.708f, 0.729f, 0.730f, 0.727f, 0.707f, 0.703f, 0.729f, 0.750f, 0.760f, 0.751f, 0.739f, 0.724f, 0.730f, 0.740f, 0.737f };
@@ -63,7 +64,7 @@ namespace Pbrt.Demos.Demos
         private Spectrum spectrumWhite;
 
         // http://www.graphics.cornell.edu/online/box/data.html
-        public CornellBox2Scene()
+        public CornellBoxScene()
         {
             InitSpectrums();
             CornellBoxFloor();
@@ -97,7 +98,7 @@ namespace Pbrt.Demos.Demos
             var lightToWorld = Translate(-278, 540, 280) * RotateX(-90);
             IShape shape = new Disk(lightToWorld, 50f);
             var diskLight = new DiffuseAreaLight(lightToWorld, DefaultMediumInterface, new Spectrum(10f), 1, shape);
-            AllLights.Add(diskLight);
+            //AllLights.Add(diskLight);
             
             //PointLight(-278, 230, 208, MathF.Pow(10, 4) );
 //            Floor();
@@ -264,7 +265,7 @@ namespace Pbrt.Demos.Demos
         public void Square(Spectrum spectrum, Transform transform, params Point3F[] points)
         {
             var squareMesh = SquareMesh(transform, points);
-            var matFloor = new MatteMaterial(new ConstantTexture<Spectrum>(spectrum), new ConstantTexture<float>(0), null);
+            var matFloor = new MatteMaterial(new ConstantTexture<Spectrum>(spectrum), new ConstantTexture<float>(20), null);
             var triangles = BuildTriangles(squareMesh, matFloor);
             AddPrimitives(triangles);
         }
