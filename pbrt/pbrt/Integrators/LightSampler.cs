@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using pbrt.Core;
 using pbrt.Lights;
 using pbrt.Media;
@@ -9,6 +10,7 @@ using pbrt.Spectrums;
 
 namespace pbrt.Integrators;
 
+[ExcludeFromCodeCoverage]
 public static class LightSampler
 {
     public static Spectrum UniformSampleAllLights(Interaction it, IScene scene, ISampler sampler, List<int> nLightSamples, bool handleMedia = false)
