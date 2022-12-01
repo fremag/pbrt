@@ -21,7 +21,7 @@ namespace pbrt.Lights
             return !scene.IntersectP(rayTo);
         }
 
-        public Spectrum Tr(IScene scene, AbstractSampler sampler)
+        public Spectrum Tr(IScene scene, ISampler sampler)
         {
             Ray ray = P0.SpawnRayTo(P1);
             Spectrum tr = new Spectrum(1f);

@@ -30,7 +30,7 @@ namespace Pbrt.Tests.Integrators
             {
             }
 
-            public override Spectrum Li(RayDifferential ray, IScene scene, AbstractSampler sampler, int depth = 0)
+            public override Spectrum Li(RayDifferential ray, IScene scene, ISampler sampler, int depth = 0)
             {
                 rays.Add(ray);
                 return new Spectrum(spectrumValue);

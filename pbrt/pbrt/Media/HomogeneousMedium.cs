@@ -21,7 +21,7 @@ namespace pbrt.Media
             SigmaT = (sigma_s + sigma_a);
         }
         
-        public override Spectrum Tr(Ray ray, AbstractSampler sampler)
+        public override Spectrum Tr(Ray ray, ISampler sampler)
         {
             var min = MathF.Min(ray.TMax * ray.D.Length, float.MaxValue);
             var spectrum = -SigmaT * min;

@@ -54,7 +54,7 @@ namespace pbrt.Integrators
             }
         }
 
-        public override Spectrum Li(RayDifferential ray, IScene scene, AbstractSampler sampler, int depth = 0)
+        public override Spectrum Li(RayDifferential ray, IScene scene, ISampler sampler, int depth = 0)
         {
             Spectrum L = new Spectrum(0f);
             // Find closest ray intersection or return background radiance
@@ -87,10 +87,10 @@ namespace pbrt.Integrators
                 {
                     // Compute direct lighting for_DirectLightingIntegrator integrator
                     case LightStrategy.UniformSampleAll:
-                        L += UniformSampleAllLights(isect, scene, sampler, NLightSamples);
+                        L += LightSampler.UniformSampleAllLights(isect, scene, sampler, NLightSamples);
                         break;
                    case LightStrategy.UniformSampleOne:
-                        L += UniformSampleOneLight(isect, scene, sampler);
+                        L += LightSampler.UniformSampleOneLight(isect, scene, sampler);
                         break;
                 }
             }

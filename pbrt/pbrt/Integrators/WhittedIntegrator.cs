@@ -16,7 +16,7 @@ namespace pbrt.Integrators
             MaxDepth = maxDepth;
         }
 
-        public override Spectrum Li(RayDifferential ray, IScene scene, AbstractSampler sampler, int depth = 0)
+        public override Spectrum Li(RayDifferential ray, IScene scene, ISampler sampler, int depth = 0)
         {
             Spectrum l = new Spectrum(0f);
             // Find closest ray intersection or return background radiance

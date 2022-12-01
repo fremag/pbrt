@@ -13,7 +13,7 @@ namespace pbrt.Core
 
         bool IntersectP(Ray ray);
         bool Intersect(Ray ray, out SurfaceInteraction isect);
-        bool IntersectTr(Ray ray, AbstractSampler sampler, out SurfaceInteraction isect, out Spectrum tr);
+        bool IntersectTr(Ray ray, ISampler sampler, out SurfaceInteraction isect, out Spectrum tr);
         void Init();
     }
 
@@ -57,7 +57,7 @@ namespace pbrt.Core
             return intersect;
         }
         
-        public bool IntersectTr(Ray ray, AbstractSampler sampler, out SurfaceInteraction isect, out Spectrum tr) 
+        public bool IntersectTr(Ray ray, ISampler sampler, out SurfaceInteraction isect, out Spectrum tr) 
         {
             tr = new Spectrum(1f);
             while (true) 

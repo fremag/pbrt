@@ -5,9 +5,26 @@ namespace pbrt.Core
     public class Point3F
     {
         private static readonly double Epsilon = 1e-5;
-        public float X { get; set; } 
-        public float Y { get; set; } 
-        public float Z { get; set; }
+        private float[] values = new float[3];
+
+        public float X
+        {
+            get => values[0];
+            set => values[0] = value;
+        }
+        
+        public float Y
+        {
+            get => values[1];
+            set => values[1] = value;
+        }
+        
+        public float Z
+        {
+            get => values[2];
+            set => values[2] = value;
+        }
+
         public bool HasNaNs => double.IsNaN(X) || double.IsNaN(Y) || double.IsNaN(Z);
         public static Point3F Zero { get; } = new Point3F(0, 0, 0);
 

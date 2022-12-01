@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using pbrt.Cameras;
 using pbrt.Core;
 using pbrt.Reflections;
@@ -7,6 +8,7 @@ using pbrt.Spectrums;
 
 namespace pbrt.Integrators;
 
+[ExcludeFromCodeCoverage]
 public class PathIntegrator : SamplerIntegrator 
 {
     int maxDepth;
@@ -20,7 +22,7 @@ public class PathIntegrator : SamplerIntegrator
         // Nothing ot do
     }
 
-    public override Spectrum Li(RayDifferential r, IScene scene, AbstractSampler sampler, int depth=0) 
+    public override Spectrum Li(RayDifferential r, IScene scene, ISampler sampler, int depth=0) 
     {
         var L = new Spectrum(0f);
         var beta = new Spectrum(1f);
@@ -69,7 +71,7 @@ public class PathIntegrator : SamplerIntegrator
             }
             
             // Sample illumination from lights to find path contribution
-            var oneLight = UniformSampleOneLight(isect, scene, sampler);
+            var oneLight = LightSampler.UniformSampleOneLight(isect, scene, sampler);
             oneLight.Mul(beta);
             L.Add(oneLight);
             

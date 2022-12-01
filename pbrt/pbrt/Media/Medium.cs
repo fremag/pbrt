@@ -6,6 +6,6 @@ namespace pbrt.Media
 {
     public abstract class Medium
     {
-        public abstract Spectrum Tr(Ray ray, AbstractSampler sampler);
+        public abstract Spectrum Tr(Ray ray, ISampler sampler);
     }
 }

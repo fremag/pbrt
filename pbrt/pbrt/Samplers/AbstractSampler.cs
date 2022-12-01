@@ -4,7 +4,20 @@ using pbrt.Core;
 
 namespace pbrt.Samplers
 {
-    public abstract class AbstractSampler
+    public interface ISampler
+    {
+        public int SamplesPerPixel { get; }
+        public float Get1D();
+        public Point2F Get2D();
+        public ISampler Clone(int seed);
+        public void StartPixel(Point2I p);
+        public bool StartNextSample();
+        public CameraSample GetCameraSample(Point2I pRaster);
+        public Point2F[] Get2DArray(int n);
+        public float[] Get1DArray(int n);
+    }
+
+    public abstract class AbstractSampler : ISampler
     {
         public static readonly float OneMinusEpsilon = 1 - float.Epsilon;
 
@@ -20,6 +33,10 @@ namespace pbrt.Samplers
         
         public int Array1DOffset { get; private set; }
         public int Array2DOffset { get; private set; }
+
+        public abstract float Get1D();
+        public abstract Point2F Get2D();
+        public abstract ISampler Clone(int seed);
 
         protected AbstractSampler() : this(1)
         {
@@ -39,9 +56,6 @@ namespace pbrt.Samplers
             Array1DOffset = 0;
             Array2DOffset = 0;            
         }
-        public abstract float Get1D();
-        public abstract Point2F Get2D();
-        public abstract AbstractSampler Clone(int seed);
 
         public CameraSample GetCameraSample(Point2I pRaster)
         {

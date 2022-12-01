@@ -34,7 +34,7 @@ namespace Pbrt.Demos.Demos
                 Sampler = Configs.Sampler.Halton,
                 Config = new HaltonSamplerConfig
                 {
-                    SamplesPerPixel = 1 << 14,
+                    SamplesPerPixel = 1 << 12,
                 }
             };
 
@@ -44,7 +44,7 @@ namespace Pbrt.Demos.Demos
                 Config = new PathIntegratorConfig
                 {
                     MaxDepth = 4,
-                    NbThreads = Environment.ProcessorCount-1
+                    NbThreads = Environment.ProcessorCount
                 }
             };
             
