@@ -24,7 +24,7 @@ namespace pbrt_runner
 
         private void PrintStats()
         {
-            string msg = $"\r[{num,3} / {max,3}] {Demo.GetType().Name,-40}: {swTotal.Elapsed:hh\\:mm\\:ss} [{n,5} / {nbTiles,5}] {(100f*n)/nbTiles,-5:##0.00} %";
+            string msg = $"\r[{num,3} / {max,3}] {(nbTiles ==0 ? 0 : 100f*n/nbTiles),-6:##0.00} % ({swTotal.Elapsed:hh\\:mm\\:ss}, {n,5} / {nbTiles,5}) {Demo.Text}";
             Console.Write(msg);
         }
 

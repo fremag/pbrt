@@ -53,7 +53,7 @@ namespace Pbrt.Demos
             };
         }
 
-        public void Init()
+        public virtual void Init()
         {
             Scene.Init();
         }

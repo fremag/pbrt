@@ -13,19 +13,26 @@ namespace Pbrt.Demos.Demos
 {
     public class CornellBoxDemo : AbstractDemo
     {
-        public override string FileName => "CornellBox.png";
+        public override string FileName => $"CornellBox{MetaData()}.png";
 
-        public CornellBoxDemo() : base("Cornell Box")
+        public CornellBoxDemo() : this(4, 32)
+        {
+            
+        }
+        
+        public CornellBoxDemo(int maxDepth, int samplesPerPixel) : base("Cornell Box")
         {
             CameraConfig = new CameraConfig
             {
                 Camera = Configs.Camera.Perspective,
                 Config = new PerspectiveCameraConfig
                 {
-                    Position = (-278, 273, -400),
+                    Position = (-278, 273, -270),
                     LookAt = (-278, 273, 0),
                     FocalDistance = 0.035f,
-                    Up = (0, 1, 0)
+                    Up = (0, 1, 0),
+                    Width = 400,
+                    Height = 400
                 }
             };
 
@@ -34,7 +41,7 @@ namespace Pbrt.Demos.Demos
                 Sampler = Configs.Sampler.Halton,
                 Config = new HaltonSamplerConfig
                 {
-                    SamplesPerPixel = 1 << 12,
+                    SamplesPerPixel = samplesPerPixel,
                 }
             };
 
@@ -43,12 +50,29 @@ namespace Pbrt.Demos.Demos
                 Integrator = IntegratorType.Path,
                 Config = new PathIntegratorConfig
                 {
-                    MaxDepth = 4,
+                    MaxDepth = maxDepth,
                     NbThreads = Environment.ProcessorCount
                 }
             };
             
             Scene = new CornellBoxScene();
+        }
+
+        public override void Init()
+        {
+            base.Init();
+            Text += MetaData();
+        }
+
+        public string MetaData()
+        {
+            string text = $"_Samples={SamplerConfig.Config.SamplesPerPixel}";
+            if (IntegratorConfig.Config is PathIntegratorConfig pathIntegratorConfig)
+            {
+                text += $"_MaxDepth={pathIntegratorConfig.MaxDepth}";
+            }
+
+            return text;
         }
     }
 
@@ -137,35 +161,46 @@ namespace Pbrt.Demos.Demos
         private void ShortBlock()
         {
             // Short block
-            Square(spectrumWhite,
-                130.0, 165.0, 65.0,
-                82.0, 165.0, 225.0,
-                240.0, 165.0, 272.0,
-                290.0, 165.0, 114.0);
+            var x1 = 190.0;
+            var x2 = 122.0;
+            var x3 = 240.0;
+            var x4 = 290.0;
+
+            var z1 = 65.0;
+            var z2 = 155.0;
+            var z3 = 190.0;
+            var z4 = 114.0;
 
             Square(spectrumWhite,
-                290.0, 0.0, 114.0,
-                290.0, 165.0, 114.0,
-                240.0, 165.0, 272.0,
-                240.0, 0.0, 272.0);
+                x1, 165.0, z1,
+                x2, 165.0, z2,
+                x3, 165.0, z3,
+                x4, 165.0, z4);
 
             Square(spectrumWhite,
-                130.0, 0.0, 65.0,
-                130.0, 165.0, 65.0,
-                290.0, 165.0, 114.0,
-                290.0, 0.0, 114.0);
+                x4, 0.0, z4,
+                x4, 165.0, z4,
+                x3, 165.0, z3,
+                x3, 0.0, z3);
 
             Square(spectrumWhite,
-                82.0, 0.0, 225.0,
-                82.0, 165.0, 225.0,
-                130.0, 165.0, 65.0,
-                130.0, 0.0, 65.0);
+                x1, 0.0, z1,
+                x1, 165.0, z1,
+                x4, 165.0, z4,
+                x4, 0.0, z4);
 
             Square(spectrumWhite,
-                240.0, 0.0, 272.0,
-                240.0, 165.0, 272.0,
-                82.0, 165.0, 225.0,
-                82.0, 0.0, 225.0);            
+                x2, 0.0, z2,
+                x2, 165.0, z2,
+                x1, 165.0, z1,
+                x1, 0.0, z1);
+
+            Square(spectrumWhite,
+                x3, 0.0, z3,
+                x3, 165.0, z3,
+                x2, 165.0, z2,
+                x2, 0.0, z2);
+                        
         }
 
         private void CornelBoxCeiling()
