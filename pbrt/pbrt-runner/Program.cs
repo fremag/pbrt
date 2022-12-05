@@ -41,13 +41,13 @@ namespace pbrt_runner
                 // new InfinityLightDayDemo(),
                 // new InfinityLightSunsetDemo(),
                 new CornellBoxDemo(1,16),
-//                new CornellBoxDemo(2,16),
-//                new CornellBoxDemo(3,16),
-//                new CornellBoxDemo(4,16),
-                // new CornellBoxDemo(4,64),
-                 new CornellBoxDemo(4,256),
-//                new CornellBoxDemo(4,1024),
-                // new CornellBoxDemo(4,16*1024),
+                new CornellBoxDemo(2,16),
+                new CornellBoxDemo(3,16),
+                new CornellBoxDemo(4,16),
+                new CornellBoxDemo(4,64),
+                new CornellBoxDemo(4,256),
+                new CornellBoxDemo(4,1024),
+                new CornellBoxDemo(4,16*1024),
             };
 
             for (int i = 0; i < demos.Length; i++)

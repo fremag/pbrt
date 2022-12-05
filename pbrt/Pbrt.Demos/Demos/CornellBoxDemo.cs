@@ -31,8 +31,9 @@ namespace Pbrt.Demos.Demos
                     LookAt = (-278, 273, 0),
                     FocalDistance = 0.035f,
                     Up = (0, 1, 0),
-                    Width = 400,
-                    Height = 400
+                    Width = 600,
+                    Height = 600,
+                    FoV = 90
                 }
             };
 
@@ -98,7 +99,8 @@ namespace Pbrt.Demos.Demos
             RightWall();
             LeftWall();
             
-            ShortBlock();
+            //ShortBlock();
+            ShortBlock2();
             TallBlock();
             var light = new[]
             {
@@ -108,8 +110,9 @@ namespace Pbrt.Demos.Demos
                 213.0, 548.8, 332.0
             };
 
-            var c = 10;
-            var spectrumLight = Spectrum.FromSampledSpectrum(new[] { 400.0f, 500.0f, 600.0f, 700.0f }, new[] { c*0.0f, c*8.0f, c*15.6f, c*18.4f }, 4);
+            var c = 70f;
+            var spectrumLight = Spectrum.FromSampledSpectrum(new[] { 400.0f, 500.0f, 600.0f, 700.0f }
+                , new[] { c, c, c, c}, 4);
             Square(spectrumLight, Transform.Translate(0, 0, 0), light);
 
             var lightMesh = SquareMesh(Transform.Translate(0, -0, 0), light);
@@ -126,6 +129,15 @@ namespace Pbrt.Demos.Demos
             
             //PointLight(-278, 230, 208, MathF.Pow(10, 4) );
 //            Floor();
+        }
+
+        private void ShortBlock2()
+        {
+            Transform t = Translate(-170, tY: 70, tZ: 180) * Scale(70, 70, 70) * RotateY(30);
+            var cube = Cube(t);
+            var matteMaterial = new MatteMaterial(new ConstantTexture<Spectrum>(spectrumWhite), new ConstantTexture<float>(20), null);
+            var triangles = BuildTriangles(cube, matteMaterial);
+            AddPrimitives(triangles);
         }
 
         private void LeftWall()
@@ -161,44 +173,45 @@ namespace Pbrt.Demos.Demos
         private void ShortBlock()
         {
             // Short block
-            var x1 = 190.0;
+            var x1 = 180.0;
             var x2 = 122.0;
             var x3 = 240.0;
             var x4 = 290.0;
 
-            var z1 = 65.0;
+            var z1 = 85.0;
             var z2 = 155.0;
             var z3 = 190.0;
             var z4 = 114.0;
 
+            var y = 135.0;
             Square(spectrumWhite,
-                x1, 165.0, z1,
-                x2, 165.0, z2,
-                x3, 165.0, z3,
-                x4, 165.0, z4);
+                x1, y, z1,
+                x2, y, z2,
+                x3, y, z3,
+                x4, y, z4);
 
             Square(spectrumWhite,
                 x4, 0.0, z4,
-                x4, 165.0, z4,
-                x3, 165.0, z3,
+                x4, y, z4,
+                x3, y, z3,
                 x3, 0.0, z3);
 
             Square(spectrumWhite,
                 x1, 0.0, z1,
-                x1, 165.0, z1,
-                x4, 165.0, z4,
+                x1, y, z1,
+                x4, y, z4,
                 x4, 0.0, z4);
 
             Square(spectrumWhite,
                 x2, 0.0, z2,
-                x2, 165.0, z2,
-                x1, 165.0, z1,
+                x2, y, z2,
+                x1, y, z1,
                 x1, 0.0, z1);
 
             Square(spectrumWhite,
                 x3, 0.0, z3,
-                x3, 165.0, z3,
-                x2, 165.0, z2,
+                x3, y, z3,
+                x2, y, z2,
                 x2, 0.0, z2);
                         
         }
@@ -300,8 +313,8 @@ namespace Pbrt.Demos.Demos
         public void Square(Spectrum spectrum, Transform transform, params Point3F[] points)
         {
             var squareMesh = SquareMesh(transform, points);
-            var matFloor = new MatteMaterial(new ConstantTexture<Spectrum>(spectrum), new ConstantTexture<float>(20), null);
-            var triangles = BuildTriangles(squareMesh, matFloor);
+            var matteMaterial = new MatteMaterial(new ConstantTexture<Spectrum>(spectrum), new ConstantTexture<float>(20), null);
+            var triangles = BuildTriangles(squareMesh, matteMaterial);
             AddPrimitives(triangles);
         }
     }
